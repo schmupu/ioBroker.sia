@@ -2,12 +2,8 @@
 
 var utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 var dp = require(__dirname + '/lib/datapoints');
-
 var net = require('net');
-
 var adapter = new utils.Adapter('sia');
-
-
 
 var server = null; // Server instance
 
@@ -17,7 +13,7 @@ var server = null; // Server instance
 // *****************************************************************************************************
 adapter.on('unload', function(callback) {
   try {
-    adapter.log.info('Closing Contact ID Server');
+    adapter.log.info('Closing SIA Server');
 
     if (server) {
       server.close();
