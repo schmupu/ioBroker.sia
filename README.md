@@ -10,11 +10,12 @@
 [![NPM](https://nodei.co/npm/iobroker.sia.png?downloads=true)](https://nodei.co/npm/iobroker.sia/)
 
 
-The protocol SIA is used by alarm systems to communicate with the central stations.
+The protocol SIA DC-09 is used by alarm systems to communicate with the central stations.
 
 This adapter is a SIA Server. When an alarm event is triggered, the alarm system sends over IP the sia message to the central station.
 You can use ioBroker with this adapter as central station. For example. you can send for a alarm by SIA a telegram message.  
 
+[SIA DC-09 protocol](https://www.yumpu.com/en/document/view/47594214/dc-09-preparing-for-ansi-public-review-security-industry-)
 
 ## Install & Configuration
 
