@@ -1,0 +1,44 @@
+{
+  "name": "iobroker.contactid",
+  "version": "0.1.2",
+  "description": "ioBroker contactid and sia Adapter",
+  "author": {
+    "name": "Thorsten Stueben",
+    "email": "thorsten@stueben.de"
+  },
+  "contributors": [
+    {
+      "name": "Thorsten Stueben",
+      "email": "thorsten@stueben.de"
+    }
+  ],
+  "homepage": "https://github.com/schmupu/ioBroker.contactid",
+  "license": "MIT",
+  "keywords": [
+    "ioBroker",
+    "contactid",
+    "sia",
+    "Smart Home",
+    "burglar",
+    "alarm",
+    "home automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/schmupu/ioBroker.contactid"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "mocha": "^4.1.0",
+    "chai": "^4.1.2"
+  },
+  "main": "contactid.js",
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha --exit"
+  },
+  "bugs": {
+    "url": "https://github.com/schmupu/ioBroker.contactid/issues"
+  },
+  "readmeFilename": "README.md"
+}

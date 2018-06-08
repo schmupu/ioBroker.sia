@@ -1,0 +1,7 @@
+{
+  "port": "Port",
+  "bind": "IP-Adresse",
+  "subscriber": "Subscriber/Accountnumber",
+  "alarmsystem": "Alarmanlage",
+  "on save adapter restarts with new config immediately": "Beim Speichern von Einstellungen der Adapter wird sofort neu gestartet."
+}

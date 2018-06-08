@@ -1,0 +1,7 @@
+{
+  "port": "Port",
+  "bind": "IP-Adresse",
+  "subscriber": "subscriber/accountnumber",
+  "alarmsystem": "burglar alarm",
+  "on save adapter restarts with new config immediately": "on save adapter restarts with new config immediately"
+}
