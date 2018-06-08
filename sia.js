@@ -222,8 +222,8 @@ function ackSIA(sia) {
   if (sia) {
 
     var id = null;
-    var rpref = sia.rpref.length > 0 ? "R" + sia.rpref : "";
-    var lpref = sia.lpref.length > 0 ? "L" + sia.lpref : "";
+    var rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
+    var lpref = sia.lpref && sia.lpref.length > 0 ? "L" + sia.lpref : "";
 
     if (sia.crc == sia.calc_crc && sia.len == sia.calc_len) {
       id = 'ACK';
