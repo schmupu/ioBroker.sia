@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "sia",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "news": {
+      "0.0.3": {
+        "en": "SIA Regex optimized",
+        "de": "SIA Regex Ausdruck optimiert"
+      },
       "0.0.2": {
         "en": "Code improvement",
         "de": "Anpassungen an der Entwicklung"

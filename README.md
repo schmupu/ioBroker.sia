@@ -28,22 +28,25 @@ You can use ioBroker with this adapter as central station. For example. you can 
 
 3. Configure your burglar system to send SIA messages
 
-    Lupusec XT1:
+    * Lupusec XT1:
 
       not supported
 
-    Lupusec XT1+/XT2/XT2+/XT3:
+    * Lupusec XT1+/XT2/XT2+/XT3:
 
       Einstellungen -> Contact ID : ip://subcriber@ip-address-iobroker:port/SIA
       Example: ip://test@192.168.20.1:50001/SIA
 
-    other alarm systems:
+    * other alarm systems:
 
       the Adapter will work with all alarm systems, which supports
       the SIA DC-09 proctocol
 
 
 ## Changelog
+
+### 0.0.3 (08.06.2018)
+* (Stübi) SIA regex optimized
 
 ### 0.0.2 (08.06.2018)
 * (Stübi) bug fixing

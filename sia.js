@@ -12,7 +12,9 @@ var server = null; // Server instance
 // is called when adapter shuts down - callback has to be called under any circumstances!
 // *****************************************************************************************************
 adapter.on('unload', function(callback) {
+
   try {
+
     adapter.log.info('Closing SIA Server');
 
     if (server) {
@@ -20,8 +22,11 @@ adapter.on('unload', function(callback) {
     }
 
     callback();
+
   } catch (e) {
+
     callback();
+
   }
 
 });
@@ -412,13 +417,20 @@ function parseSIA(data) {
 
     str = new Buffer((data.subarray(7, len)));
     sia.str = str.toString();
-    regex = /\"(.+)\"(\d{4})(R.{1,6}){0,1}(L.{1,6})\#([\w\d]+)\[(.+?)\](\[(.+?)\])?(_(.+)){0,1}/gm;
+
+    // Example str:
+    // "SIA-DCS"0002R1L232#78919[1234|NFA129][S123Main St., 55123]_11:10:00,10-12-2019
+    // "SIA-DCS"0002R1L232#78919[ ][ ]_11:10:00,10-12-2019
+    // "SIA-DCS"0266L0#alarm1[alarm2|Nri1OP0001*Familie*]_16:22:03,06-08-2018
+    // http://s545463982.onlinehome.us/DC09Gen/
+
+    // regex = /\"(.+)\"(\d{4})(R.{1,6}){0,1}(L.{1,6})\#([\w\d]+)\[(.+?)\](\[(.+?)\])?(_(.+)){0,1}/gm;
+    regex =/\"(.+)\"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))\#([\w\d]+)\[(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
 
     sia.calc_len = sia.str.length;
     sia.calc_crc = crc16str(sia.str);
 
     adapter.log.debug("parseSIA sia.str : " + sia.str);
-    adapter.log.debug("parseSIA sia.str : " + str.toString());
 
     if ((m = regex.exec(sia.str)) !== null && m.length >= 6) {
 
@@ -426,18 +438,12 @@ function parseSIA(data) {
 
       sia.id = m[1]; // id (SIA-DCS, ACK)
       sia.seq = m[2]; // sqeuence number (0002 or 0003)
-      sia.rpref = m[3] || ""; // Receiver Number - optional (R0, R1, R123456)
-      if (sia.rpref.length > 1) {
-        sia.rpref = sia.rpref.substr(1);
-      }
-      sia.lpref = m[4]; // Prefix Acount number - required (L0, L1, L1232)
-      if (sia.lpref.length > 1) {
-        sia.lpref = sia.lpref.substr(1);
-      }
-      sia.act = m[5]; // Acount number - required (1224, ABCD124)
-      sia.data_message = m[6]; // Message
-      sia.data_extended = m[8] || ""; // extended Message
-      sia.ts = m[10] || "";
+      sia.rpref = m[4] || ""; // Receiver Number - optional (R0, R1, R123456)
+      sia.lpref = m[6]; // Prefix Acount number - required (L0, L1, L1232)
+      sia.act = m[7]; // Acount number - required (1224, ABCD124)
+      sia.data_message = m[8]; // Message
+      sia.data_extended = m[10] || ""; // extended Message
+      sia.ts = m[12] || "";
 
     }
 
@@ -471,11 +477,20 @@ function onClientConnected(sock) {
 
       setStatesSIA(sia);
       ack = ackSIA(sia);
-      sock.end(ack);
+
+      try {
+
+        sock.end(ack);
+
+      } catch(e) { }
 
     } else {
 
-      sock.end();
+      try {
+
+        sock.end();
+
+      } catch(e) { }
 
     }
 
