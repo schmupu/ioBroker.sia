@@ -37,6 +37,11 @@ You can use ioBroker with this adapter as central station. For example. you can 
       Einstellungen -> Contact ID : ip://subcriber@ip-address-iobroker:port/SIA
       Example: ip://test@192.168.20.1:50001/SIA
 
+    other alarm systems:
+
+      the Adapter will work with all alarm systems, which supports
+      the SIA DC-09 proctocol
+       
 
 ## Changelog
 

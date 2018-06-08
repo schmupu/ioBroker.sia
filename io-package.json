@@ -36,8 +36,7 @@
     "port": 50001,
     "bind": "0.0.0.0",
     "keys": [{
-      "accountnumber": "test",
-      "alarmsystem": "lupusec_xt2"
+      "accountnumber": "test"
     }]
   },
   "objects": [],

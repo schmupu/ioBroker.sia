@@ -213,28 +213,6 @@ function createObjects() {
 }
 
 
-// *****************************************************************************************************
-// read configuration by accountnumber and return the alarmsytem
-// *****************************************************************************************************
-function getAlarmSystem(accountnumber) {
-
-  for (var i = 0; i < adapter.config.keys.length; i++) {
-
-    var key = adapter.config.keys[i];
-
-    if (key.accountnumber == accountnumber) {
-
-      return key.alarmsystem;
-
-    }
-
-  }
-
-  return null;
-
-}
-
-
 
 // *****************************************************************************************************
 // Acknowledge for SIA
