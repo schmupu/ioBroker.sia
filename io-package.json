@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "sia",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "news": {
+      "0.0.2": {
+        "en": "Code improvement",
+        "de": "Anpassungen an der Entwicklung"
+      },
       "0.0.1": {
         "en": "Code improvement",
         "de": "Anpassungen an der Entwicklung"

@@ -41,9 +41,12 @@ You can use ioBroker with this adapter as central station. For example. you can 
 
       the Adapter will work with all alarm systems, which supports
       the SIA DC-09 proctocol
-       
+
 
 ## Changelog
+
+### 0.0.2 (08.06.2018)
+* (Stübi) bug fixing
 
 ### 0.0.1 (07.06.2018)
 * (Stübi) first implementation
