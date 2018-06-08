@@ -414,7 +414,11 @@ function parseSIA(data) {
     sia.calc_len = sia.str.length;
     sia.calc_crc = crc16str(sia.str);
 
+    adapter.log.debug("parseSIA sia.str : " + sia.str);
+
     if ((m = regex.exec(sia.str)) !== null && m.length >= 6) {
+
+      adapter.log.debug("parseSIA regex   : " + JSON.stringify(sia));
 
       sia.id = m[1]; // id (SIA-DCS, ACK)
       sia.seq = m[2]; // sqeuence number (0002 or 0003)
