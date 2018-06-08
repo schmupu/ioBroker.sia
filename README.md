@@ -3,7 +3,8 @@
 # ioBroker.sia
 ==================
 
-[![Build Status](https://travis-ci.org/schmupu/ioBroker.sia.svg?branch=master)](https://travis-ci.org/schmupu/ioBroker.sia)
+[![Travis CI Build Status](https://travis-ci.org/schmupu/ioBroker.sia.svg?branch=master)](https://travis-ci.org/schmupu/ioBroker.sia)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/schmupu/ioBroker.sia?branch=master&svg=true)](https://ci.appveyor.com/project/schmupu/ioBroker-sia/)
 [![NPM version](http://img.shields.io/npm/v/iobroker.sia.svg)](https://www.npmjs.com/package/iobroker.sia)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.sia.svg)](https://www.npmjs.com/package/iobroker.sia)
 
