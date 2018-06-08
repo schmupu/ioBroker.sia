@@ -89,7 +89,7 @@ function main() {
 // *****************************************************************************************************
 // convert subcriber to ID for using as channel name. Special characters and spaces are deleted.
 // *****************************************************************************************************
-function (accountnumber) {
+function getAcountNumberID(accountnumber) {
 
   var id = accountnumber.replace(/[.\s]+/g, '_');
   return id;
