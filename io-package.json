@@ -1,53 +1,33 @@
 {
   "common": {
-    "name": "contactid",
-    "version": "0.1.1",
+    "name": "sia",
+    "version": "0.0.1",
     "news": {
-      "0.1.2": {
-        "en": "SIA protocol supported",
-        "de": "Untertützung des SIA Protokolls"
-      },
-      "0.1.1": {
-        "en": "Lupusec XT1+,XT2+ and XT3 added",
-        "de": "Lpussec XT1+,XT2+ und XT3 Untertützung"
-      },
-      "0.1.0": {
-        "en": "First Beta version",
-        "de": "Erste Beta Version"
-      },
-      "0.0.6": {
-        "en": "Bug Fixing",
-        "de": "Fehlerbehebung"
-      },
-      "0.0.5": {
-        "en": "fixed error in drop down menu",
-        "de": "Fehlerbehebung Drop-Down Menue"
-      },
-      "0.0.4": {
+      "0.0.1": {
         "en": "Code improvement",
         "de": "Anpassungen an der Entwicklung"
       }
     },
     "title": "Contact ID für Alarmanlagen",
     "titleLang": {
-      "en": "Contact ID for burglar alarms",
-      "de": "Contact ID für Alarmanlagen"
+      "en": "SIA Server for burglar alarms",
+      "de": "SIA Server für Alarmanlagen"
     },
     "desc": {
-      "en": "ioBroker Contact ID Adapter for burglar alarms",
-      "de": "ioBroker Contact ID Adapter für Alarmanlagen"
+      "en": "ioBroker SIA Server Adapter for burglar alarms",
+      "de": "ioBroker SIA Server Adapter für Alarmanlagen"
     },
     "authors": [
       "Thorsten Stueben <thorsten@stueben.de>"
     ],
     "platform": "Javascript/Node.js",
     "mode": "daemon",
-    "icon": "contactid.png",
+    "icon": "sia.png",
     "materialize": true,
     "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/schmupu/ioBroker.contactid/master/contactidext.png",
-    "keywords": ["contactid", "lupusec", "burglar", "alarm", "contactid"],
-    "readme": "https://github.com/schmupu/ioBroker.contactid/blob/master/README.md",
+    "extIcon": "https://raw.githubusercontent.com/schmupu/ioBroker.sia/master/sia.png",
+    "keywords": ["sia", "burglar", "alarm"],
+    "readme": "https://github.com/schmupu/ioBroker.sia/blob/master/README.md",
     "loglevel": "info",
     "type": "alarm",
     "restartAdapters": []
