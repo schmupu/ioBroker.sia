@@ -89,9 +89,9 @@ function main() {
 // *****************************************************************************************************
 // convert subcriber to ID for using as channel name. Special characters and spaces are deleted.
 // *****************************************************************************************************
-function getSubscriberID(subscriber) {
+function (accountnumber) {
 
-  var id = subscriber.replace(/[.\s]+/g, '_');
+  var id = accountnumber.replace(/[.\s]+/g, '_');
   return id;
 
 }
@@ -119,11 +119,11 @@ function deleteChannel(obj) {
         var found = false;
         var channelname = obj.common.name;
 
-        // Channel Name ist ein subscriber
+        // Channel Name ist ein accountnumber
         for (var i = 0; i < adapter.config.keys.length; i++) {
 
           var key = adapter.config.keys[i];
-          var id = getSubscriberID(key.subscriber);
+          var id = getAcountNumberID(key.accountnumber);
 
           if (id == channelname) {
 
@@ -173,7 +173,7 @@ function createObjectSIA(id, key) {
   adapter.setObjectNotExists(id, {
     type: 'channel',
     common: {
-      name: key.subscriber
+      name: key.accountnumber
     },
     native: {}
   });
@@ -183,7 +183,7 @@ function createObjectSIA(id, key) {
     let sid = id + '.' + prop;
     let parameter = JSON.parse(JSON.stringify(obj[prop]));
 
-    parameter.name = key.subscriber + ' ' + parameter.name;
+    parameter.name = key.accountnumber + ' ' + parameter.name;
 
     adapter.setObjectNotExists(sid, {
       type: 'state',
@@ -197,62 +197,16 @@ function createObjectSIA(id, key) {
 
 
 // *****************************************************************************************************
-// create for every ID a channel and create a few states
-// *****************************************************************************************************
-function createObjectCID(id, key) {
-
-  let obj = dp.dpCID || {};
-
-  adapter.setObjectNotExists(id, {
-    type: 'channel',
-    common: {
-      name: key.subscriber
-    },
-    native: {}
-  });
-
-  for (let prop in obj) {
-
-    let sid = id + '.' + prop;
-    let parameter = JSON.parse(JSON.stringify(obj[prop]));
-
-    parameter.name = key.subscriber + ' ' + parameter.name;
-
-    adapter.setObjectNotExists(sid, {
-      type: 'state',
-      common: parameter,
-      native: {}
-    });
-
-  }
-
-}
-
-// *****************************************************************************************************
-// read configuration, and create for all subscribers a channel and states
+// read configuration, and create for all accountnumbers a channel and states
 // *****************************************************************************************************
 function createObjects() {
 
-  var type = adapter.config.alarmtype;
-
   for (var i = 0; i < adapter.config.keys.length; i++) {
 
     var key = adapter.config.keys[i];
-    var id = getSubscriberID(key.subscriber);
+    var id = getAcountNumberID(key.accountnumber);
 
-    switch (type) {
-
-      case "cid":
-        createObjectCID(id, key);
-        break;
-
-      case "sia":
-        createObjectSIA(id, key);
-        break;
-
-      default:
-
-    }
+    createObjectSIA(id, key);
 
   }
 
@@ -260,15 +214,15 @@ function createObjects() {
 
 
 // *****************************************************************************************************
-// read configuration by subscriber and return the alarmsytem
+// read configuration by accountnumber and return the alarmsytem
 // *****************************************************************************************************
-function getAlarmSystem(subscriber) {
+function getAlarmSystem(accountnumber) {
 
   for (var i = 0; i < adapter.config.keys.length; i++) {
 
     var key = adapter.config.keys[i];
 
-    if (key.subscriber == subscriber) {
+    if (key.accountnumber == accountnumber) {
 
       return key.alarmsystem;
 
@@ -281,38 +235,6 @@ function getAlarmSystem(subscriber) {
 }
 
 
-// *****************************************************************************************************
-// Acknowledge for CID
-// *****************************************************************************************************
-function ackCID(cid) {
-
-  var ack = null;
-
-  switch (getAlarmSystem(cid.subscriber)) {
-
-    case "lupusec_xt1":
-
-      ack = new Buffer(1);
-      ack[0] = 6; //Acknowledge Lupusex 0x6
-      break;
-
-    case "lupusec_xt1p":
-    case "lupusec_xt2":
-    case "lupusec_xt2p":
-    case "lupusec_xt3":
-
-      ack = cid.data; // komplette Nachricht wieder zurückegeben
-      break;
-
-    default:
-
-     ack = null;
-
-  }
-
-  return ack;
-
-}
 
 // *****************************************************************************************************
 // Acknowledge for SIA
@@ -350,7 +272,7 @@ function ackSIA(sia) {
 }
 
 // *****************************************************************************************************
-// Set state for contact id message
+// Set state for SIA message
 // *****************************************************************************************************
 function setStatesSIA(sia) {
 
@@ -363,9 +285,9 @@ function setStatesSIA(sia) {
 
       var key = adapter.config.keys[i];
 
-      if (key.subscriber == sia.act) {
+      if (key.accountnumber == sia.act) {
 
-        var id = getSubscriberID(sia.act);
+        var id = getAcountNumberID(sia.act);
 
         for (let prop in obj) {
 
@@ -437,81 +359,10 @@ function setStatesSIA(sia) {
 
 }
 
-// *****************************************************************************************************
-// Set state for contact id message
-// *****************************************************************************************************
-function setStatesCID(cid) {
-
-  var obj = dp.dpCID || {};
-  var val = null;
-
-  if (cid) {
-
-    for (var i = 0; i < adapter.config.keys.length; i++) {
-
-      var key = adapter.config.keys[i];
-
-      if (key.subscriber == cid.subscriber) {
-
-        var id = getSubscriberID(cid.subscriber);
-
-        for (let prop in obj) {
-
-          var sid = id + '.' + prop;
-
-          switch (prop) {
-
-            case 'subscriber':
-              val = cid.subscriber;
-              break;
-
-            case 'event':
-              val = cid.event;
-              break;
-
-            case 'eventtext':
-              val = cid.eventtext;
-              break;
-
-            case 'group':
-              val = cid.group;
-              break;
-
-            case 'qualifier':
-              val = cid.qualifier;
-              break;
-
-            case 'sensor':
-              val = cid.sensor;
-              break;
-
-            case 'message':
-              val = cid.data;
-              break;
-
-            default:
-              val = null;
-
-          }
-
-          adapter.setState(sid, {
-            val: val,
-            ack: true
-          });
-
-        }
-
-      }
-
-    }
-
-  }
-
-}
 
 
 // *****************************************************************************************************
-// start socket server for listining for contact IDs
+// start socket server for listining for SIA
 // *****************************************************************************************************
 function serverStart() {
 
@@ -519,7 +370,7 @@ function serverStart() {
 
   server.listen(adapter.config.port, adapter.config.bind, function() {
 
-    var text = 'Contact ID Server listening on IP-Adress: ' + server.address().address + ':' + server.address().port;
+    var text = 'SIA Server listening on IP-Adress: ' + server.address().address + ':' + server.address().port;
     adapter.log.info(text);
 
   });
@@ -605,7 +456,7 @@ function parseSIA(data) {
 }
 
 // *****************************************************************************************************
-// alarm system connected and sending contact ID message
+// alarm system connected and sending SIA  message
 // *****************************************************************************************************
 function onClientConnected(sock) {
 
@@ -621,46 +472,19 @@ function onClientConnected(sock) {
     var strdata = data.toString().trim();
     adapter.log.info(remoteAddress + ' sending following message: ' + strdata);
 
-    if (adapter.config.alarmtype == "cid") {
+    var sia = parseSIA(data);
 
-      // [alarmanlage 18140101001B4B6]
-      // [alarmanlage 18160200000C5B7]
+    if (sia) {
 
-      var cid = parseCID(strdata);
+      setStatesSIA(sia);
+      ack = ackSIA(sia);
+      sock.end(ack);
 
-      if (cid) {
+    } else {
 
-        // adapter.log.info("Received message: " + JSON.stringify(cid));
-        setStatesCID(cid);
-        ack = ackCID(cid);
-        sock.end(ack);
-
-      } else {
-
-        sock.end();
-
-      }
+      sock.end();
 
     }
-
-    if (adapter.config.alarmtype == "sia") {
-
-      var sia = parseSIA(data);
-
-      if (sia) {
-
-        setStatesSIA(sia);
-        ack = ackSIA(sia);
-        sock.end(ack);
-
-      } else {
-
-        sock.end();
-
-      }
-
-    }
-
 
   });
 
@@ -672,37 +496,6 @@ function onClientConnected(sock) {
   sock.on('error', function(err) {
     adapter.log.error('Connection ' + remoteAddress + ' error: ' + err.message);
   });
-
-}
-
-
-// *****************************************************************************************************
-// parse contactid and put into object
-// *****************************************************************************************************
-function parseCID(data) {
-
-  var reg = /^\[(.+) 18(.)(.{3})(.{2})(.{3})(.)(.*)\]/gm;
-  var match = reg.exec(data);
-  var cid = null;
-
-  if (match) {
-
-    // <ACCT><MT><QXYZ><GG><CCC><S>
-    cid = {
-
-      data: data,
-      subscriber: match[1].trim(),
-      qualifier: match[2],
-      event: match[3],
-      eventtext: getEventText(match[3]),
-      group: match[4],
-      sensor: match[5],
-      checksum: match[6]
-    };
-
-  }
-
-  return cid;
 
 }
 
