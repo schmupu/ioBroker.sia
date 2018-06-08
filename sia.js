@@ -262,6 +262,8 @@ function setStatesSIA(sia) {
 
   if (sia) {
 
+    adapter.log.debug("setStatesSIA sia.act : " + sia.act);
+
     for (var i = 0; i < adapter.config.keys.length; i++) {
 
       var key = adapter.config.keys[i];
