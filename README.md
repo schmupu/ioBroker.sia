@@ -4,10 +4,10 @@
 ==================
 
 [![Build Status](https://travis-ci.org/schmupu/ioBroker.sia.svg?branch=master)](https://travis-ci.org/schmupu/ioBroker.sia)
-[![NPM version](http://img.shields.io/npm/v/ioBroker.sia.svg)](https://www.npmjs.com/package/ioBroker.sia)
-[![Downloads](https://img.shields.io/npm/dm/ioBroker.sia.svg)](https://www.npmjs.com/package/ioBroker.sia)
+[![NPM version](http://img.shields.io/npm/v/iobroker.sia.svg)](https://www.npmjs.com/package/iobroker.sia)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.sia.svg)](https://www.npmjs.com/package/iobroker.sia)
 
-[![NPM](https://nodei.co/npm/ioBroker.sia.png?downloads=true)](https://nodei.co/npm/ioBroker.sia/)
+[![NPM](https://nodei.co/npm/iobroker.sia.png?downloads=true)](https://nodei.co/npm/iobroker.sia/)
 
 
 The protocol SIA is used by alarm systems to communicate with the central stations.
@@ -40,7 +40,7 @@ You can use ioBroker with this adapter as central station. For example. you can 
 ## Changelog
 
 ### 0.0.1 (07.06.2018)
-* (Stübi) first implementation 
+* (Stübi) first implementation
 
 
 ## License
