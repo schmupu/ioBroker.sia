@@ -410,7 +410,7 @@ function parseSIA(data) {
     sia.len = parseInt((data.subarray(3, 7)).toString(), 16); // length of data
     sia.cr = data[len]; // <cr>
 
-    sia.str = (data.subarray(7, len)).toString(); // data
+    sia.str = (data.subarray(7, len)).toString('utf8'); // data
     regex = /\"(.+)\"(\d{4})(R.{1,6}){0,1}(L.{1,6})\#([\w\d]+)\[(.+?)\](\[(.+?)\])?(_(.+)){0,1}/gm;
 
     sia.calc_len = sia.str.length;
