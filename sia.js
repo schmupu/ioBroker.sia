@@ -239,10 +239,13 @@ function ackSIA(sia) {
     var end = new Buffer([0x0d]);
     var buf = new Buffer(str);
     var ack = Buffer.concat([start, buf, end]);
+
+    adapter.log.debug("ackSIA : " + JSON.stringify(ack));
     return ack;
 
   } else {
 
+    adapter.log.debug("ackSIA : null");
     return null;
 
   }
@@ -264,6 +267,8 @@ function setStatesSIA(sia) {
       var key = adapter.config.keys[i];
 
       if (key.accountnumber == sia.act) {
+
+        adapter.log.debug("setStatesSIA for " + sia.act + " : " + JSON.stringify(sia));
 
         var id = getAcountNumberID(sia.act);
 
@@ -322,6 +327,7 @@ function setStatesSIA(sia) {
 
           }
 
+          adapter.log.debug("ackSIA : set state for id " + sid + " with value " + val);
           adapter.setState(sid, {
             val: val,
             ack: true
@@ -429,6 +435,7 @@ function parseSIA(data) {
 
   }
 
+  adapter.log.debug("parseSIA : " + JSON.stringify(sia));
   return sia;
 
 }
