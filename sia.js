@@ -417,6 +417,7 @@ function parseSIA(data) {
     sia.calc_crc = crc16str(sia.str);
 
     adapter.log.debug("parseSIA sia.str : " + sia.str);
+    adapter.log.debug("parseSIA sia.str : " + sia.str.toString());
 
     if ((m = regex.exec(sia.str)) !== null && m.length >= 6) {
 
