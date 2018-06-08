@@ -8,7 +8,7 @@
         "de": "Anpassungen an der Entwicklung"
       }
     },
-    "title": "Contact ID für Alarmanlagen",
+    "title": "SIA Server für Alarmanlagen",
     "titleLang": {
       "en": "SIA Server for burglar alarms",
       "de": "SIA Server für Alarmanlagen"
@@ -25,7 +25,7 @@
     "icon": "sia.png",
     "materialize": true,
     "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/schmupu/ioBroker.sia/master/sia.png",
+    "extIcon": "https://raw.githubusercontent.com/schmupu/ioBroker.sia/master/admin/sia.png",
     "keywords": ["sia", "burglar", "alarm"],
     "readme": "https://github.com/schmupu/ioBroker.sia/blob/master/README.md",
     "loglevel": "info",
