@@ -410,14 +410,15 @@ function parseSIA(data) {
     sia.len = parseInt((data.subarray(3, 7)).toString(), 16); // length of data
     sia.cr = data[len]; // <cr>
 
-    sia.str = (data.subarray(7, len)).toString('utf8'); // data
+    str = new Buffer((data.subarray(7, len)));
+    sia.str = str.toString();
     regex = /\"(.+)\"(\d{4})(R.{1,6}){0,1}(L.{1,6})\#([\w\d]+)\[(.+?)\](\[(.+?)\])?(_(.+)){0,1}/gm;
 
     sia.calc_len = sia.str.length;
     sia.calc_crc = crc16str(sia.str);
 
     adapter.log.debug("parseSIA sia.str : " + sia.str);
-    adapter.log.debug("parseSIA sia.str : " + sia.str.toString());
+    adapter.log.debug("parseSIA sia.str : " + str.toString());
 
     if ((m = regex.exec(sia.str)) !== null && m.length >= 6) {
 
