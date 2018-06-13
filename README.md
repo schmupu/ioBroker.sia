@@ -46,6 +46,9 @@ You can use ioBroker with this adapter as central station. For example. you can 
 
 ## Changelog
 
+### 0.0.4 (08.06.2018)
+* (Stübi) Cleanup
+
 ### 0.0.3 (08.06.2018)
 * (Stübi) SIA regex optimized
 

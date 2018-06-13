@@ -77,7 +77,7 @@ adapter.on('ready', function() {
 function main() {
 
   // delete not used / missing object in configuration
-  deleteObects();
+  deleteObjects();
 
   // add object from configuration.
   createObjects();
@@ -157,7 +157,7 @@ function deleteChannel(obj) {
 // list of all objects (devices, channel, states) for this instance. call function  deleteChannel
 // for deleting old (not used) channels in configuration
 // *****************************************************************************************************
-function deleteObects() {
+function deleteObjects() {
 
   adapter.getAdapterObjects(function(obj) {
 
