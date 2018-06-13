@@ -32,32 +32,6 @@ adapter.on('unload', function(callback) {
 });
 
 
-// *****************************************************************************************************
-// is called if a subscribed object changes
-// *****************************************************************************************************
-adapter.on('objectChange', function(id, obj) {
-
-  // Warning, obj can be null if it was deleted
-  if (obj) {
-
-  }
-
-});
-
-
-// *****************************************************************************************************
-// is called if a subscribed state changes
-// *****************************************************************************************************
-adapter.on('stateChange', function(id, state) {
-
-  // Warning, state can be null if it was deleted
-  if (state && !state.ack) {
-
-  }
-
-});
-
-
 
 // *****************************************************************************************************
 // is called when databases are connected and adapter received configuration.
