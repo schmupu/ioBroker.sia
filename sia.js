@@ -32,32 +32,6 @@ adapter.on('unload', function(callback) {
 });
 
 
-// *****************************************************************************************************
-// is called if a subscribed object changes
-// *****************************************************************************************************
-adapter.on('objectChange', function(id, obj) {
-
-  // Warning, obj can be null if it was deleted
-  if (obj) {
-
-  }
-
-});
-
-
-// *****************************************************************************************************
-// is called if a subscribed state changes
-// *****************************************************************************************************
-adapter.on('stateChange', function(id, state) {
-
-  // Warning, state can be null if it was deleted
-  if (state && !state.ack) {
-
-  }
-
-});
-
-
 
 // *****************************************************************************************************
 // is called when databases are connected and adapter received configuration.
@@ -77,7 +51,7 @@ adapter.on('ready', function() {
 function main() {
 
   // delete not used / missing object in configuration
-  deleteObects();
+  deleteObjects();
 
   // add object from configuration.
   createObjects();
@@ -157,7 +131,7 @@ function deleteChannel(obj) {
 // list of all objects (devices, channel, states) for this instance. call function  deleteChannel
 // for deleting old (not used) channels in configuration
 // *****************************************************************************************************
-function deleteObects() {
+function deleteObjects() {
 
   adapter.getAdapterObjects(function(obj) {
 
