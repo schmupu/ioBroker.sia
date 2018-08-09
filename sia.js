@@ -292,7 +292,15 @@ function setStatesSIA(sia) {
               break;
 
             case 'ts':
-              val = sia.ts;
+              var [tt,dd] = sia.ts.split(',');
+              if(tt && dd) {
+
+                val = new Date(dd + "," + tt + " UTC");
+
+              } else {
+
+                val = "";
+              }
               break;
 
             case 'crc':
