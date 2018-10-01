@@ -47,6 +47,9 @@ You can use ioBroker with this adapter as central station. For example. you can 
 
 ## Changelog
 
+### 0.1.5 (01.10.2018)
+* (Stübi) Translations
+
 ### 0.0.5 (09.08.2018)
 * (Stübi) Requires nodejs 6.0 or higher
 

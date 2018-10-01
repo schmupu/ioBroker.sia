@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "sia",
-    "version": "0.0.5",
+    "version": "0.1.5",
     "news": {
+      "0.1.5": {
+        "en": "Translations",
+        "de": "Übersetzungen"
+      },
       "0.0.5": {
         "en": "Requires nodejs 6.0 or higther",
         "de": "Mindestanforderung nodejs 6.0"
