@@ -47,6 +47,9 @@ You can use ioBroker with this adapter as central station. For example. you can 
 
 ## Changelog
 
+### 0.1.6 (23.10.2018)
+* (Stübi) Bugfxing (NAK) and AES support
+
 ### 0.1.5 (01.10.2018)
 * (Stübi) Translations
 

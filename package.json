@@ -1,17 +1,15 @@
 {
   "name": "iobroker.sia",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "ioBroker SIA Server Adapter",
   "author": {
     "name": "Thorsten Stueben",
     "email": "thorsten@stueben.de"
   },
-  "contributors": [
-    {
-      "name": "Thorsten Stueben",
-      "email": "thorsten@stueben.de"
-    }
-  ],
+  "contributors": [{
+    "name": "Thorsten Stueben",
+    "email": "thorsten@stueben.de"
+  }],
   "homepage": "https://github.com/schmupu/ioBroker.sia",
   "license": "MIT",
   "keywords": [
@@ -26,7 +24,9 @@
     "type": "git",
     "url": "https://github.com/schmupu/ioBroker.sia"
   },
-  "dependencies": {},
+  "dependencies": {
+    "node-forge": "^0.7.6"
+  },
   "devDependencies": {
     "gulp": "^3.9.1",
     "mocha": "^4.1.0",

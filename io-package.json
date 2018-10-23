@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "sia",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "news": {
+      "0.1.6": {
+        "en": "Bugfxing (NAK) and AES support",
+        "de": "Fehlerbehbung (NAK) und AES Verschlüsselung"
+      },
       "0.1.5": {
         "en": "Translations",
         "de": "Übersetzungen"

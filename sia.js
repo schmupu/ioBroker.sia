@@ -3,6 +3,7 @@
 var utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 var dp = require(__dirname + '/lib/datapoints');
 var net = require('net');
+var forge = require('node-forge');
 var adapter = new utils.Adapter('sia');
 
 var server = null; // Server instance
@@ -191,7 +192,76 @@ function createObjects() {
 
 }
 
+// *****************************************************************************************************
+// ASCII Text -> BYTES
+// *****************************************************************************************************
+function getBytes(text) {
+  let bytes = [];
+  for (let i = 0; i < text.length; i++) {
+    let charCode = text.charCodeAt(i);
+    let cLen = Math.ceil(Math.log(charCode) / Math.log(256));
+    for (let j = 0; j < cLen; j++) {
+      bytes.push((charCode << (j * 8)) & 0xFF);
+    }
+  }
+  return bytes;
+}
 
+// *****************************************************************************************************
+// Encrypt
+// *****************************************************************************************************
+function encrypt(password, decrypted) {
+  let key = getBytes(key); //
+  let iv = forge.util.hexToBytes('0000000000000000');
+  let cipher = forge.cipher.createCipher('AES-CBC', key);
+  cipher.start({
+    iv: iv
+  });
+  cipher.update(forge.util.createBuffer(decrypted));
+  let result = cipher.finish();
+  return cipher.output;
+}
+
+// *****************************************************************************************************
+// Decrypt
+// *****************************************************************************************************
+function decrypt(password, encrypted) {
+  let key = getBytes(password);
+  let iv = forge.util.hexToBytes('0000000000000000');
+  let decipher = forge.cipher.createDecipher('AES-CBC', key);
+  decipher.start({
+    iv: iv
+  });
+  decipher.update(encrypted);
+  let result = decipher.finish(); // check 'result' for true/false
+  return decipher.output;
+}
+
+// *****************************************************************************************************
+// get timestamp in following format <_HH:MM:SS,MM-DD-YYYY>
+// *****************************************************************************************************
+function getTimestamp(datum) {
+
+  if (!datum) {
+    datum = new date();
+  }
+
+  let month = ('0' + datum.getMonth()).slice(-2);
+  9 // liefert 0 - 11
+  let year = datum.getFullYear();
+  2018 // YYYY (startet nicht bei 0)
+  let day = ('0' + datum.getDate()).slice(-2);
+  23 // liefert 1 - 31
+
+  let hour = ('0' + datum.getHours()).slice(-2);
+  19 // liefert 0 - 23
+  let minute = ('0' + datum.getMinutes()).slice(-2);
+  let second = ('0' + datum.getSeconds()).slice(-2);
+
+  let str = '_' + hour + ':' + minute + ':' + second + ',' + month + '-' + day + '-' + year;
+  return str;
+
+}
 
 // *****************************************************************************************************
 // Acknowledge for SIA
@@ -200,25 +270,28 @@ function ackSIA(sia) {
 
   if (sia) {
 
-    var id = null;
-    var rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
-    var lpref = sia.lpref && sia.lpref.length > 0 ? "L" + sia.lpref : "";
-
     if (sia.crc == sia.calc_crc && sia.len == sia.calc_len) {
-      id = 'ACK';
+
+      let id = 'ACK';
+      let rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
+      let lpref = sia.lpref && sia.lpref.length > 0 ? "L" + sia.lpref : "";
+      let str = '"' + id + '"' + sia.seq + rpref + lpref + '#' + sia.act + '[]';
+
     } else {
-      id = 'ACK';
+
+      let id = 'NAK';
+      let ts = getTimestamp(new Date()); // tiemstamp
+      let str = '"' + id + '"' + '0000' + 'R0' + 'L0' + 'A0' + '[]' + ts;
+
     }
 
-    var str = '"' + id + '"' + sia.seq + rpref + lpref + '#' + sia.act + '[]';
-    var crc = crc16str(str);
-    var len = str.length;
+    let crc = crc16str(str);
+    let len = str.length;
 
-    var start = new Buffer([0x0a, crc >>> 8 & 0xff, crc & 0xff, len >>> 8 & 0xff, len & 0xff]);
-    var end = new Buffer([0x0d]);
-    var buf = new Buffer(str);
-    var ack = Buffer.concat([start, buf, end]);
-
+    let start = new Buffer([0x0a, crc >>> 8 & 0xff, crc & 0xff, len >>> 8 & 0xff, len & 0xff]);
+    let end = new Buffer([0x0d]);
+    let buf = new Buffer(str);
+    let ack = Buffer.concat([start, buf, end]);
     adapter.log.debug("ackSIA : " + JSON.stringify(ack));
     return ack;
 
@@ -292,8 +365,8 @@ function setStatesSIA(sia) {
               break;
 
             case 'ts':
-              var [tt,dd] = sia.ts.split(',');
-              if(tt && dd) {
+              var [tt, dd] = sia.ts.split(',');
+              if (tt && dd) {
 
                 val = new Date(dd + "," + tt + " UTC");
 
@@ -372,6 +445,81 @@ function byteToHexString(uint8arr) {
 
 }
 
+// *****************************************************************************************************
+// SIA Message parsen
+// *****************************************************************************************************
+function parseSIA2(data) {
+
+  var sia = {};
+  var len = data.length - 1;
+  var tmp = null;
+  var str = null;
+  var m = null;
+  var n = null;
+  var regex = null;
+  var sialen = null;
+  var siacrc = null;
+
+  if (data && data[0] == 0x0a && data[len] == 0x0d) {
+
+    sia.data = data; // komplette Nachricht
+    sia.lf = data[0]; // <lf>
+    // sia.crc = data.subarray(1, 3); // <crc>
+    sia.crc = data[1] * 256 + data[2];
+    sia.len = parseInt((data.subarray(3, 7)).toString(), 16); // length of data
+    sia.cr = data[len]; // <cr>
+
+    str = new Buffer((data.subarray(7, len)));
+    sia.str = str.toString();
+    sia.calc_len = sia.str.length;
+    sia.calc_crc = crc16str(sia.str);
+
+    adapter.log.debug("parseSIA sia.str : " + sia.str);
+
+    // Example str:
+    // "SIA-DCS"0002R1L232#78919[1234|NFA129][S123Main St., 55123]_11:10:00,10-12-2019
+    // "SIA-DCS"0002R1L232#78919[ ][ ]_11:10:00,10-12-2019
+    // "SIA-DCS"0266L0#alarm1[alarm2|Nri1OP0001*Familie*]_16:22:03,06-08-2018
+    // http://s545463982.onlinehome.us/DC09Gen/
+
+    // "*SIA-DCS"9876R579BDFL789ABC#12345A[209c9d400b655df7a26aecb6a887e7ee6ed8103217079aae7cbd9dd7551e96823263460f7ef0514864897ae9789534f1
+
+
+    regex = /\"(.+)\"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))\#([\w\d]+)\[(.+)/gm;
+    if ((m = regex.exec(sia.str)) !== null && m.length >= 8) {
+
+      adapter.log.debug("parseSIA regex   : " + JSON.stringify(sia));
+
+      sia.id = m[1]; // id (SIA-DCS, ACK)
+      sia.seq = m[2]; // sqeuence number (0002 or 0003)
+      sia.rpref = m[4] || ""; // Receiver Number - optional (R0, R1, R123456)
+      sia.lpref = m[6]; // Prefix Acount number - required (L0, L1, L1232)
+      sia.act = m[7]; // Acount number - required (1224, ABCD124)
+      let msg = m[8];
+
+      // if id starts with *, message is encrypted
+      if (sia.id[0] == "*") {
+        msg = decrypt("password", msg);
+        regex = /.+?\|(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
+      } else {
+        regex = /(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
+      }
+
+      if ((m = regex.exec(msg)) !== null && m.length >= 1) {
+        sia.data_message = m[1]; // Message
+        sia.data_extended = m[3] || ""; // extended Message
+        sia.ts = m[5] || "";
+      }
+
+    }
+
+  }
+
+  adapter.log.debug("parseSIA : " + JSON.stringify(sia));
+  return sia;
+
+}
+
 
 // *****************************************************************************************************
 // SIA Message parsen
@@ -407,7 +555,7 @@ function parseSIA(data) {
     // http://s545463982.onlinehome.us/DC09Gen/
 
     // regex = /\"(.+)\"(\d{4})(R.{1,6}){0,1}(L.{1,6})\#([\w\d]+)\[(.+?)\](\[(.+?)\])?(_(.+)){0,1}/gm;
-    regex =/\"(.+)\"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))\#([\w\d]+)\[(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
+    regex = /\"(.+)\"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))\#([\w\d]+)\[(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
 
     sia.calc_len = sia.str.length;
     sia.calc_crc = crc16str(sia.str);
@@ -464,7 +612,7 @@ function onClientConnected(sock) {
 
         sock.end(ack);
 
-      } catch(e) { }
+      } catch (e) {}
 
     } else {
 
@@ -472,7 +620,7 @@ function onClientConnected(sock) {
 
         sock.end();
 
-      } catch(e) { }
+      } catch (e) {}
 
     }
 
