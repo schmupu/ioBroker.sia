@@ -270,19 +270,22 @@ function ackSIA(sia) {
 
   if (sia) {
 
+    let ts = getTimestamp(new Date()); // tiemstamp
+    let str = "";
+
     if (sia.crc == sia.calc_crc && sia.len == sia.calc_len) {
 
-      let id = 'ACK';
       let rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
       let lpref = sia.lpref && sia.lpref.length > 0 ? "L" + sia.lpref : "";
-      let str = '"' + id + '"' + sia.seq + rpref + lpref + '#' + sia.act + '[]';
+
+      if (sia.id[0] == "*") {
+        str = '"*ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[' + sia.pad + ']' + ts;
+      } else {
+        str = '"ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[]';
+      }
 
     } else {
-
-      let id = 'NAK';
-      let ts = getTimestamp(new Date()); // tiemstamp
-      let str = '"' + id + '"' + '0000' + 'R0' + 'L0' + 'A0' + '[]' + ts;
-
+      str = '"NAK"' + '0000' + 'R0' + 'L0' + 'A0' + '[]' + ts;
     }
 
     let crc = crc16str(str);
@@ -500,16 +503,24 @@ function parseSIA2(data) {
       // if id starts with *, message is encrypted
       if (sia.id[0] == "*") {
         msg = decrypt("password", msg);
-        regex = /.+?\|(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
+        regex = /(.+?)\|(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
+        if ((m = regex.exec(msg)) !== null && m.length >= 1) {
+          sia.pad = m[1]; // Pad
+          sia.data_message = m[2]; // Message
+          sia.data_extended = m[4] || ""; // extended Message
+          sia.ts = m[6] || "";
+        }
       } else {
         regex = /(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
+        if ((m = regex.exec(msg)) !== null && m.length >= 1) {
+          sia.pad = ""; // Pad
+          sia.data_message = m[1]; // Message
+          sia.data_extended = m[3] || ""; // extended Message
+          sia.ts = m[5] || "";
+        }
       }
 
-      if ((m = regex.exec(msg)) !== null && m.length >= 1) {
-        sia.data_message = m[1]; // Message
-        sia.data_extended = m[3] || ""; // extended Message
-        sia.ts = m[5] || "";
-      }
+
 
     }
 
@@ -601,7 +612,7 @@ function onClientConnected(sock) {
     var strdata = data.toString().trim();
     adapter.log.info(remoteAddress + ' sending following message: ' + strdata);
 
-    var sia = parseSIA(data);
+    var sia = parseSIA2(data);
 
     if (sia) {
 
