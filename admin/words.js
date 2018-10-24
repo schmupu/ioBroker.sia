@@ -35,17 +35,39 @@ systemDictionary = {
     "es": "Suscriptores",
     "pl": "Subskrybenci"
   },
-  "accountnumber": {
-  "en": "account number",
-  "de": "Accountnummer",
-  "ru": "номер аккаунта",
-  "pt": "número da conta",
-  "nl": "rekeningnummer",
-  "fr": "numéro de compte",
-  "it": "numero di conto",
-  "es": "número de cuenta",
-  "pl": "numer konta"
-},
+  "Accountnumber": {
+    "en": "account number",
+    "de": "Accountnummer",
+    "ru": "номер аккаунта",
+    "pt": "número da conta",
+    "nl": "rekeningnummer",
+    "fr": "numéro de compte",
+    "it": "numero di conto",
+    "es": "número de cuenta",
+    "pl": "numer konta"
+  },
+  "AES encrypting": {
+    "en": "AES encrypting",
+    "de": "AES-Verschlüsselung",
+    "ru": "Шифрование AES",
+    "pt": "Criptografia AES",
+    "nl": "AES-codering",
+    "fr": "Cryptage AES",
+    "it": "Crittografia AES",
+    "es": "Cifrado AES",
+    "pl": "Szyfrowanie AES"
+  },
+  "AES password": {
+    "en": "AES password",
+    "de": "AES Passwort",
+    "ru": "Пароль AES",
+    "pt": "Senha AES",
+    "nl": "AES-wachtwoord",
+    "fr": "Mot de passe AES",
+    "it": "Password AES",
+    "es": "Contraseña AES",
+    "pl": "Hasło AES"
+  },
   "bind": {
     "en": "Bind IP-Address",
     "de": "Bind IP-Adresse",
