@@ -501,15 +501,13 @@ function byteToHexString(uint8arr) {
 // *****************************************************************************************************
 function parseSIA2(data) {
 
-  var sia = {};
-  var len = data.length - 1;
-  var tmp = null;
-  var str = null;
-  var m = null;
-  var n = null;
-  var regex = null;
-  var sialen = null;
-  var siacrc = null;
+  let sia = {};
+  let len = data.length - 1;
+  let tmp = null;
+  let str = null;
+  let m = null;
+  let n = null;
+  let regex = null;
 
   if (data && data[0] == 0x0a && data[len] == 0x0d) {
 
@@ -663,6 +661,12 @@ function parseSIA(data) {
 // *****************************************************************************************************
 function onClientConnected(sock) {
 
+  // See https://nodejs.org/api/stream.html#stream_readable_setencoding_encoding
+  sock.setEncoding(null);
+
+  // Hack that must be added to make this work as expected
+  // delete sock._readableState.decoder;
+
   var remoteAddress = sock.remoteAddress + ':' + sock.remotePort;
   var strclose = "close"
   var len = strclose.length;
@@ -671,7 +675,7 @@ function onClientConnected(sock) {
   // adapter.log.info('New client connected: ' + remoteAddress);
 
   sock.on('data', function(data) {
-
+data = Buffer.from(data,'binary');
     adapter.log.debug('received from ' + remoteAddress + ' following data: ' + data);
     adapter.log.info('received from ' + remoteAddress + ' following message: ' + data.toString().trim());
     var sia = parseSIA2(data);
