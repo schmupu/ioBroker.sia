@@ -678,7 +678,10 @@ function onClientConnected(sock) {
 
   sock.on('data', function(data) {
     // data = Buffer.from(data,'binary');
-    adapter.log.debug('received from ' + remoteAddress + ' following data: ' + data);
+    // data = new Buffer(data);
+    let data2 = Buffer.from(data, 'binary');
+    adapter.log.debug('received from ' + remoteAddress + ' following data: ' + JSON.stringify(data));
+    adapter.log.debug('received from ' + remoteAddress + ' following data2: ' + JSON.stringify(data2));
     adapter.log.info('received from ' + remoteAddress + ' following message: ' + data.toString().trim());
     var sia = parseSIA2(data);
     if (sia) {
