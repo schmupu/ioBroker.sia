@@ -519,7 +519,7 @@ function parseSIA2(data) {
     let tmp = (data.subarray(3, 7)).toString();
     sia.len = parseInt(tmp, 16); // length of data
     adapter.log.debug("data : " + data);
-    adapter.log.debug("len data : " + (data.subarray(3, 7).toString()));
+    adapter.log.debug("len data : " + (data.subarray(3, 7)).toString('utf8'));
     sia.cr = data[len]; // <cr>
 
     str = new Buffer((data.subarray(7, len)));
