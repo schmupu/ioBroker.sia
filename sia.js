@@ -515,7 +515,9 @@ function parseSIA2(data) {
     sia.lf = data[0]; // <lf>
     // sia.crc = data.subarray(1, 3); // <crc>
     sia.crc = data[1] * 256 + data[2];
-    sia.len = parseInt((data.subarray(3, 7)).toString(), 16); // length of data
+
+    let tmp = (data.subarray(3, 7)).toString();
+    sia.len = parseInt(tmp, 16); // length of data
     adapter.log.debug("data : " + data);
     adapter.log.debug("len data : " + (data.subarray(3, 7).toString()));
     sia.cr = data[len]; // <cr>
