@@ -219,8 +219,8 @@ function encrypt(password, decrypted) {
 // Encrypt / Input: ASCII , Output: HEX
 // *****************************************************************************************************
 function encrypt_hex(password, decrypted) {
-    let data = encrypt(password, decrypted);
-    return forge.util.bytesToHex(data);
+  let data = encrypt(password, decrypted);
+  return forge.util.bytesToHex(data);
 }
 
 // *****************************************************************************************************
@@ -242,9 +242,9 @@ function decrypt(password, encrypted) {
 // Decrypt / Input: HEX, Output ASCII
 // *****************************************************************************************************
 function decrypt_hex(password, encrypted) {
-    var data = forge.util.createBuffer();
-    data.putBytes(forge.util.hexToBytes(encrypted));
-    return decrypt(password, data);
+  var data = forge.util.createBuffer();
+  data.putBytes(forge.util.hexToBytes(encrypted));
+  return decrypt(password, data);
 }
 
 // *****************************************************************************************************
@@ -518,6 +518,7 @@ function parseSIA2(data) {
     // sia.crc = data.subarray(1, 3); // <crc>
     sia.crc = data[1] * 256 + data[2];
     sia.len = parseInt((data.subarray(3, 7)).toString(), 16); // length of data
+    adapter.log.debug("data : " + data);
     adapter.log.debug("len data : " + data.subarray(3, 7));
     sia.cr = data[len]; // <cr>
 
@@ -528,7 +529,7 @@ function parseSIA2(data) {
 
     adapter.log.debug("parseSIA sia.str : " + sia.str);
 
-    if(sia.calc_len != sia.len || sia.calc_crc != sia.crc) {
+    if (sia.calc_len != sia.len || sia.calc_crc != sia.crc) {
       adapter.log.info("CRC oder Length comparinge with calculated values are different");
       adapter.log.debug("SIA crc= " + sia.crc + ", calc_crc=" + sia.calc_crc);
       adapter.log.debug("SIA len= " + sia.len + ", calc_len=" + sia.calc_len);
@@ -671,6 +672,7 @@ function onClientConnected(sock) {
 
   sock.on('data', function(data) {
 
+    adapter.log.debug('received from ' + remoteAddress + ' following data: ' + data);
     adapter.log.info('received from ' + remoteAddress + ' following message: ' + data.toString().trim());
     var sia = parseSIA2(data);
     if (sia) {
@@ -685,8 +687,7 @@ function onClientConnected(sock) {
       adapter.log.info('sending to ' + remoteAddress + ' following message: ' + ack.toString().trim());
       sock.end(ack);
 
-    } catch (e) {
-    }
+    } catch (e) {}
 
   });
 
