@@ -327,6 +327,9 @@ function ackSIA(sia) {
     let cfg = getAcctInfo(sia.act);
     let str = "";
 
+    adapter.log.debug("ackSIA (cfg) : " + JSON.stringify(cfg));
+    adapter.log.debug("ackSIA (sia) : " + JSON.stringify(sia));
+
     if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg) {
 
       let rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
