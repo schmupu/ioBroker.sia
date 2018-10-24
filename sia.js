@@ -516,10 +516,8 @@ function parseSIA2(data) {
     // sia.crc = data.subarray(1, 3); // <crc>
     sia.crc = data[1] * 256 + data[2];
 
-    var sd = require('string_decoder').StringDecoder;
-    var d = new sd('utf8');
-    tmp = d.write(data.subarray(3, 7));
 
+    tmp = d.write(data.substr(3, 7));
     // let tmp = (data.subarray(3, 7)).toString();
     sia.len = parseInt(tmp, 16); // length of data
     adapter.log.debug("data : " + data);
