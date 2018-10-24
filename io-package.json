@@ -61,7 +61,9 @@
     "port": 50001,
     "bind": "0.0.0.0",
     "keys": [{
-      "accountnumber": "test"
+      "accountnumber": "test",
+      "aes": false,
+      "password": ""
     }]
   },
   "objects": [],
