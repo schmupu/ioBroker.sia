@@ -279,6 +279,7 @@ function getAcctInfo(act) {
       return key;
     }
   }
+  adapter.log.info("Could not found entries for accountnumber " + act + " in the configuration");
   return undefined;
 
 }
@@ -526,6 +527,14 @@ function parseSIA2(data) {
 
     adapter.log.debug("parseSIA sia.str : " + sia.str);
 
+    if(sia.calc_len != sia.len || sia.calc_crc != sia.crc) {
+      adapter.log.info("CRC oder Length comparinge with calculated values are different");
+      adapter.log.debug("SIA crc= " + sia.crc + ", calc_crc=" + sia.calc_crc);
+      adapter.log.debug("SIA len= " + sia.len + ", calc_len=" + sia.calc_len);
+      return undefined;
+    }
+
+
     // Example str:
     // "SIA-DCS"0002R1L232#78919[1234|NFA129][S123Main St., 55123]_11:10:00,10-12-2019
     // "SIA-DCS"0002R1L232#78919[ ][ ]_11:10:00,10-12-2019
@@ -577,6 +586,7 @@ function parseSIA2(data) {
   if (sia && sia.id && sia.seq && sia.lpref && sia.act && sia.pad != undefined) {
     return sia;
   } else {
+    adapter.log.info("Required SIA fields missing");
     return undefined;
   }
 
