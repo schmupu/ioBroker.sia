@@ -518,6 +518,7 @@ function parseSIA2(data) {
     // sia.crc = data.subarray(1, 3); // <crc>
     sia.crc = data[1] * 256 + data[2];
     sia.len = parseInt((data.subarray(3, 7)).toString(), 16); // length of data
+    adapter.log.debug("len data : " + data.subarray(3, 7));
     sia.cr = data[len]; // <cr>
 
     str = new Buffer((data.subarray(7, len)));
@@ -670,7 +671,7 @@ function onClientConnected(sock) {
 
   sock.on('data', function(data) {
 
-    adapter.log.info('receving from ' + remoteAddress + ' following message: ' + data.toString().trim());
+    adapter.log.info('received from ' + remoteAddress + ' following message: ' + data.toString().trim());
     var sia = parseSIA2(data);
     if (sia) {
       setStatesSIA(sia);
