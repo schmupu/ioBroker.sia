@@ -528,10 +528,12 @@ function parseSIA2(data) {
     adapter.log.debug("parseSIA sia.str : " + sia.str);
 
     if (sia.calc_len != sia.len || sia.calc_crc != sia.crc) {
-      adapter.log.info("CRC oder Length comparinge with calculated values are different");
+      adapter.log.info("CRC or Length different to the caclulated values");
       adapter.log.debug("SIA crc= " + sia.crc + ", calc_crc=" + sia.calc_crc);
       adapter.log.debug("SIA len= " + sia.len + ", calc_len=" + sia.calc_len);
       return undefined;
+      // sia.calc_len = sia.len;
+      // sia.calc_crc = sia.crc;
     }
 
 
@@ -662,7 +664,7 @@ function parseSIA(data) {
 function onClientConnected(sock) {
 
   // See https://nodejs.org/api/stream.html#stream_readable_setencoding_encoding
-  sock.setEncoding(null);
+  // sock.setEncoding(null);
 
   // Hack that must be added to make this work as expected
   // delete sock._readableState.decoder;
@@ -675,7 +677,7 @@ function onClientConnected(sock) {
   // adapter.log.info('New client connected: ' + remoteAddress);
 
   sock.on('data', function(data) {
-data = Buffer.from(data,'binary');
+    // data = Buffer.from(data,'binary');
     adapter.log.debug('received from ' + remoteAddress + ' following data: ' + data);
     adapter.log.info('received from ' + remoteAddress + ' following message: ' + data.toString().trim());
     var sia = parseSIA2(data);
