@@ -253,15 +253,24 @@ function decrypt_hex(password, encrypted) {
 function getTimestamp(datum) {
 
   if (!datum) {
-    datum = new date();
+    datum = new Date();
   }
 
+  /*
   let month = ('0' + datum.getMonth()).slice(-2); // liefert 0 - 11
   let year = datum.getFullYear(); // YYYY (startet nicht bei 0)
   let day = ('0' + datum.getDate()).slice(-2); // liefert 1 - 31
   let hour = ('0' + datum.getHours()).slice(-2); // liefert 0 - 23
   let minute = ('0' + datum.getMinutes()).slice(-2);
   let second = ('0' + datum.getSeconds()).slice(-2);
+  */
+
+  let month = ('0' + datum.getUTCMonth()).slice(-2); // liefert 0 - 11
+  let year = datum.getUTCFullYear(); // YYYY (startet nicht bei 0)
+  let day = ('0' + datum.getUTCDate()).slice(-2); // liefert 1 - 31
+  let hour = ('0' + datum.getUTCHours()).slice(-2); // liefert 0 - 23
+  let minute = ('0' + datum.getUTCMinutes()).slice(-2);
+  let second = ('0' + datum.getUTCSeconds()).slice(-2);
 
   let str = '_' + hour + ':' + minute + ':' + second + ',' + month + '-' + day + '-' + year;
   return str;
@@ -302,7 +311,7 @@ function acctExist(act) {
 // *****************************************************************************************************
 function nackSIA() {
 
-  let ts = getTimestamp(new Date()); // tiemstamp
+  let ts = getTimestamp(); // tiemstamp
   let str = '"NAK"' + '0000' + 'R0' + 'L0' + 'A0' + '[]' + ts;
 
   let crc = crc16str(str);
@@ -324,7 +333,7 @@ function ackSIA(sia) {
 
   if (sia) {
 
-    let ts = getTimestamp(new Date()); // tiemstamp
+    let ts = getTimestamp(); // tiemstamp
     let cfg = getAcctInfo(sia.act);
     let str = "";
 
@@ -513,18 +522,30 @@ function parseSIA2(data) {
 
     sia.data = data; // komplette Nachricht
     sia.lf = data[0]; // <lf>
-    // sia.crc = data.subarray(1, 3); // <crc>
-    sia.crc = data[1] * 256 + data[2];
 
+    // Check if CRC 2 Byte Binary or 4 Byte HEX
+    if(data[5] == '0'.charCodeAt() && data[9] == '"'.charCodeAt()) {
+      str = new Buffer((data.subarray(9, len)));
+      sia.len = parseInt(data.toString().substring(5,9),16);
+      sia.crc = parseInt(data.toString().substring(1,5),16);
+    }
 
-    tmp = data.toString().substring(3, 7);
+    // Lupusec sends the CRC in binary forum
+    if(data[3] == '0'.charCodeAt() && data[7] == '"'.charCodeAt()) {
+      str = new Buffer((data.subarray(7, len)));
+      sia.len = parseInt(data.toString().substring(3,7),16);
+      sia.crc = data[1] * 256 + data[2];
+    }
+
+    // Length of Message
+    //tmp = data.toString().substring(3, 7);
     // let tmp = (data.subarray(3, 7)).toString();
-    sia.len = parseInt(tmp, 16); // length of data
+    // sia.len = parseInt(tmp, 16); // length of data
     adapter.log.debug("data : " + data);
     adapter.log.debug("len data : " + tmp);
     sia.cr = data[len]; // <cr>
 
-    str = new Buffer((data.subarray(7, len)));
+    // str = new Buffer((data.subarray(7, len)));
     sia.str = str.toString();
     sia.calc_len = sia.str.length;
     sia.calc_crc = crc16str(sia.str);
