@@ -288,7 +288,7 @@ function getAcctInfo(act) {
       return key;
     }
   }
-  adapter.log.info("Could not found entries for accountnumber " + act + " in the configuration");
+  // adapter.log.info("Could not found entries for accountnumber " + act + " in the configuration");
   return undefined;
 
 }
@@ -581,6 +581,11 @@ function parseSIA2(data) {
       sia.act = m[7] || undefined; // Acount number - required (1224, ABCD124) - required
       let msg = m[8] || "";
       let cfg = getAcctInfo(sia.act);
+
+      if (!cfg) {
+        adapter.log.info("Could not found entries for accountnumber " + sia.act + " in the configuration");
+        return undefined;
+      }
 
       // if id starts with *, message is encrypted
       if (sia.id && sia.id[0] == "*" && cfg && cfg.aes == true) {
