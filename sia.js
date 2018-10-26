@@ -634,8 +634,9 @@ function parseSIA(data) {
         if (cfg.aes == true && cfg.password) {
           msg = decrypt_hex(cfg.password, msg);
           if (msg) {
-            sia.pad = msg.substring(0, 16); // PAD first 16 Bytes
-            msg = msg.substring(17); // Data Message
+            let padlen = msg.indexOf("|");
+            sia.pad = msg.substring(0, padlen); // len of pad
+            msg = msg.substring(padlen+1); // Data Message
           } else {
             adapter.log.info("Could not decrypt message");
             return undefined;
