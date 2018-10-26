@@ -599,15 +599,25 @@ function parseSIA2(data) {
       }
 
       // if id starts with *, message is encrypted
-      if (sia.id && sia.id[0] == "*" && cfg && cfg.aes == true) {
-        msg = decrypt_hex(cfg.password, msg);
-        if (msg) {
-          sia.pad = msg.substring(0, 16); // PAD first 16 Bytes
-          msg = msg.substring(17); // Data Message
+      if (sia.id && sia.id[0] == "*") {
+        if (cfg.aes == true && cfg.password) {
+          msg = decrypt_hex(cfg.password, msg);
+          if (msg) {
+            sia.pad = msg.substring(0, 16); // PAD first 16 Bytes
+            msg = msg.substring(17); // Data Message
+          } else {
+            adapter.log.info("Could not decrypt message");
+            return undefined;
+          }
         } else {
-          adapter.log.info("Could not decrypt message");
+          adapter.log.info("Could not decrypt message, because AES encrypting disabled or password is missing");
           return undefined;
         }
+      }
+
+      if (sia.id && sia.id[0] != "*" && cfg.aes == true) {
+        adapter.log.info("Encrypting enabled, message was sent not entcrypted");
+        return undefined;
       }
 
       regex = /(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
