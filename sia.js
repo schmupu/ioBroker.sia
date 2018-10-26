@@ -7,7 +7,6 @@ var forge = require('node-forge');
 var adapter = new utils.Adapter('sia');
 var server = null; // Server instance
 
-
 // *****************************************************************************************************
 // is called when adapter shuts down - callback has to be called under any circumstances!
 // *****************************************************************************************************
@@ -24,7 +23,6 @@ adapter.on('unload', function(callback) {
   }
 
 });
-
 
 
 // *****************************************************************************************************
@@ -227,21 +225,33 @@ function encrypt_hex(password, decrypted) {
 // Decrypt / Input: Binary , Output ASCII
 // *****************************************************************************************************
 function decrypt(password, encrypted) {
+
   let key = getBytes(password);
   let iv = forge.util.hexToBytes('0000000000000000');
-  let decipher = forge.cipher.createDecipher('AES-CBC', key);
-  decipher.start({
-    iv: iv
-  });
-  decipher.update(encrypted);
-  let result = decipher.finish(); // check 'result' for true/false
-  return decipher.output;
+  try {
+
+    let decipher = forge.cipher.createDecipher('AES-CBC', key);
+    decipher.start({
+      iv: iv
+    });
+    decipher.update(encrypted);
+    // let result = decipher.finish(); // check 'result' for true/false
+    if (decipher.output) {
+      return decipher.output.data || "";
+    } else {
+      return undefined;
+    }
+  } catch (e) {
+    return undefined;
+  }
+
 }
 
 // *****************************************************************************************************
 // Decrypt / Input: HEX, Output ASCII
 // *****************************************************************************************************
 function decrypt_hex(password, encrypted) {
+
   var data = forge.util.createBuffer();
   data.putBytes(forge.util.hexToBytes(encrypted));
   return decrypt(password, data);
@@ -524,16 +534,16 @@ function parseSIA2(data) {
     sia.lf = data[0]; // <lf>
 
     // Check if CRC 2 Byte Binary or 4 Byte HEX
-    if(data[5] == '0'.charCodeAt() && data[9] == '"'.charCodeAt()) {
+    if (data[5] == '0'.charCodeAt() && data[9] == '"'.charCodeAt()) {
       str = new Buffer((data.subarray(9, len)));
-      sia.len = parseInt(data.toString().substring(5,9),16);
-      sia.crc = parseInt(data.toString().substring(1,5),16);
+      sia.len = parseInt(data.toString().substring(5, 9), 16);
+      sia.crc = parseInt(data.toString().substring(1, 5), 16);
     }
 
     // Lupusec sends the CRC in binary forum
-    if(data[3] == '0'.charCodeAt() && data[7] == '"'.charCodeAt()) {
+    if (data[3] == '0'.charCodeAt() && data[7] == '"'.charCodeAt()) {
       str = new Buffer((data.subarray(7, len)));
-      sia.len = parseInt(data.toString().substring(3,7),16);
+      sia.len = parseInt(data.toString().substring(3, 7), 16);
       sia.crc = data[1] * 256 + data[2];
     }
 
@@ -579,6 +589,7 @@ function parseSIA2(data) {
       sia.rpref = m[4] || ""; // Receiver Number - optional (R0, R1, R123456)
       sia.lpref = m[6] || undefined; // Prefix Acount number - required (L0, L1, L1232) - required
       sia.act = m[7] || undefined; // Acount number - required (1224, ABCD124) - required
+      sia.pad = ""; // Pad
       let msg = m[8] || "";
       let cfg = getAcctInfo(sia.act);
 
@@ -589,23 +600,21 @@ function parseSIA2(data) {
 
       // if id starts with *, message is encrypted
       if (sia.id && sia.id[0] == "*" && cfg && cfg.aes == true) {
-        // msg = encrypt_hex(cfg.password, msg);
         msg = decrypt_hex(cfg.password, msg);
-        regex = /(.+?)\|(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
-        if ((m = regex.exec(msg)) !== null && m.length >= 1) {
-          sia.pad = m[1] || undefined; // Pad
-          sia.data_message = m[2] || ""; // Message
-          sia.data_extended = m[4] || ""; // extended Message
-          sia.ts = m[6] || "";
+        if (msg) {
+          sia.pad = msg.substring(0, 16); // PAD first 16 Bytes
+          msg = msg.substring(17); // Data Message
+        } else {
+          adapter.log.info("Could not decrypt message");
+          return undefined;
         }
-      } else if (sia.id && sia.id[0] != "*" && cfg && cfg.aes == false) {
-        regex = /(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
-        if ((m = regex.exec(msg)) !== null && m.length >= 1) {
-          sia.pad = ""; // Pad
-          sia.data_message = m[1] || ""; // Message
-          sia.data_extended = m[3] || ""; // extended Message
-          sia.ts = m[5] || "";
-        }
+      }
+
+      regex = /(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
+      if ((m = regex.exec(msg)) !== null && m.length >= 1) {
+        sia.data_message = m[1] || ""; // Message
+        sia.data_extended = m[3] || ""; // extended Message
+        sia.ts = m[5] || "";
       }
 
     }
