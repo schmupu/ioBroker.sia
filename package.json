@@ -25,7 +25,6 @@
     "url": "https://github.com/schmupu/ioBroker.sia"
   },
   "dependencies": {
-    "node-forge": "^0.7.6"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

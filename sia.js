@@ -3,9 +3,10 @@
 var utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 var dp = require(__dirname + '/lib/datapoints');
 var net = require('net');
-var forge = require('node-forge');
+// var forge = require('node-forge');   "dependencies": {  "node-forge": "^0.7.6" },
 var adapter = new utils.Adapter('sia');
 var server = null; // Server instance
+var crypto = require('crypto');
 
 // *****************************************************************************************************
 // is called when adapter shuts down - callback has to be called under any circumstances!
@@ -201,6 +202,7 @@ function getBytes(text) {
 // *****************************************************************************************************
 // Encrypt / Input: ASCII , Output: Binary
 // *****************************************************************************************************
+/*
 function encrypt(password, decrypted) {
   let key = getBytes(password); //
   let iv = forge.util.hexToBytes('0000000000000000');
@@ -212,6 +214,7 @@ function encrypt(password, decrypted) {
   let result = cipher.finish();
   return cipher.output;
 }
+
 
 // *****************************************************************************************************
 // Encrypt / Input: ASCII , Output: HEX
@@ -255,6 +258,26 @@ function decrypt_hex(password, encrypted) {
   var data = forge.util.createBuffer();
   data.putBytes(forge.util.hexToBytes(encrypted));
   return decrypt(password, data);
+}
+*/
+
+// *****************************************************************************************************
+// Decrypt / Input: HEX, Output ASCII
+// *****************************************************************************************************
+function decrypt_hex(password, encrypted) {
+
+  try {
+    let iv = new Buffer(16);
+    iv.fill(0);
+    let crypted = new Buffer(encrypted, 'hex').toString('binary');
+    let decipher = crypto.createDecipheriv('aes-128-cbc', password, iv);
+    decipher.setAutoPadding(false);
+    let decoded = decipher.update(crypted, 'binary', 'utf8');
+    decoded += decipher.final('utf8');
+    return (decoded ? decoded : undefined);
+  } catch (e) {
+    return undefined;
+  }
 }
 
 // *****************************************************************************************************
@@ -518,7 +541,7 @@ function byteToHexString(uint8arr) {
 // *****************************************************************************************************
 // SIA Message parsen
 // *****************************************************************************************************
-function parseSIA2(data) {
+function parseSIA(data) {
 
   let sia = {};
   let len = data.length - 1;
@@ -645,69 +668,6 @@ function parseSIA2(data) {
 
 
 // *****************************************************************************************************
-// SIA Message parsen
-// *****************************************************************************************************
-function parseSIA(data) {
-
-  var sia = {};
-  var len = data.length - 1;
-  var tmp = null;
-  var str = null;
-  var m = null;
-  var n = null;
-  var regex = null;
-  var sialen = null;
-  var siacrc = null;
-
-  if (data && data[0] == 0x0a && data[len] == 0x0d) {
-
-    sia.data = data; // komplette Nachricht
-    sia.lf = data[0]; // <lf>
-    // sia.crc = data.subarray(1, 3); // <crc>
-    sia.crc = data[1] * 256 + data[2];
-    sia.len = parseInt((data.subarray(3, 7)).toString(), 16); // length of data
-    sia.cr = data[len]; // <cr>
-
-    str = new Buffer((data.subarray(7, len)));
-    sia.str = str.toString();
-
-    // Example str:
-    // "SIA-DCS"0002R1L232#78919[1234|NFA129][S123Main St., 55123]_11:10:00,10-12-2019
-    // "SIA-DCS"0002R1L232#78919[ ][ ]_11:10:00,10-12-2019
-    // "SIA-DCS"0266L0#alarm1[alarm2|Nri1OP0001*Familie*]_16:22:03,06-08-2018
-    // http://s545463982.onlinehome.us/DC09Gen/
-
-    // regex = /\"(.+)\"(\d{4})(R.{1,6}){0,1}(L.{1,6})\#([\w\d]+)\[(.+?)\](\[(.+?)\])?(_(.+)){0,1}/gm;
-    regex = /\"(.+)\"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))\#([\w\d]+)\[(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
-
-    sia.calc_len = sia.str.length;
-    sia.calc_crc = crc16str(sia.str);
-
-    adapter.log.debug("parseSIA sia.str : " + sia.str);
-
-    if ((m = regex.exec(sia.str)) !== null && m.length >= 6) {
-
-      adapter.log.debug("parseSIA regex   : " + JSON.stringify(sia));
-
-      sia.id = m[1]; // id (SIA-DCS, ACK)
-      sia.seq = m[2]; // sqeuence number (0002 or 0003)
-      sia.rpref = m[4] || ""; // Receiver Number - optional (R0, R1, R123456)
-      sia.lpref = m[6]; // Prefix Acount number - required (L0, L1, L1232)
-      sia.act = m[7]; // Acount number - required (1224, ABCD124)
-      sia.data_message = m[8]; // Message
-      sia.data_extended = m[10] || ""; // extended Message
-      sia.ts = m[12] || "";
-
-    }
-
-  }
-
-  adapter.log.debug("parseSIA : " + JSON.stringify(sia));
-  return sia;
-
-}
-
-// *****************************************************************************************************
 // alarm system connected and sending SIA  message
 // *****************************************************************************************************
 function onClientConnected(sock) {
@@ -728,11 +688,9 @@ function onClientConnected(sock) {
   sock.on('data', function(data) {
     // data = Buffer.from(data,'binary');
     // data = new Buffer(data);
-    let data2 = Buffer.from(data, 'binary');
     adapter.log.debug('received from ' + remoteAddress + ' following data: ' + JSON.stringify(data));
-    adapter.log.debug('received from ' + remoteAddress + ' following data2: ' + JSON.stringify(data2));
     adapter.log.info('received from ' + remoteAddress + ' following message: ' + data.toString().trim());
-    var sia = parseSIA2(data);
+    var sia = parseSIA(data);
     if (sia) {
       setStatesSIA(sia);
       ack = ackSIA(sia);
