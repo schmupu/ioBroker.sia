@@ -262,10 +262,27 @@ function decrypt_hex(password, encrypted) {
 */
 
 // *****************************************************************************************************
+// Encrypt / Input: ASCII , Output: HEX
+// *****************************************************************************************************
+function encrypt_hex(password, decrypted) {
+  try {
+    let iv = new Buffer(16);
+    iv.fill(0);
+    let crypted = decrypted;
+    let cipher = crypto.createCipheriv('aes-128-cbc', password, iv);
+    //cipher.setAutoPadding(false);
+    let encoded = cipher.update(crypted, 'utf8', 'hex');
+    encoded += cipher.final('hex');
+    return (encoded ? encoded : undefined);
+  } catch (e) {
+    return undefined;
+  }
+}
+
+// *****************************************************************************************************
 // Decrypt / Input: HEX, Output ASCII
 // *****************************************************************************************************
 function decrypt_hex(password, encrypted) {
-
   try {
     let iv = new Buffer(16);
     iv.fill(0);
@@ -288,15 +305,6 @@ function getTimestamp(datum) {
   if (!datum) {
     datum = new Date();
   }
-
-  /*
-  let month = ('0' + datum.getMonth()).slice(-2); // liefert 0 - 11
-  let year = datum.getFullYear(); // YYYY (startet nicht bei 0)
-  let day = ('0' + datum.getDate()).slice(-2); // liefert 1 - 31
-  let hour = ('0' + datum.getHours()).slice(-2); // liefert 0 - 23
-  let minute = ('0' + datum.getMinutes()).slice(-2);
-  let second = ('0' + datum.getSeconds()).slice(-2);
-  */
 
   let month = ('0' + datum.getUTCMonth()).slice(-2); // liefert 0 - 11
   let year = datum.getUTCFullYear(); // YYYY (startet nicht bei 0)
