@@ -197,11 +197,14 @@ function createObjectSIA(id, key) {
         }, function() {
           adapter.log.debug("Create parameters for object " + sid);
         });
-      } else if (!propertiesObjAinObjB(parameter, obj.common)) {
-        obj.common = parameter;
-        adapter.extendObject(sid, obj, function() {
-          adapter.log.debug("Changed parameters for object " + sid);
-        });
+      } else {
+        parameter.name = obj.common.name;
+        if (!propertiesObjAinObjB(parameter, obj.common)) {
+          obj.common = parameter;
+          adapter.extendObject(sid, obj, function() {
+            adapter.log.debug("Changed parameters for object " + sid);
+          });
+        }
       }
     });
 
