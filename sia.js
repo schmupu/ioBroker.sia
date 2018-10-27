@@ -135,6 +135,29 @@ function deleteObjects() {
 }
 
 
+// *******************************************************************************
+// Compare if propierties of object a exist in  object b
+// *******************************************************************************
+function propertiesObjAinObjB(obja, objb) {
+
+  if (obja === objb) return true;
+  if (!(obja instanceof Object) || !(objb instanceof Object)) return false;
+  if (obja.constructor !== objb.constructor) return false;
+
+  for (let p in obja) {
+
+    if (!obja.hasOwnProperty(p)) continue;
+    if (!objb.hasOwnProperty(p)) return false;
+    if (obja[p] === objb[p]) continue;
+    if (typeof(obja[p]) !== "object") return false;
+    if (!propertiesObjAinObjB(obja[p], objb[p])) return false; // Objects and Arrays must be tested recursively
+
+  }
+
+  return true;
+
+}
+
 // *****************************************************************************************************
 // create for every ID a channel and create a few states
 // *****************************************************************************************************
@@ -157,10 +180,29 @@ function createObjectSIA(id, key) {
 
     parameter.name = key.accountnumber + ' ' + parameter.name;
 
+    /*
     adapter.setObjectNotExists(sid, {
       type: 'state',
       common: parameter,
       native: {}
+    });
+    */
+
+    adapter.getObject(sid, function(err, obj) {
+      if (!obj) {
+        adapter.setObjectNotExists(sid, {
+          type: 'state',
+          common: parameter,
+          native: {}
+        }, function() {
+          adapter.log.debug("Create parameters for object " + sid);
+        });
+      } else if (!propertiesObjAinObjB(parameter, obj.common)) {
+        obj.common = parameter;
+        adapter.extendObject(sid, obj, function() {
+          adapter.log.debug("Changed parameters for object " + sid);
+        });
+      }
     });
 
   }
@@ -468,15 +510,15 @@ function setStatesSIA(sia) {
             break;
 
           case 'ts':
-            var [tt, dd] = sia.ts.split(',');
-            if (tt && dd) {
-
-              val = new Date(dd + "," + tt + " UTC");
-
-            } else {
-
-              val = "";
-            }
+            /*
+             var [tt, dd] = sia.ts.split(',');
+             if (tt && dd) {
+               val = new Date(dd + "," + tt + " UTC");
+             } else {
+               val = "";
+             }
+             */
+            val = sia.ts;
             break;
 
           case 'crc':
@@ -636,7 +678,7 @@ function parseSIA(data) {
           if (msg) {
             let padlen = msg.indexOf("|");
             sia.pad = msg.substring(0, padlen); // len of pad
-            msg = msg.substring(padlen+1); // Data Message
+            msg = msg.substring(padlen + 1); // Data Message
           } else {
             adapter.log.info("Could not decrypt message");
             return undefined;
