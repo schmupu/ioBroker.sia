@@ -364,6 +364,31 @@ function getTimestamp(datum) {
 }
 
 // *****************************************************************************************************
+// Is SIA Message in time (+20 or -40 seconds)
+// *****************************************************************************************************
+function isInTime(ts) {
+  if (ts) {
+    let [tt, dd] = ts.split(',');
+    let val = new Date(dd + "," + tt + " UTC");
+    // val = val.toUTCString();
+
+    [tt, dd] = getTimestamp().substring(1).split(',');
+    let now = new Date();
+    // now = now.toUTCString();
+
+    let diff = (val - now) / 1000;
+    if (diff > 20 || diff < -40) {
+      adapter.log.debug("Timestamp difference. Time in message " + val.toUTCString() + ". Time now " + now.toUTCString());
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
+}
+
+// *****************************************************************************************************
 // Acount configuration
 // *****************************************************************************************************
 function getAcctInfo(act) {
@@ -426,13 +451,15 @@ function ackSIA(sia) {
     adapter.log.debug("ackSIA (cfg) : " + JSON.stringify(cfg));
     adapter.log.debug("ackSIA (sia) : " + JSON.stringify(sia));
 
-    if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg) {
+    if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg && isInTime(sia.ts)) {
 
       let rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
       let lpref = sia.lpref && sia.lpref.length > 0 ? "L" + sia.lpref : "";
 
       if (sia.id[0] == "*") {
-        str = '"*ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[' + sia.pad + ']' + ts;
+        let msg = encrypt_hex(cfg.password, sia.pad + ']' + ts);
+        str = '"*ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[' + msg;
+        // str = '"*ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[' + sia.pad + ']' + ts;
       } else {
         str = '"ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[]';
       }
