@@ -377,7 +377,8 @@ function isInTime(ts) {
     // now = now.toUTCString();
 
     let diff = (val - now) / 1000;
-    if (diff > 20 || diff < -40) {
+    // if (diff > 20 || diff < -40) {
+    if (diff > 120 || diff < -120) {
       adapter.log.debug("Timestamp difference. Time in message " + val.toUTCString() + ". Time now " + now.toUTCString());
       return false;
     } else {
