@@ -11,7 +11,7 @@ var crypto = require('crypto');
 // *****************************************************************************************************
 // is called when adapter shuts down - callback has to be called under any circumstances!
 // *****************************************************************************************************
-adapter.on('unload', function(callback) {
+adapter.on('unload', function (callback) {
 
   try {
     adapter.log.info('Closing SIA Server');
@@ -30,7 +30,7 @@ adapter.on('unload', function(callback) {
 // is called when databases are connected and adapter received configuration.
 // start here!
 // *****************************************************************************************************
-adapter.on('ready', function() {
+adapter.on('ready', function () {
 
   adapter.log.info(adapter.namespace);
   main();
@@ -126,7 +126,7 @@ function deleteChannel(obj) {
 // *****************************************************************************************************
 function deleteObjects() {
 
-  adapter.getAdapterObjects(function(obj) {
+  adapter.getAdapterObjects(function (obj) {
 
     deleteChannel(obj);
 
@@ -149,7 +149,7 @@ function propertiesObjAinObjB(obja, objb) {
     if (!obja.hasOwnProperty(p)) continue;
     if (!objb.hasOwnProperty(p)) return false;
     if (obja[p] === objb[p]) continue;
-    if (typeof(obja[p]) !== "object") return false;
+    if (typeof (obja[p]) !== "object") return false;
     if (!propertiesObjAinObjB(obja[p], objb[p])) return false; // Objects and Arrays must be tested recursively
 
   }
@@ -188,20 +188,20 @@ function createObjectSIA(id, key) {
     });
     */
 
-    adapter.getObject(sid, function(err, obj) {
+    adapter.getObject(sid, function (err, obj) {
       if (!obj) {
         adapter.setObjectNotExists(sid, {
           type: 'state',
           common: parameter,
           native: {}
-        }, function() {
+        }, function () {
           adapter.log.debug("Create parameters for object " + sid);
         });
       } else {
         parameter.name = obj.common.name;
         if (!propertiesObjAinObjB(parameter, obj.common)) {
           obj.common = parameter;
-          adapter.extendObject(sid, obj, function() {
+          adapter.extendObject(sid, obj, function () {
             adapter.log.debug("Changed parameters for object " + sid);
           });
         }
@@ -452,6 +452,7 @@ function ackSIA(sia) {
     adapter.log.debug("ackSIA (cfg) : " + JSON.stringify(cfg));
     adapter.log.debug("ackSIA (sia) : " + JSON.stringify(sia));
 
+    // if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg && isInTime(sia.ts)) {
     if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg && isInTime(sia.ts)) {
 
       let rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
@@ -588,7 +589,7 @@ function serverStart() {
 
   server = net.createServer(onClientConnected);
 
-  server.listen(adapter.config.port, adapter.config.bind, function() {
+  server.listen(adapter.config.port, adapter.config.bind, function () {
 
     var text = 'SIA Server listening on IP-Adress: ' + server.address().address + ':' + server.address().port;
     adapter.log.info(text);
@@ -656,7 +657,6 @@ function parseSIA(data) {
     // let tmp = (data.subarray(3, 7)).toString();
     // sia.len = parseInt(tmp, 16); // length of data
     adapter.log.debug("data : " + data);
-    adapter.log.debug("len data : " + tmp);
     sia.cr = data[len]; // <cr>
 
     // str = new Buffer((data.subarray(7, len)));
@@ -767,7 +767,7 @@ function onClientConnected(sock) {
 
   // adapter.log.info('New client connected: ' + remoteAddress);
 
-  sock.on('data', function(data) {
+  sock.on('data', function (data) {
     // data = Buffer.from(data,'binary');
     // data = new Buffer(data);
     adapter.log.debug('received from ' + remoteAddress + ' following data: ' + JSON.stringify(data));
@@ -785,16 +785,16 @@ function onClientConnected(sock) {
       adapter.log.info('sending to ' + remoteAddress + ' following message: ' + ack.toString().trim());
       sock.end(ack);
 
-    } catch (e) {}
+    } catch (e) { }
 
   });
 
-  sock.on('close', function() {
+  sock.on('close', function () {
     adapter.log.info('connection from ' + remoteAddress + ' closed');
   });
 
 
-  sock.on('error', function(err) {
+  sock.on('error', function (err) {
     adapter.log.error('Connection ' + remoteAddress + ' error: ' + err.message);
   });
 
