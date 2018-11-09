@@ -453,7 +453,7 @@ function ackSIA(sia) {
     adapter.log.debug("ackSIA (sia) : " + JSON.stringify(sia));
 
     // if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg && isInTime(sia.ts)) {
-    if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg && isInTime(sia.ts)) {
+    if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg) {
 
       let rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
       let lpref = sia.lpref && sia.lpref.length > 0 ? "L" + sia.lpref : "";
@@ -670,6 +670,9 @@ function parseSIA(data) {
       adapter.log.info("CRC or Length different to the caclulated values");
       adapter.log.debug("SIA crc= " + sia.crc + ", calc_crc=" + sia.calc_crc);
       adapter.log.debug("SIA len= " + sia.len + ", calc_len=" + sia.calc_len);
+      adapter.log.debug("Message for CRC and LEN calculation" + sia.str);
+      adapter.log.debug("Message for CRC and LEN calculation (String)" + sia.str.toString());
+
       return undefined;
       // sia.calc_len = sia.len;
       // sia.calc_crc = sia.crc;
