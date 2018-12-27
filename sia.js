@@ -1,6 +1,11 @@
+/* jshint -W097 */
+/* jshint -W030 */
+/* jshint strict:true */
+/* jslint node: true */
+/* jslint esversion: 6 */
 'use strict';
 
-var utils = require(__dirname + '/lib/utils'); // Get common adapter utils
+const utils  = require('@iobroker/adapter-core'); 
 var dp = require(__dirname + '/lib/datapoints');
 var net = require('net');
 // var forge = require('node-forge');   "dependencies": {  "node-forge": "^0.7.6" },
@@ -32,7 +37,7 @@ adapter.on('unload', function (callback) {
 // *****************************************************************************************************
 adapter.on('ready', function () {
 
-  adapter.log.info(adapter.namespace);
+  adapter.log.info("Starting " + adapter.namespace);
   main();
 
 });
@@ -94,10 +99,10 @@ function deleteChannel(obj) {
         // Channel Name ist ein accountnumber
         for (var i = 0; i < adapter.config.keys.length; i++) {
 
-          var key = adapter.config.keys[i];
-          var id = getAcountNumberID(key.accountnumber);
+          var keyc = adapter.config.keys[i];
+          var idc = getAcountNumberID(keyc.accountnumber);
 
-          if (id == channelname) {
+          if (idc == channelname) {
 
             found = true;
 
@@ -764,7 +769,7 @@ function onClientConnected(sock) {
   // delete sock._readableState.decoder;
 
   var remoteAddress = sock.remoteAddress + ':' + sock.remotePort;
-  var strclose = "close"
+  var strclose = "close";
   var len = strclose.length;
   var ack = null;
 

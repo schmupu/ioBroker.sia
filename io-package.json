@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "sia",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "news": {
+      "0.1.7": {
+        "en": "Update Adapter Core File",
+        "de": "Update Adapter Core File"
+      },
       "0.1.6": {
         "en": "Bugfxing (NAK) and AES support",
         "de": "Fehlerbehbung (NAK) und AES Verschlüsselung"
@@ -51,7 +55,11 @@
     "materialize": true,
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/schmupu/ioBroker.sia/master/admin/sia.png",
-    "keywords": ["sia", "burglar", "alarm"],
+    "keywords": [
+      "sia",
+      "burglar",
+      "alarm"
+    ],
     "readme": "https://github.com/schmupu/ioBroker.sia/blob/master/README.md",
     "loglevel": "info",
     "type": "alarm",
@@ -60,11 +68,13 @@
   "native": {
     "port": 50001,
     "bind": "0.0.0.0",
-    "keys": [{
-      "accountnumber": "test",
-      "aes": false,
-      "password": ""
-    }]
+    "keys": [
+      {
+        "accountnumber": "test",
+        "aes": false,
+        "password": ""
+      }
+    ]
   },
   "objects": [],
   "instanceObjects": []
