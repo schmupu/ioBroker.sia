@@ -1,9 +1,9 @@
 {
   "common": {
     "name": "sia",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "news": {
-      "0.1.7": {
+      "0.1.8": {
         "en": "Update Adapter Core File",
         "de": "Update Adapter Core File"
       },

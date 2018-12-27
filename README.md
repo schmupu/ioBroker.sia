@@ -47,7 +47,7 @@ You can use ioBroker with this adapter as central station. For example. you can 
 
 ## Changelog
 
-### 0.1.7 (27.12.2018)
+### 0.1.8 (27.12.2018)
 * (Stübi) Update Adapter Core File
 
 ### 0.1.6 (23.10.2018)
