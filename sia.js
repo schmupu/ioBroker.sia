@@ -5,43 +5,51 @@
 /* jslint esversion: 6 */
 'use strict';
 
-const utils  = require('@iobroker/adapter-core'); 
-var dp = require(__dirname + '/lib/datapoints');
-var net = require('net');
-// var forge = require('node-forge');   "dependencies": {  "node-forge": "^0.7.6" },
-var adapter = new utils.Adapter('sia');
-var server = null; // Server instance
-var crypto = require('crypto');
+const utils = require('@iobroker/adapter-core');
+const dp = require(__dirname + '/lib/datapoints');
+const net = require('net');
+let server = null; // Server instance
+let crypto = require('crypto');
 
-// *****************************************************************************************************
-// is called when adapter shuts down - callback has to be called under any circumstances!
-// *****************************************************************************************************
-adapter.on('unload', function (callback) {
+const adapterName = require('./package.json').name.split('.').pop();
+let adapter;
 
-  try {
-    adapter.log.info('Closing SIA Server');
-    if (server) {
-      server.close();
+function startAdapter(options) {
+  options = options || {};
+  options.name = adapterName;
+  adapter = new utils.Adapter(options);
+
+  // *****************************************************************************************************
+  // is called when adapter shuts down - callback has to be called under any circumstances!
+  // *****************************************************************************************************
+  adapter.on('unload', function (callback) {
+
+    try {
+      adapter.log.info('Closing SIA Server');
+      if (server) {
+        server.close();
+      }
+      callback();
+    } catch (e) {
+      callback();
     }
-    callback();
-  } catch (e) {
-    callback();
-  }
 
-});
+  });
 
 
-// *****************************************************************************************************
-// is called when databases are connected and adapter received configuration.
-// start here!
-// *****************************************************************************************************
-adapter.on('ready', function () {
+  // *****************************************************************************************************
+  // is called when databases are connected and adapter received configuration.
+  // start here!
+  // *****************************************************************************************************
+  adapter.on('ready', function () {
 
-  adapter.log.info("Starting " + adapter.namespace);
-  main();
+    adapter.log.info("Starting " + adapter.namespace);
+    main();
 
-});
+  });
 
+  return adapter;
+}
 
 // *****************************************************************************************************
 // Main function
@@ -872,4 +880,12 @@ function crc16str(str) {
 
   return crc16(new Buffer(str));
 
+}
+
+// If started as allInOne mode => return function to create instance
+if (typeof module !== undefined && module.parent) {
+  module.exports = startAdapter;
+} else {
+  // or start the instance directly
+  startAdapter();
 }

@@ -47,6 +47,9 @@ You can use ioBroker with this adapter as central station. For example. you can 
 
 ## Changelog
 
+### 1.0.0 (05.01.2018)
+* (Stübi) Support of compact modus
+
 ### 0.1.8 (27.12.2018)
 * (Stübi) Update Adapter Core File
 

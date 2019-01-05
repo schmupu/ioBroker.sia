@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "sia",
-    "version": "0.1.8",
+    "version": "1.0.0",
     "news": {
+      "1.0.0": {
+        "en": "Support of compact mode",
+        "de": "Compact Modus Unterstützung"
+      },
       "0.1.8": {
         "en": "Update Adapter Core File",
         "de": "Update Adapter Core File"
@@ -54,6 +58,7 @@
     "icon": "sia.png",
     "materialize": true,
     "enabled": true,
+    "compact": true,
     "extIcon": "https://raw.githubusercontent.com/schmupu/ioBroker.sia/master/admin/sia.png",
     "keywords": [
       "sia",
