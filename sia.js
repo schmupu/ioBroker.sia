@@ -8,10 +8,10 @@
 const utils = require('@iobroker/adapter-core');
 const dp = require(__dirname + '/lib/datapoints');
 const net = require('net');
-let server = null; // Server instance
-let crypto = require('crypto');
-
+const crypto = require('crypto');
 const adapterName = require('./package.json').name.split('.').pop();
+
+let server = null; // Server instance
 let adapter;
 
 function startAdapter(options) {
@@ -23,7 +23,6 @@ function startAdapter(options) {
   // is called when adapter shuts down - callback has to be called under any circumstances!
   // *****************************************************************************************************
   adapter.on('unload', function (callback) {
-
     try {
       adapter.log.info('Closing SIA Server');
       if (server) {
@@ -33,21 +32,16 @@ function startAdapter(options) {
     } catch (e) {
       callback();
     }
-
   });
-
 
   // *****************************************************************************************************
   // is called when databases are connected and adapter received configuration.
   // start here!
   // *****************************************************************************************************
   adapter.on('ready', function () {
-
     adapter.log.info("Starting " + adapter.namespace);
     main();
-
   });
-
   return adapter;
 }
 
@@ -55,129 +49,86 @@ function startAdapter(options) {
 // Main function
 // *****************************************************************************************************
 function main() {
-
   // delete not used / missing object in configuration
   deleteObjects();
-
   // add object from configuration.
   createObjects();
-
   // start socket server
   serverStart();
-
   // all states changes inside the adapters namespace are subscribed
   // adapter.subscribeStates('*');
-
 }
-
 
 // *****************************************************************************************************
 // convert subcriber to ID for using as channel name. Special characters and spaces are deleted.
 // *****************************************************************************************************
 function getAcountNumberID(accountnumber) {
-
   var id = accountnumber.replace(/[.\s]+/g, '_');
   return id;
-
 }
-
 
 // *****************************************************************************************************
 // delete channel and states which are missing in configuration
 // *****************************************************************************************************
 function deleteChannel(obj) {
-
   // adapter.log.info('deleteChannel: ' + JSON.stringify(obj));
-
   // search recrusive for channel name. If found and missing in
   // configuration, delete channel and all states
-  Object.keys(obj).forEach(key => {
-
+  Object.keys(obj).forEach((key) => {
     if (obj[key] && typeof obj[key] === 'object') {
-
       deleteChannel(obj[key]); // recurse.
-
     } else {
-
       if (obj[key] == 'channel') {
-
         var found = false;
         var channelname = obj.common.name;
-
         // Channel Name ist ein accountnumber
         for (var i = 0; i < adapter.config.keys.length; i++) {
-
           var keyc = adapter.config.keys[i];
           var idc = getAcountNumberID(keyc.accountnumber);
-
           if (idc == channelname) {
-
             found = true;
-
           }
-
         }
-
         if (!found) {
-
           adapter.deleteChannel(channelname);
-
         }
-
       }
-
     }
-
   });
-
 }
-
 
 // *****************************************************************************************************
 // list of all objects (devices, channel, states) for this instance. call function  deleteChannel
 // for deleting old (not used) channels in configuration
 // *****************************************************************************************************
 function deleteObjects() {
-
   adapter.getAdapterObjects(function (obj) {
-
     deleteChannel(obj);
-
   });
-
 }
-
 
 // *******************************************************************************
 // Compare if propierties of object a exist in  object b
 // *******************************************************************************
 function propertiesObjAinObjB(obja, objb) {
-
   if (obja === objb) return true;
   if (!(obja instanceof Object) || !(objb instanceof Object)) return false;
   if (obja.constructor !== objb.constructor) return false;
-
   for (let p in obja) {
-
     if (!obja.hasOwnProperty(p)) continue;
     if (!objb.hasOwnProperty(p)) return false;
     if (obja[p] === objb[p]) continue;
     if (typeof (obja[p]) !== "object") return false;
     if (!propertiesObjAinObjB(obja[p], objb[p])) return false; // Objects and Arrays must be tested recursively
-
   }
-
   return true;
-
 }
 
 // *****************************************************************************************************
 // create for every ID a channel and create a few states
 // *****************************************************************************************************
 function createObjectSIA(id, key) {
-
   let obj = dp.dpSIA || {};
-
   adapter.setObjectNotExists(id, {
     type: 'channel',
     common: {
@@ -185,14 +136,10 @@ function createObjectSIA(id, key) {
     },
     native: {}
   });
-
   for (let prop in obj) {
-
     let sid = id + '.' + prop;
     let parameter = JSON.parse(JSON.stringify(obj[prop]));
-
     parameter.name = key.accountnumber + ' ' + parameter.name;
-
     /*
     adapter.setObjectNotExists(sid, {
       type: 'state',
@@ -200,7 +147,6 @@ function createObjectSIA(id, key) {
       native: {}
     });
     */
-
     adapter.getObject(sid, function (err, obj) {
       if (!obj) {
         adapter.setObjectNotExists(sid, {
@@ -220,26 +166,18 @@ function createObjectSIA(id, key) {
         }
       }
     });
-
   }
-
 }
-
 
 // *****************************************************************************************************
 // read configuration, and create for all accountnumbers a channel and states
 // *****************************************************************************************************
 function createObjects() {
-
   for (var i = 0; i < adapter.config.keys.length; i++) {
-
     var key = adapter.config.keys[i];
     var id = getAcountNumberID(key.accountnumber);
-
     createObjectSIA(id, key);
-
   }
-
 }
 
 // *****************************************************************************************************
@@ -273,7 +211,6 @@ function encrypt(password, decrypted) {
   return cipher.output;
 }
 
-
 // *****************************************************************************************************
 // Encrypt / Input: ASCII , Output: HEX
 // *****************************************************************************************************
@@ -286,11 +223,9 @@ function encrypt_hex(password, decrypted) {
 // Decrypt / Input: Binary , Output ASCII
 // *****************************************************************************************************
 function decrypt(password, encrypted) {
-
   let key = getBytes(password);
   let iv = forge.util.hexToBytes('0000000000000000');
   try {
-
     let decipher = forge.cipher.createDecipher('AES-CBC', key);
     decipher.start({
       iv: iv
@@ -305,14 +240,12 @@ function decrypt(password, encrypted) {
   } catch (e) {
     return undefined;
   }
-
 }
 
 // *****************************************************************************************************
 // Decrypt / Input: HEX, Output ASCII
 // *****************************************************************************************************
 function decrypt_hex(password, encrypted) {
-
   var data = forge.util.createBuffer();
   data.putBytes(forge.util.hexToBytes(encrypted));
   return decrypt(password, data);
@@ -359,21 +292,17 @@ function decrypt_hex(password, encrypted) {
 // get timestamp in following format <_HH:MM:SS,MM-DD-YYYY>
 // *****************************************************************************************************
 function getTimestamp(datum) {
-
   if (!datum) {
     datum = new Date();
   }
-
   let month = ('0' + datum.getUTCMonth()).slice(-2); // liefert 0 - 11
   let year = datum.getUTCFullYear(); // YYYY (startet nicht bei 0)
   let day = ('0' + datum.getUTCDate()).slice(-2); // liefert 1 - 31
   let hour = ('0' + datum.getUTCHours()).slice(-2); // liefert 0 - 23
   let minute = ('0' + datum.getUTCMinutes()).slice(-2);
   let second = ('0' + datum.getUTCSeconds()).slice(-2);
-
   let str = '_' + hour + ':' + minute + ':' + second + ',' + month + '-' + day + '-' + year;
   return str;
-
 }
 
 // *****************************************************************************************************
@@ -384,11 +313,9 @@ function isInTime(ts) {
     let [tt, dd] = ts.split(',');
     let val = new Date(dd + "," + tt + " UTC");
     // val = val.toUTCString();
-
     [tt, dd] = getTimestamp().substring(1).split(',');
     let now = new Date();
     // now = now.toUTCString();
-
     let diff = (val - now) / 1000;
     // if (diff > 20 || diff < -40) {
     if (diff > 120 || diff < -120) {
@@ -406,7 +333,6 @@ function isInTime(ts) {
 // Acount configuration
 // *****************************************************************************************************
 function getAcctInfo(act) {
-
   for (let i = 0; i < adapter.config.keys.length; i++) {
     let key = adapter.config.keys[i];
     if (key.accountnumber == act) {
@@ -415,14 +341,12 @@ function getAcctInfo(act) {
   }
   // adapter.log.info("Could not found entries for accountnumber " + act + " in the configuration");
   return undefined;
-
 }
 
 // *****************************************************************************************************
 // Accountnumber exist in Config
 // *****************************************************************************************************
 function acctExist(act) {
-
   let key = getAcctInfo(act);
   if (key) {
     return true;
@@ -435,42 +359,32 @@ function acctExist(act) {
 // Acknowledge for SIA
 // *****************************************************************************************************
 function nackSIA() {
-
   let ts = getTimestamp(); // tiemstamp
   let str = '"NAK"' + '0000' + 'R0' + 'L0' + 'A0' + '[]' + ts;
-
   let crc = crc16str(str);
   let len = str.length;
-
   let start = new Buffer([0x0a, crc >>> 8 & 0xff, crc & 0xff, len >>> 8 & 0xff, len & 0xff]);
   let end = new Buffer([0x0d]);
   let buf = new Buffer(str);
   let nack = Buffer.concat([start, buf, end]);
   adapter.log.debug("nackSIA : " + JSON.stringify(nack));
   return nack;
-
 }
 
 // *****************************************************************************************************
 // Acknowledge for SIA
 // *****************************************************************************************************
 function ackSIA(sia) {
-
   if (sia) {
-
     let ts = getTimestamp(); // tiemstamp
     let cfg = getAcctInfo(sia.act);
     let str = "";
-
     adapter.log.debug("ackSIA (cfg) : " + JSON.stringify(cfg));
     adapter.log.debug("ackSIA (sia) : " + JSON.stringify(sia));
-
     // if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg && isInTime(sia.ts)) {
     if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg) {
-
       let rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
       let lpref = sia.lpref && sia.lpref.length > 0 ? "L" + sia.lpref : "";
-
       if (sia.id[0] == "*") {
         let msg = encrypt_hex(cfg.password, sia.pad + ']' + ts);
         str = '"*ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[' + msg;
@@ -478,82 +392,54 @@ function ackSIA(sia) {
       } else {
         str = '"ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[]';
       }
-
       let crc = crc16str(str);
       let len = str.length;
-
       let start = new Buffer([0x0a, crc >>> 8 & 0xff, crc & 0xff, len >>> 8 & 0xff, len & 0xff]);
       let end = new Buffer([0x0d]);
       let buf = new Buffer(str);
       let ack = Buffer.concat([start, buf, end]);
       adapter.log.debug("ackSIA : " + JSON.stringify(ack));
       return ack;
-
     }
-
   }
-
   return nackSIA();
-
 }
-
 
 // *****************************************************************************************************
 // Set state for SIA message
 // *****************************************************************************************************
 function setStatesSIA(sia) {
-
   var obj = dp.dpSIA || {};
   var val = null;
-
   if (sia) {
-
     adapter.log.debug("setStatesSIA sia.act : " + sia.act);
-
     if (acctExist(sia.act)) {
-
       adapter.log.debug("setStatesSIA for " + sia.act + " : " + JSON.stringify(sia));
-
       var id = getAcountNumberID(sia.act);
-
       for (let prop in obj) {
-
         var sid = id + '.' + prop;
-
         switch (prop) {
-
           case 'id':
             val = sia.id;
             break;
-
           case 'sequence':
             val = sia.seq;
             break;
-
           case 'rpref':
             val = sia.rpref;
             break;
-
           case 'lpref':
             val = sia.lpref;
             break;
-
-          case 'lpref':
-            val = sia.lpref;
-            break;
-
           case 'accountnumber':
             val = sia.act;
             break;
-
           case 'msgdata':
             val = sia.data_message;
             break;
-
           case 'extdata':
             val = sia.data_extended;
             break;
-
           case 'ts':
             /*
              var [tt, dd] = sia.ts.split(',');
@@ -565,145 +451,106 @@ function setStatesSIA(sia) {
              */
             val = sia.ts;
             break;
-
           case 'crc':
             val = sia.crc;
             break;
-
           case 'len':
             val = sia.len;
             break;
-
           default:
             val = null;
-
         }
-
         adapter.log.debug("ackSIA : set state for id " + sid + " with value " + val);
         adapter.setState(sid, {
           val: val,
           ack: true
         });
-
       }
-
     }
-
   }
-
 }
-
-
 
 // *****************************************************************************************************
 // start socket server for listining for SIA
 // *****************************************************************************************************
 function serverStart() {
-
   server = net.createServer(onClientConnected);
-
   server.listen(adapter.config.port, adapter.config.bind, function () {
-
     var text = 'SIA Server listening on IP-Adress: ' + server.address().address + ':' + server.address().port;
     adapter.log.info(text);
-
   });
-
 }
-
 
 // *****************************************************************************************************
 // Convert Byte to Hex String
 // *****************************************************************************************************
 function byteToHexString(uint8arr) {
-
   if (!uint8arr) {
     return '';
   }
-
   var hexStr = '';
-
   for (var i = 0; i < uint8arr.length; i++) {
     var hex = (uint8arr[i] & 0xff).toString(16);
     hex = (hex.length === 1) ? '0' + hex : hex;
     hexStr += hex;
   }
-
   return hexStr.toUpperCase();
-
 }
 
 // *****************************************************************************************************
 // SIA Message parsen
 // *****************************************************************************************************
 function parseSIA(data) {
-
   let sia = {};
   let len = data.length - 1;
-  let tmp = null;
   let str = null;
   let m = null;
-  let n = null;
   let regex = null;
-
   if (data && data[0] == 0x0a && data[len] == 0x0d) {
-
     sia.data = data; // komplette Nachricht
     sia.lf = data[0]; // <lf>
-
     // Check if CRC 2 Byte Binary or 4 Byte HEX
     if (data[5] == '0'.charCodeAt() && data[9] == '"'.charCodeAt()) {
       str = new Buffer((data.subarray(9, len)));
       sia.len = parseInt(data.toString().substring(5, 9), 16);
       sia.crc = parseInt(data.toString().substring(1, 5), 16);
     }
-
     // Lupusec sends the CRC in binary forum
     if (data[3] == '0'.charCodeAt() && data[7] == '"'.charCodeAt()) {
       str = new Buffer((data.subarray(7, len)));
       sia.len = parseInt(data.toString().substring(3, 7), 16);
       sia.crc = data[1] * 256 + data[2];
     }
-
     // Length of Message
     //tmp = data.toString().substring(3, 7);
     // let tmp = (data.subarray(3, 7)).toString();
     // sia.len = parseInt(tmp, 16); // length of data
     adapter.log.debug("data : " + data);
     sia.cr = data[len]; // <cr>
-
     // str = new Buffer((data.subarray(7, len)));
     sia.str = str.toString();
     sia.calc_len = sia.str.length;
     sia.calc_crc = crc16str(sia.str);
-
     adapter.log.debug("parseSIA sia.str : " + sia.str);
-
     if (sia.calc_len != sia.len || sia.calc_crc != sia.crc) {
       adapter.log.info("CRC or Length different to the caclulated values");
       adapter.log.debug("SIA crc= " + sia.crc + ", calc_crc=" + sia.calc_crc);
       adapter.log.debug("SIA len= " + sia.len + ", calc_len=" + sia.calc_len);
       adapter.log.debug("Message for CRC and LEN calculation" + sia.str);
       adapter.log.debug("Message for CRC and LEN calculation (String)" + sia.str.toString());
-
       return undefined;
       // sia.calc_len = sia.len;
       // sia.calc_crc = sia.crc;
     }
-
-
     // Example str:
     // "SIA-DCS"0002R1L232#78919[1234|NFA129][S123Main St., 55123]_11:10:00,10-12-2019
     // "SIA-DCS"0002R1L232#78919[ ][ ]_11:10:00,10-12-2019
     // "SIA-DCS"0266L0#alarm1[alarm2|Nri1OP0001*Familie*]_16:22:03,06-08-2018
     // http://s545463982.onlinehome.us/DC09Gen/
     // "*SIA-DCS"9876R579BDFL789ABC#12345A[209c9d400b655df7a26aecb6a887e7ee6ed8103217079aae7cbd9dd7551e96823263460f7ef0514864897ae9789534f1
-
     regex = /\"(.+)\"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))\#([\w\d]+)\[(.+)/gm;
     if ((m = regex.exec(sia.str)) !== null && m.length >= 8) {
-
       adapter.log.debug("parseSIA regex   : " + JSON.stringify(sia));
-
       sia.id = m[1] || undefined; // id (SIA-DCS, ACK) - required
       sia.seq = m[2] || undefined; // sqeuence number (0002 or 0003) - required
       sia.rpref = m[4] || ""; // Receiver Number - optional (R0, R1, R123456)
@@ -712,12 +559,10 @@ function parseSIA(data) {
       sia.pad = ""; // Pad
       let msg = m[8] || "";
       let cfg = getAcctInfo(sia.act);
-
       if (!cfg) {
         adapter.log.info("Could not found entries for accountnumber " + sia.act + " in the configuration");
         return undefined;
       }
-
       // if id starts with *, message is encrypted
       if (sia.id && sia.id[0] == "*") {
         if (cfg.aes == true && cfg.password) {
@@ -735,25 +580,19 @@ function parseSIA(data) {
           return undefined;
         }
       }
-
       if (sia.id && sia.id[0] != "*" && cfg.aes == true) {
         adapter.log.info("Encrypting enabled, message was sent not entcrypted");
         return undefined;
       }
-
       regex = /(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
       if ((m = regex.exec(msg)) !== null && m.length >= 1) {
         sia.data_message = m[1] || ""; // Message
         sia.data_extended = m[3] || ""; // extended Message
         sia.ts = m[5] || "";
       }
-
     }
-
   }
-
   adapter.log.debug("parseSIA : " + JSON.stringify(sia));
-
   // Test if all required fields will be sent
   if (sia && sia.id && sia.seq && sia.lpref && sia.act && sia.pad != undefined) {
     return sia;
@@ -761,28 +600,19 @@ function parseSIA(data) {
     adapter.log.info("Required SIA fields missing");
     return undefined;
   }
-
 }
-
 
 // *****************************************************************************************************
 // alarm system connected and sending SIA  message
 // *****************************************************************************************************
 function onClientConnected(sock) {
-
   // See https://nodejs.org/api/stream.html#stream_readable_setencoding_encoding
   // sock.setEncoding(null);
-
   // Hack that must be added to make this work as expected
   // delete sock._readableState.decoder;
-
   var remoteAddress = sock.remoteAddress + ':' + sock.remotePort;
-  var strclose = "close";
-  var len = strclose.length;
   var ack = null;
-
   // adapter.log.info('New client connected: ' + remoteAddress);
-
   sock.on('data', function (data) {
     // data = Buffer.from(data,'binary');
     // data = new Buffer(data);
@@ -795,33 +625,25 @@ function onClientConnected(sock) {
     } else {
       ack = nackSIA();
     }
-
     try {
-
       adapter.log.info('sending to ' + remoteAddress + ' following message: ' + ack.toString().trim());
       sock.end(ack);
-
-    } catch (e) { }
-
+    } catch (e) {
+      // Error Message 
+    }
   });
-
   sock.on('close', function () {
     adapter.log.info('connection from ' + remoteAddress + ' closed');
   });
-
-
   sock.on('error', function (err) {
     adapter.log.error('Connection ' + remoteAddress + ' error: ' + err.message);
   });
-
 }
-
 
 // *****************************************************************************************************
 // CRC Calculation. Example. crc16([0x20, 0x22])
 // *****************************************************************************************************
 function crc16(data) {
-
   /* CRC table for the CRC-16. The poly is 0x8005 (x^16 + x^15 + x^2 + 1) */
   const crctab16 = new Uint16Array([
     0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
@@ -857,29 +679,21 @@ function crc16(data) {
     0x4400, 0x84C1, 0x8581, 0x4540, 0x8701, 0x47C0, 0x4680, 0x8641,
     0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040
   ]);
-
-
   var len = data.length;
   var buffer = 0;
   var crc;
-
   while (len--) {
     crc = ((crc >>> 8) ^ (crctab16[(crc ^ (data[buffer++])) & 0xff]));
   }
-
   return crc;
   // return [(crc >>> 8 & 0xff), (crc & 0xff)];
-
 }
-
 
 // *****************************************************************************************************
 // CRC Calculation. Example. crc16([0x20, 0x22])
 // *****************************************************************************************************
 function crc16str(str) {
-
   return crc16(new Buffer(str));
-
 }
 
 // If started as allInOne mode => return function to create instance
