@@ -25,27 +25,36 @@ You can use ioBroker with this adapter as central station. For example. you can 
 2. Configuration of the adapter:
 
   Choose the IP-address and port for listening for SIA requests.
-  Register you subcriber name to identify you burglar alarm messages and
-  select your burglar alarm type.
+  ![sia_adapter1](admin/sia_adapter1.png)
+ 
+  Register account number. If you are using AES you have to enter a password (key). The key should be 16 characters long.    
+  ![sia_adapter2](admin/sia_adapter2.png)
 
 3. Configure your burglar system to send SIA messages
-
-    * Lupusec XT1:
-
-      not supported
 
     * Lupusec XT1+/XT2/XT2+/XT3:
 
       Einstellungen -> Contact ID : ip://subcriber@ip-address-iobroker:port/SIA
       Example: ip://test@192.168.20.1:50001/SIA
 
-    * other alarm systems:
+      ![sia_lupusec1](admin/sia_lupusec1.png)
+
+    * Other alarm systems:
 
       the Adapter will work with all alarm systems, which supports
       the SIA DC-09 proctocol
 
+4. SIA Objects / States
+
+If you receive SIA messages you see them in the states tree
+
+![sia_adapter3](admin/sia_adapter3.png)
+
 
 ## Changelog
+
+### 1.0.1 (26.01.2018)
+* (Stübi) Saving password encrypt. 
 
 ### 1.0.0 (05.01.2018)
 * (Stübi) Support js-controller compact mode 

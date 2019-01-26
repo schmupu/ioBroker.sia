@@ -40,9 +40,41 @@ function startAdapter(options) {
   // *****************************************************************************************************
   adapter.on('ready', function () {
     adapter.log.info("Starting " + adapter.namespace);
-    main();
+    adapter.getForeignObject('system.config', (err, obj) => {
+      if (adapter.config.keys) {
+        for (let i in adapter.config.keys) {
+          for (let j in adapter.config.keys[i]) {
+            if (j === 'password') {
+              if (obj && obj.native && obj.native.secret) {
+                adapter.config.keys[i][j] = decrypt(obj.native.secret, adapter.config.keys[i][j]);
+              } else {
+                adapter.config.keys[i][j] = decrypt('Zgfr56gFe87jJOM', adapter.config.keys[i][j]);
+              }
+            }
+          }
+        }
+      }
+      main();
+    });
   });
   return adapter;
+}
+
+// *****************************************************************************************************
+// Password decrypt
+// *****************************************************************************************************
+// decrypt password
+function decrypt(key, value) {
+  let result = '';
+  if (value.startsWith('(crypt)')) {
+    value = value.substr(7);
+    for (let i = 0; i < value.length; ++i) {
+      result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+    }
+  } else {
+    result = value;
+  }
+  return result;
 }
 
 // *****************************************************************************************************

@@ -18,15 +18,45 @@
     var active = false;
     var g_onChange;
     var SEP = '_';
+    var secret;
 
     if (typeof _ !== 'function') _ = translateWord;
 
+    function encrypt(key, value) {
+      var result = '';
+      if (value.startsWith('(crypt)')) {
+        value = value.substr(7);
+      }
+      for (var i = 0; i < value.length; ++i) {
+        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+      }
+      result = '(crypt)' + result;
+      return result;
+    }
 
-    function load(settings, onChange) {
+
+    function decrypt(key, value) {
+      let result = '';
+      if (value.startsWith('(crypt)')) {
+        value = value.substr(7);
+        for (let i = 0; i < value.length; ++i) {
+          result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+        }
+      } else {
+        result = value;
+      }
+      return result;
+    }
+
+    function loadHelper(settings, onChange) {
+
+      if (!settings) return;
+      if (settings.password === undefined) settings.password = '';
+      if (settings.email === undefined) settings.email = '';
+
       g_onChange = onChange;
 
-
-      getIPs(function(ips) {
+      getIPs(function (ips) {
         for (var i = 0; i < ips.length; i++) {
           $('#bind').append('<option value="' + ips[i].address + '">' + ips[i].name + '</option>');
         }
@@ -34,7 +64,7 @@
       });
 
 
-      $('#values').on('click', function() {
+      $('#values').on('click', function () {
         //checkDevices();
       });
 
@@ -57,7 +87,7 @@
       };
       //checkDevices();
 
-      socket.emit('getState', 'system.adapter.' + adapter + '.' + instance + '.alive', function(err, state) {
+      socket.emit('getState', 'system.adapter.' + adapter + '.' + instance + '.alive', function (err, state) {
         active = /*common.enabled ||*/ (state && state.val);
       });
 
@@ -90,12 +120,19 @@
         }
       }
 
+
       //for (var key in settings) {
-      forAllKeys(settings, function(key) {
+      forAllKeys(settings, function (key) {
         // example: select elements with id=key and class=value and insert value
         var val = getVal(key);
+
+        if (val && $('#' + key + '.value').attr('data-crypt') == "1") {
+          val = decrypt(secret, val);
+        }
+        //var val = $key.data('crypt') && settings[key] ? decrypt(secret, settings[key]) : settings[key];
+        // var val = $key.data('crypt') && getVal(key) ? decrypt(secret, getVal(key)) : getVal(key);
         if ($('#' + key + '.value').attr('type') == 'checkbox') {
-          $('#' + key + '.value').prop('checked', val).change(function() {
+          $('#' + key + '.value').prop('checked', val).change(function () {
             if ($('#auth').prop('checked')) {
               $('#secure').prop('checked', true);
             }
@@ -103,9 +140,9 @@
             //showHideSettings();
           });
         } else {
-          $('#' + key + '.value').val(val).change(function() {
+          $('#' + key + '.value').val(val).change(function () {
             onChange();
-          }).keyup(function() {
+          }).keyup(function () {
             onChange();
           });
         }
@@ -115,9 +152,22 @@
         settings.language = systemLang || 'en';
         $('#language').val(settings.language).trigger('change');
       }
+      loadTablePasswordDecrypt(settings.keys); // decrypting password
       devices = settings.keys; // || [ {name: '', ip: "", mac: ""} ];
       values2table('values', devices, onChange);
       //changed = true;
+      // $('#password_confirm').val($('#password').val());
+      M.updateTextFields();
+      onChange(false);
+    }
+
+    function load(settings, onChange) {
+
+      socket.emit('getObject', 'system.config', function (err, obj) {
+        secret = (obj.native ? obj.native.secret : '') || 'Zgfr56gFe87jJOM';
+        loadHelper(settings, onChange);
+      });
+
       onChange(false);
     }
 
@@ -130,10 +180,36 @@
       obj[ar[ar.length - 1]] = val;
     }
 
+    function loadTablePasswordDecrypt(table) {
+      if (table) {
+        for (let i in table) {
+          for (let j in table[i]) {
+            if (j === 'password') {
+              let value = table[i][j];
+              if (value) table[i][j] = decrypt(secret, value);
+            }
+          }
+        }
+      }
+    }
+
+    function saveTablePasswordEncrypt(table) {
+      if (table) {
+        for (let i in table) {
+          for (let j in table[i]) {
+            if (j === 'password') {
+              let value = table[i][j];
+              if (value) table[i][j] = encrypt(secret, value);
+            }
+          }
+        }
+      }
+    }
+
     function save(callback) {
       var obj = {};
       changed = true;
-      $('.value').each(function() {
+      $('.value').each(function () {
         var $this = $(this),
           val;
         switch ($this.attr('type')) {
@@ -145,35 +221,48 @@
             val = ~~$this.val();
             break;
           default:
-            val = $this.val();
+            // val = $this.val();
+            // obj[$this.attr('id')] =  $this.data('crypt') && $this.val() ? encrypt(secret, $this.val()) : $this.val();
+            val = $this.data('crypt') && $this.val() ? encrypt(secret, $this.val()) : $this.val();
         }
         setVal(obj, $this.attr('id'), val);
       });
       obj.keys = table2values('values');
+      saveTablePasswordEncrypt(obj.keys); // encrypted save of table password
+
+      /*
+      if ($('#password').val() !== $('#password_confirm').val()) {
+        showMessage(_('Password confirmation is not equal with password'));
+        return;
+      }
+      */
+
+
       callback(obj);
     }
   </script>
   <style>
     .loader {
-      border: 4px solid #b8d1f3;
-      /* Light grey */
-      border-top: 4px solid #3498db;
-      /* Blue */
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      animation: spin 2s linear infinite;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
+        border: 4px solid #b8d1f3;
+        /* Light grey */
+        border-top: 4px solid #3498db;
+        /* Blue */
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        animation: spin 2s linear infinite;
       }
-      100% {
-        transform: rotate(360deg);
+  
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+  
+        100% {
+          transform: rotate(360deg);
+        }
       }
-    }
-  </style>
+    </style>
 </head>
 
 
@@ -237,8 +326,10 @@
                 <tr>
                   <th data-name="_index" style="width: 40px" class="translate"></th>
                   <th data-name="accountnumber" style="width: 240px" data-style="width: 240px" class="translate" for="accountnumber">Accountnumber</th>
-                  <th data-name="aes" style="width: 200px" data-style="width: 200px" class="translate" for="aes" data-type="checkbox">AES encrypting</th>
-                  <th data-name="password" style="width: 120px" data-style="width: 120px" class="translate" for="password" data-type="password">AES password</th>
+                  <th data-name="aes" style="width: 200px" data-style="width: 200px" class="translate" for="aes"
+                    data-type="checkbox">AES encrypting</th>  
+                  <th data-name="password" style="width: 120px" data-style="width: 120px" class="translate" for="password"
+                    data-type="password" data-crypt="1">AES password</th>
                   <th data-buttons="delete" style="width: 40px"></th>
                 </tr>
               </thead>
