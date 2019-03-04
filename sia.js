@@ -384,6 +384,7 @@ function nackSIA() {
   let nack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
 
   adapter.log.debug("nackSIA : " + JSON.stringify(nack));
+  adapter.log.info("Created NAK : <0x0A><0x" + crchex + ">" + lenhex + buf +"<0x0D>");
   return nack;
 }
 
@@ -428,6 +429,7 @@ function ackSIA(sia) {
       let ack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
 
       adapter.log.debug("ackSIA : " + JSON.stringify(ack));
+      adapter.log.info("Created ACK : <0x0A><0x" + crchex + ">" + lenhex + buf +"<0x0D>");
       return ack;
     }
   }
