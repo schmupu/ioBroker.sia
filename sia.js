@@ -81,6 +81,14 @@ function decrypt(key, value) {
 // Main function
 // *****************************************************************************************************
 function main() {
+
+  // Password for AES is not allowed to be longer than 16 characters 
+  for (let i in adapter.config.keys) {
+    if (adapter.config.keys[i].aes === true && adapter.config.keys[i].password.length > 16) {
+      adapter.log.error('Password for accountnumber ' + adapter.config.keys[i].accountnumber + ' is to long. Maximal 16 charactars allowed!');
+    }
+  }
+
   // delete not used / missing object in configuration
   deleteObjects();
   // add object from configuration.
@@ -234,7 +242,6 @@ function customPadding(str, blockSize, padder, format) {
   str = new Buffer(str, "utf8").toString(format);
   //1 char = 8bytes
   let bitLength = str.length * 8;
-
   if (bitLength < blockSize) {
     for (let i = bitLength; i < blockSize; i += 8) {
       str += padder;
