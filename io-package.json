@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "sia",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "news": {
+      "1.0.1": {
+        "en": "ACK and NAC calculation extended",
+        "de": "ACK and NAC Berechnung angepasst"
+      },
       "1.0.0": {
         "en": "Support of compact mode",
         "de": "Compact Modus Unterstützung"

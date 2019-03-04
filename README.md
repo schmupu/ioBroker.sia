@@ -55,6 +55,7 @@ If you receive SIA messages you see them in the states tree
 
 ### 1.0.1 (26.01.2018)
 * (Stübi) Saving password encrypt. 
+* (Stübi) ACK and NAC calculation extended.
 
 ### 1.0.0 (05.01.2018)
 * (Stübi) Support js-controller compact mode 

@@ -227,62 +227,7 @@ function getBytes(text) {
   return bytes;
 }
 
-// *****************************************************************************************************
-// Encrypt / Input: ASCII , Output: Binary
-// *****************************************************************************************************
-/*
-function encrypt(password, decrypted) {
-  let key = getBytes(password); //
-  let iv = forge.util.hexToBytes('0000000000000000');
-  let cipher = forge.cipher.createCipher('AES-CBC', key);
-  cipher.start({
-    iv: iv
-  });
-  cipher.update(forge.util.createBuffer(decrypted));
-  let result = cipher.finish();
-  return cipher.output;
-}
 
-// *****************************************************************************************************
-// Encrypt / Input: ASCII , Output: HEX
-// *****************************************************************************************************
-function encrypt_hex(password, decrypted) {
-  let data = encrypt(password, decrypted);
-  return forge.util.bytesToHex(data);
-}
-
-// *****************************************************************************************************
-// Decrypt / Input: Binary , Output ASCII
-// *****************************************************************************************************
-function decrypt(password, encrypted) {
-  let key = getBytes(password);
-  let iv = forge.util.hexToBytes('0000000000000000');
-  try {
-    let decipher = forge.cipher.createDecipher('AES-CBC', key);
-    decipher.start({
-      iv: iv
-    });
-    decipher.update(encrypted);
-    // let result = decipher.finish(); // check 'result' for true/false
-    if (decipher.output) {
-      return decipher.output.data || "";
-    } else {
-      return undefined;
-    }
-  } catch (e) {
-    return undefined;
-  }
-}
-
-// *****************************************************************************************************
-// Decrypt / Input: HEX, Output ASCII
-// *****************************************************************************************************
-function decrypt_hex(password, encrypted) {
-  var data = forge.util.createBuffer();
-  data.putBytes(forge.util.hexToBytes(encrypted));
-  return decrypt(password, data);
-}
-*/
 
 // *****************************************************************************************************
 // Encrypt / Input: ASCII , Output: HEX
@@ -395,10 +340,21 @@ function nackSIA() {
   let str = '"NAK"' + '0000' + 'R0' + 'L0' + 'A0' + '[]' + ts;
   let crc = crc16str(str);
   let len = str.length;
+  let crchex = ('0000'+crc.toString(16)).substr(-4);
+  let lenhex = ('0000'+len.toString(16)).substr(-4);
+  /*
   let start = new Buffer([0x0a, crc >>> 8 & 0xff, crc & 0xff, len >>> 8 & 0xff, len & 0xff]);
   let end = new Buffer([0x0d]);
   let buf = new Buffer(str);
   let nack = Buffer.concat([start, buf, end]);
+  */
+  let start = new Buffer([0x0a]);
+  let end = new Buffer([0x0d]);
+  let crcbuf = new Buffer(crchex);
+  let lenbuf = new Buffer(lenhex);
+  let buf = new Buffer(str);
+  let nack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
+
   adapter.log.debug("nackSIA : " + JSON.stringify(nack));
   return nack;
 }
@@ -426,10 +382,22 @@ function ackSIA(sia) {
       }
       let crc = crc16str(str);
       let len = str.length;
+      let crchex = ('0000'+crc.toString(16)).substr(-4);
+      let lenhex = ('0000'+len.toString(16)).substr(-4);
+
+      /*
       let start = new Buffer([0x0a, crc >>> 8 & 0xff, crc & 0xff, len >>> 8 & 0xff, len & 0xff]);
       let end = new Buffer([0x0d]);
       let buf = new Buffer(str);
       let ack = Buffer.concat([start, buf, end]);
+      */
+      let start = new Buffer([0x0a]);
+      let end = new Buffer([0x0d]);
+      let crcbuf = new Buffer(crchex);
+      let lenbuf = new Buffer(lenhex);
+      let buf = new Buffer(str);
+      let ack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
+
       adapter.log.debug("ackSIA : " + JSON.stringify(ack));
       return ack;
     }

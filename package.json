@@ -1,6 +1,6 @@
 {
   "name": "iobroker.sia",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ioBroker SIA Server Adapter",
   "author": {
     "name": "Thorsten Stueben",
