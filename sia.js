@@ -340,8 +340,8 @@ function nackSIA() {
   let str = '"NAK"' + '0000' + 'R0' + 'L0' + 'A0' + '[]' + ts;
   let crc = crc16str(str);
   let len = str.length;
-  let crchex = ('0000'+crc.toString(16)).substr(-4);
-  let lenhex = ('0000'+len.toString(16)).substr(-4);
+  let crchex = ('0000'+crc.toString(16)).substr(-4).toUpperCase();
+  let lenhex = ('0000'+len.toString(16)).substr(-4).toUpperCase();
   /*
   let start = new Buffer([0x0a, crc >>> 8 & 0xff, crc & 0xff, len >>> 8 & 0xff, len & 0xff]);
   let end = new Buffer([0x0d]);
@@ -382,8 +382,8 @@ function ackSIA(sia) {
       }
       let crc = crc16str(str);
       let len = str.length;
-      let crchex = ('0000'+crc.toString(16)).substr(-4);
-      let lenhex = ('0000'+len.toString(16)).substr(-4);
+      let crchex = ('0000'+crc.toString(16)).substr(-4).toUpperCase();
+      let lenhex = ('0000'+len.toString(16)).substr(-4).toUpperCase();
 
       /*
       let start = new Buffer([0x0a, crc >>> 8 & 0xff, crc & 0xff, len >>> 8 & 0xff, len & 0xff]);
