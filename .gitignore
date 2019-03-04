@@ -5,4 +5,4 @@ nbproject
 admin/i18n/flat.txt
 admin/i18n/*/flat.txt
 .DS_Store
-.vscode
+package-lock.json

@@ -10,3 +10,4 @@ test
 appveyor.yml
 .DS_Store
 .vscode
+package-lock.json

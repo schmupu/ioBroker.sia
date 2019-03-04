@@ -227,7 +227,25 @@ function getBytes(text) {
   return bytes;
 }
 
+// *****************************************************************************************************
+// Padding /  str = customPadding(str, 256, 0x0, "hex"); // magic happens here
+// *****************************************************************************************************
+function customPadding(str, blockSize, padder, format) {
+  str = new Buffer(str, "utf8").toString(format);
+  //1 char = 8bytes
+  let bitLength = str.length * 8;
 
+  if (bitLength < blockSize) {
+    for (let i = bitLength; i < blockSize; i += 8) {
+      str += padder;
+    }
+  } else if (bitLength > blockSize) {
+    while ((str.length * 8) % blockSize != 0) {
+      str += padder;
+    }
+  }
+  return new Buffer(str, format).toString("utf8");
+}
 
 // *****************************************************************************************************
 // Encrypt / Input: ASCII , Output: HEX
@@ -237,6 +255,7 @@ function encrypt_hex(password, decrypted) {
     let iv = new Buffer(16);
     iv.fill(0);
     let crypted = decrypted;
+    password = customPadding(password, 256, 0x0, "hex"); // magic happens here
     let cipher = crypto.createCipheriv('aes-128-cbc', password, iv);
     //cipher.setAutoPadding(false);
     let encoded = cipher.update(crypted, 'utf8', 'hex');
@@ -255,6 +274,7 @@ function decrypt_hex(password, encrypted) {
     let iv = new Buffer(16);
     iv.fill(0);
     let crypted = new Buffer(encrypted, 'hex').toString('binary');
+    password = customPadding(password, 256, 0x0, "hex"); // magic happens here
     let decipher = crypto.createDecipheriv('aes-128-cbc', password, iv);
     decipher.setAutoPadding(false);
     let decoded = decipher.update(crypted, 'binary', 'utf8');
@@ -340,8 +360,8 @@ function nackSIA() {
   let str = '"NAK"' + '0000' + 'R0' + 'L0' + 'A0' + '[]' + ts;
   let crc = crc16str(str);
   let len = str.length;
-  let crchex = ('0000'+crc.toString(16)).substr(-4).toUpperCase();
-  let lenhex = ('0000'+len.toString(16)).substr(-4).toUpperCase();
+  let crchex = ('0000' + crc.toString(16)).substr(-4).toUpperCase();
+  let lenhex = ('0000' + len.toString(16)).substr(-4).toUpperCase();
   /*
   let start = new Buffer([0x0a, crc >>> 8 & 0xff, crc & 0xff, len >>> 8 & 0xff, len & 0xff]);
   let end = new Buffer([0x0d]);
@@ -382,8 +402,8 @@ function ackSIA(sia) {
       }
       let crc = crc16str(str);
       let len = str.length;
-      let crchex = ('0000'+crc.toString(16)).substr(-4).toUpperCase();
-      let lenhex = ('0000'+len.toString(16)).substr(-4).toUpperCase();
+      let crchex = ('0000' + crc.toString(16)).substr(-4).toUpperCase();
+      let lenhex = ('0000' + len.toString(16)).substr(-4).toUpperCase();
 
       /*
       let start = new Buffer([0x0a, crc >>> 8 & 0xff, crc & 0xff, len >>> 8 & 0xff, len & 0xff]);
