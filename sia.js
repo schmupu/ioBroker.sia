@@ -377,7 +377,8 @@ function nackSIA() {
   */
   let start = new Buffer([0x0a]);
   let end = new Buffer([0x0d]);
-  let crcbuf = new Buffer(crchex);
+  // let crcbuf = new Buffer(crchex);
+  let crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
   let lenbuf = new Buffer(lenhex);
   let buf = new Buffer(str);
   let nack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
@@ -420,7 +421,8 @@ function ackSIA(sia) {
       */
       let start = new Buffer([0x0a]);
       let end = new Buffer([0x0d]);
-      let crcbuf = new Buffer(crchex);
+      // let crcbuf = new Buffer(crchex);
+      let crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
       let lenbuf = new Buffer(lenhex);
       let buf = new Buffer(str);
       let ack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
