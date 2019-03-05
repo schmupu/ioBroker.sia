@@ -55,7 +55,7 @@ If you receive SIA messages you see them in the states tree
 
 ## Changelog
 
-### 1.0.1 (05.03.2018)
+### 1.0.1 (05.03.2019)
 * (Stübi) Saving password encrypted. 
 * (Stübi) ACK and NAC calculation extended.
 * (Stübi) CRC can be send in 0xABCD (2 Byte) or ABCD (4 Byte, ASCII) format. Automatic recognizing
