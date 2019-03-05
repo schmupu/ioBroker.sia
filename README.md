@@ -62,6 +62,7 @@ If you receive SIA messages you see them in the states tree
 * (Stübi) AES Password can be in AES-128-CBC, AES-192-CBC or AES-256-CBC
 * (Stübi) AES Password can be saved in byte or hex (length 16, 24 or 32 byte) format or hex (length 32, 48 or 64 hex) format
 * (Stübi) Timeout for ACK (0 = disable, 1 - n sec)
+* (Stübi) Set ioBroker States of message on ACK not on NACK
 
 ### 1.0.0 (05.01.2018)
 * (Stübi) Support js-controller compact mode 

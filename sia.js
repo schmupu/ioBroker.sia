@@ -84,12 +84,12 @@ function main() {
 
   for (let i in adapter.config.keys) {
     if (adapter.config.keys[i].aes === true) {
-      if(adapter.config.keys[i].hex === true) {
+      if (adapter.config.keys[i].hex === true) {
         // if password is hex instead of byte, convert hex to byte
         adapter.config.keys[i].password = new Buffer(adapter.config.keys[i].password, 'hex').toString();
       }
       let len = adapter.config.keys[i].password.length;
-        // Password for AES is not allowed to be longer than 16, 24 and 32 characters 
+      // Password for AES is not allowed to be longer than 16, 24 and 32 characters 
       if (len !== 16 && len !== 24 && len !== 32) {
         adapter.log.error('Password for accountnumber ' + adapter.config.keys[i].accountnumber + ' must be 16, 24 or 32 Byte or 32, 48 or 64 Hex long');
       }
@@ -445,7 +445,7 @@ function ackSIA(sia) {
     adapter.log.debug("ackSIA (cfg) : " + JSON.stringify(cfg));
     adapter.log.debug("ackSIA (sia) : " + JSON.stringify(sia));
     if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg && isInTime(sia.ts)) {
-    // if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg) {
+      // if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg) {
       let rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
       let lpref = sia.lpref && sia.lpref.length > 0 ? "L" + sia.lpref : "";
       if (sia.id[0] == "*") {
@@ -650,9 +650,9 @@ function parseSIA(data) {
     let lenhex = ('0000' + sia.len.toString(16)).substr(-4).toUpperCase();
     if (sia.crcformat === 'bin') {
       // Lupusec sends in 2 bin instead of 4 hex
-      adapter.log.info("SIA Message : <0x0A><0x" + crchex + ">" + lenhex  + str + "<0x0D>");
+      adapter.log.info("SIA Message : <0x0A><0x" + crchex + ">" + lenhex + str + "<0x0D>");
     } else {
-      adapter.log.info("SIA Message : <0x0A>" + crchex + "" + lenhex  + str + "<0x0D>");
+      adapter.log.info("SIA Message : <0x0A>" + crchex + "" + lenhex + str + "<0x0D>");
     }
 
     adapter.log.debug("parseSIA sia.str : " + sia.str);
@@ -744,9 +744,11 @@ function onClientConnected(sock) {
     adapter.log.info('received from ' + remoteAddress + ' following message: ' + data.toString().trim());
     var sia = parseSIA(data);
     if (sia) {
-      setStatesSIA(sia);
       ack = ackSIA(sia);
-      if(!ack) {
+      if (ack) {
+        // set states only if ACK okay
+        setStatesSIA(sia);
+      } else {
         let crcformat = getcrcFormat(data);
         ack = nackSIA(crcformat);
       }
