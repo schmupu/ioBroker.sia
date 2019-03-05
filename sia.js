@@ -244,9 +244,10 @@ function getBytes(text) {
 }
 
 // *****************************************************************************************************
-// Padding /  str = customPadding(str, 256, 0x0, "hex"); // magic happens here
+// Padding /  str = customPadding(str, 16, 0x0, "hex"); // magic happens here
 // *****************************************************************************************************
-function customPadding(str, blockSize, padder, format) {
+function customPadding(str, bytelen, padder, format) {
+  let blockSize = bytelen * 16;
   str = new Buffer(str, "utf8").toString(format);
   //1 char = 8bytes
   let bitLength = str.length * 8;
@@ -272,7 +273,7 @@ function encrypt_hex(password, decrypted) {
     iv.fill(0);
     let crypted = decrypted;
     let aes;
-    // password = customPadding(password, 256, 0x0, "hex"); // magic happens here
+    // password = customPadding(password, 24, 0x0, "hex"); // magic happens here
     switch (password.length) {
       case 16:
         aes = 'aes-128-cbc';
@@ -305,7 +306,7 @@ function decrypt_hex(password, encrypted) {
     iv.fill(0);
     let crypted = new Buffer(encrypted, 'hex').toString('binary');
     let aes;
-    // password = customPadding(password, 256, 0x0, "hex"); // magic happens here
+    //  password = customPadding(password, 24, 0x0, "hex"); // magic happens here
     switch (password.length) {
       case 16:
         aes = 'aes-128-cbc';
@@ -357,9 +358,9 @@ function isInTime(ts) {
     [tt, dd] = getTimestamp().substring(1).split(',');
     let now = new Date();
     // now = now.toUTCString();
-    let diff = (val - now) / 1000;
+    let diff = Math.abs((val - now) / 1000);
     // if (diff > 20 || diff < -40) {
-    if (diff > 120 || diff < -120) {
+    if (adapter.config.timeout > 0 && diff > adapter.config.timeout) {
       adapter.log.debug("Timestamp difference. Time in message " + val.toUTCString() + ". Time now " + now.toUTCString());
       return false;
     } else {
@@ -443,18 +444,21 @@ function ackSIA(sia) {
     let str = "";
     adapter.log.debug("ackSIA (cfg) : " + JSON.stringify(cfg));
     adapter.log.debug("ackSIA (sia) : " + JSON.stringify(sia));
-    // if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg && isInTime(sia.ts)) {
-    if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg) {
+    if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg && isInTime(sia.ts)) {
+    // if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg) {
       let rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
       let lpref = sia.lpref && sia.lpref.length > 0 ? "L" + sia.lpref : "";
       if (sia.id[0] == "*") {
         let msglen = ('|]' + ts).length;
-        let padlen = (msglen % 16);
+        let padlen = 16 - (msglen % 16);
+        let pad = new Buffer(padlen);
+        /*
         let pad = "";
         if(padlen > 0) {
           padlen = 16 - padlen;
           pad = new Buffer(padlen);
         }
+        */
         let msg = encrypt_hex(cfg.password, pad + '|]' + ts);
         str = '"*ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[' + msg;
       } else {
@@ -492,8 +496,7 @@ function ackSIA(sia) {
       return ack;
     }
   }
-  let crcformat = getcrcFormat(data);
-  return nackSIA(crcformat);
+  return undefined;
 }
 
 // *****************************************************************************************************
@@ -743,6 +746,10 @@ function onClientConnected(sock) {
     if (sia) {
       setStatesSIA(sia);
       ack = ackSIA(sia);
+      if(!ack) {
+        let crcformat = getcrcFormat(data);
+        ack = nackSIA(crcformat);
+      }
     } else {
       let crcformat = getcrcFormat(data);
       ack = nackSIA(crcformat);

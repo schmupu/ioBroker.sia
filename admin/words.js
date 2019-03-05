@@ -46,6 +46,18 @@ systemDictionary = {
     "es": "número de cuenta",
     "pl": "numer konta"
   },
+  "ACK Timeout": {
+    "en": "ACK Timeout",
+    "de": "ACK Timeout",
+    "ru": "ACK Timeout",
+    "pt": "Tempo limite ACK",
+    "nl": "ACK Timeout",
+    "fr": "ACK Timeout",
+    "it": "Timeout ACK",
+    "es": "ACK Timeout",
+    "pl": "Limit czasu ACK",
+    "zh-cn": "ACK超时"
+  },
   "AES encrypting": {
     "en": "AES encrypting",
     "de": "AES-Verschlüsselung",
