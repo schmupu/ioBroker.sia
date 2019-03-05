@@ -68,6 +68,18 @@ systemDictionary = {
     "es": "Contraseña AES",
     "pl": "Hasło AES"
   },
+  "AES password in Hex": {
+    "en": "AES password in Hex format",
+    "de": "AES Passwort im Hex Format",
+    "ru": "Пароль в шестнадцатеричном",
+    "pt": "Senha em Hex",
+    "nl": "Wachtwoord in Hex",
+    "fr": "Mot de passe en hexadécimal",
+    "it": "Password in esadecimale",
+    "es": "Contraseña en Hex",
+    "pl": "Hasło w Hex",
+    "zh-cn": "十六进制密码"
+  },
   "bind": {
     "en": "Bind IP-Address",
     "de": "Bind IP-Adresse",

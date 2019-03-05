@@ -81,6 +81,7 @@
       {
         "accountnumber": "test",
         "aes": false,
+        "hex": false,
         "password": ""
       }
     ]

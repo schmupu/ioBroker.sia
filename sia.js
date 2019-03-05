@@ -82,12 +82,20 @@ function decrypt(key, value) {
 // *****************************************************************************************************
 function main() {
 
-  // Password for AES is not allowed to be longer than 16 characters 
   for (let i in adapter.config.keys) {
-    if (adapter.config.keys[i].aes === true && adapter.config.keys[i].password.length > 16) {
-      adapter.log.error('Password for accountnumber ' + adapter.config.keys[i].accountnumber + ' is to long. Maximal 16 charactars allowed!');
+    if (adapter.config.keys[i].aes === true) {
+      if(adapter.config.keys[i].hex === true) {
+        // if password is hex instead of byte, convert hex to byte
+        adapter.config.keys[i].password = new Buffer(adapter.config.keys[i].password, 'hex').toString();
+      }
+      let len = adapter.config.keys[i].password.length;
+        // Password for AES is not allowed to be longer than 16, 24 and 32 characters 
+      if (len !== 16 && len !== 24 && len !== 32) {
+        adapter.log.error('Password for accountnumber ' + adapter.config.keys[i].accountnumber + ' must be 16, 24 or 32 Byte or 32, 48 or 64 Hex long');
+      }
     }
   }
+
 
   // delete not used / missing object in configuration
   deleteObjects();
@@ -262,8 +270,22 @@ function encrypt_hex(password, decrypted) {
     let iv = new Buffer(16);
     iv.fill(0);
     let crypted = decrypted;
-    password = customPadding(password, 256, 0x0, "hex"); // magic happens here
-    let cipher = crypto.createCipheriv('aes-128-cbc', password, iv);
+    let aes;
+    // password = customPadding(password, 256, 0x0, "hex"); // magic happens here
+    switch (password.length) {
+      case 16:
+        aes = 'aes-128-cbc';
+        break;
+      case 24:
+        aes = 'aes-192-cbc';
+        break;
+      case 32:
+        aes = 'aes-256-cbc';
+        break;
+      default:
+        return undefined;
+    }
+    let cipher = crypto.createCipheriv(aes, password, iv);
     //cipher.setAutoPadding(false);
     let encoded = cipher.update(crypted, 'utf8', 'hex');
     encoded += cipher.final('hex');
@@ -281,8 +303,22 @@ function decrypt_hex(password, encrypted) {
     let iv = new Buffer(16);
     iv.fill(0);
     let crypted = new Buffer(encrypted, 'hex').toString('binary');
-    password = customPadding(password, 256, 0x0, "hex"); // magic happens here
-    let decipher = crypto.createDecipheriv('aes-128-cbc', password, iv);
+    let aes;
+    // password = customPadding(password, 256, 0x0, "hex"); // magic happens here
+    switch (password.length) {
+      case 16:
+        aes = 'aes-128-cbc';
+        break;
+      case 24:
+        aes = 'aes-192-cbc';
+        break;
+      case 32:
+        aes = 'aes-256-cbc';
+        break;
+      default:
+        return undefined;
+    }
+    let decipher = crypto.createDecipheriv(aes, password, iv);
     decipher.setAutoPadding(false);
     let decoded = decipher.update(crypted, 'binary', 'utf8');
     decoded += decipher.final('utf8');
@@ -599,6 +635,16 @@ function parseSIA(data) {
     sia.str = str.toString();
     sia.calc_len = sia.str.length;
     sia.calc_crc = crc16str(sia.str);
+
+    let crchex = ('0000' + sia.crc.toString(16)).substr(-4).toUpperCase();
+    let lenhex = ('0000' + sia.len.toString(16)).substr(-4).toUpperCase();
+    if (sia.crcformat === 'bin') {
+      // Lupusec sends in 2 bin instead of 4 hex
+      adapter.log.info("SIA Message : <0x0A><0x" + crchex + ">" + lenhex  + str + "<0x0D>");
+    } else {
+      adapter.log.info("SIA Message : <0x0A>" + crchex + "" + lenhex  + str + "<0x0D>");
+    }
+
     adapter.log.debug("parseSIA sia.str : " + sia.str);
     if (sia.calc_len != sia.len || sia.calc_crc != sia.crc) {
       adapter.log.info("CRC or Length different to the caclulated values");

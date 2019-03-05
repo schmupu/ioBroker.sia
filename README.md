@@ -27,7 +27,8 @@ You can use ioBroker with this adapter as central station. For example. you can 
   Choose the IP-address and port for listening for SIA requests.
   ![sia_adapter1](admin/sia_adapter1.png)
  
-  Register account number. If you are using AES you have to enter a password (key). The key should be 16 characters long.    
+  Register account number. If you are using AES you have to enter a password (key). The key should be 16, 24 or 32 characters (byte) long.
+  If the checkbox "AES password in Hex format" is active, the password length must be 32, 48 or 64 character (byte) long.
   ![sia_adapter2](admin/sia_adapter2.png)
 
 3. Configure your burglar system to send SIA messages
@@ -53,9 +54,12 @@ If you receive SIA messages you see them in the states tree
 
 ## Changelog
 
-### 1.0.1 (26.01.2018)
-* (Stübi) Saving password encrypt. 
+### 1.0.1 (05.03.2018)
+* (Stübi) Saving password encrypted. 
 * (Stübi) ACK and NAC calculation extended.
+* (Stübi) CRC can be send in 0xABCD (2 Byte) or ABCD (4 Byte, ASCII) format. Automatic recognizing
+* (Stübi) AES Password can be in AES-128-CBC, AES-192-CBC or AES-256-CBC
+* (Stübi) AES Password can be saved in byte or hex (length 16, 24 or 32 byte) format or hex (length 32, 48 or 64 hex) format
 
 ### 1.0.0 (05.01.2018)
 * (Stübi) Support js-controller compact mode 
