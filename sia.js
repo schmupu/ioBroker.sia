@@ -644,10 +644,14 @@ function parseSIA(data) {
     adapter.log.debug("data : " + data);
     sia.cr = data[len]; // <cr>
     // str = new Buffer((data.subarray(7, len)));
+
     sia.str = str.toString();
+    sia.calc_len = str.length;
+    sia.calc_crc = crc16str(str);
+    /*
     sia.calc_len = sia.str.length;
     sia.calc_crc = crc16str(sia.str);
-
+    */
     let crchex = ('0000' + sia.crc.toString(16)).substr(-4).toUpperCase();
     let lenhex = ('0000' + sia.len.toString(16)).substr(-4).toUpperCase();
     if (sia.crcformat === 'bin') {
