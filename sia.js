@@ -452,7 +452,8 @@ function ackSIA(sia) {
       if (sia.id[0] == "*") {
         let msglen = ('|]' + ts).length;
         let padlen = 16 - (msglen % 16);
-        let pad = new Buffer(padlen);
+        // let pad = new Buffer(padlen);
+        let pad = Buffer.alloc(padlen, padlen);
         /*
         let pad = "";
         if(padlen > 0) {
