@@ -267,6 +267,7 @@ function customPadding(str, blockSize, padder, format) {
 // *****************************************************************************************************
 function encrypt_hex(password, decrypted) {
   try {
+    let test = decrypted.length;
     let iv = new Buffer(16);
     iv.fill(0);
     let crypted = decrypted;
@@ -447,9 +448,15 @@ function ackSIA(sia) {
       let rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
       let lpref = sia.lpref && sia.lpref.length > 0 ? "L" + sia.lpref : "";
       if (sia.id[0] == "*") {
-        let msg = encrypt_hex(cfg.password, sia.pad + ']' + ts);
+        let msglen = ('|]' + ts).length;
+        let padlen = (msglen % 16);
+        let pad = "";
+        if(padlen > 0) {
+          padlen = 16 - padlen;
+          pad = new Buffer(padlen);
+        }
+        let msg = encrypt_hex(cfg.password, pad + '|]' + ts);
         str = '"*ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[' + msg;
-        // str = '"*ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[' + sia.pad + ']' + ts;
       } else {
         str = '"ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[]';
       }
