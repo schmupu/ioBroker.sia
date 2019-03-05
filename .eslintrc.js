@@ -27,12 +27,13 @@ module.exports = {
         'max-len': [
             'warn',
             {
-                'code': 120,
+                'code': 200,
                 'ignoreTemplateLiterals': true,
                 'ignoreStrings': true
             }
         ],
         'generator-star-spacing': 'off',
-        'func-names': ['error', 'never']
+        'func-names': ['error', 'never'],
+        'quotes': ['error', 'single']
     }
 }

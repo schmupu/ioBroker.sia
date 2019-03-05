@@ -39,7 +39,7 @@ function startAdapter(options) {
   // start here!
   // *****************************************************************************************************
   adapter.on('ready', function () {
-    adapter.log.info("Starting " + adapter.namespace);
+    adapter.log.info('Starting ' + adapter.namespace);
     adapter.getForeignObject('system.config', (err, obj) => {
       if (adapter.config.keys) {
         for (let i in adapter.config.keys) {
@@ -63,7 +63,6 @@ function startAdapter(options) {
 // *****************************************************************************************************
 // Password decrypt
 // *****************************************************************************************************
-// decrypt password
 function decrypt(key, value) {
   let result = '';
   if (value.startsWith('(crypt)')) {
@@ -78,10 +77,9 @@ function decrypt(key, value) {
 }
 
 // *****************************************************************************************************
-// Main function
+// Password Check
 // *****************************************************************************************************
-function main() {
-
+function passwordCheck() {
   for (let i in adapter.config.keys) {
     if (adapter.config.keys[i].aes === true) {
       if (adapter.config.keys[i].hex === true) {
@@ -95,8 +93,14 @@ function main() {
       }
     }
   }
+}
 
-
+// *****************************************************************************************************
+// Main function
+// *****************************************************************************************************
+function main() {
+  // Password check
+  passwordCheck();
   // delete not used / missing object in configuration
   deleteObjects();
   // add object from configuration.
@@ -166,7 +170,7 @@ function propertiesObjAinObjB(obja, objb) {
     if (!obja.hasOwnProperty(p)) continue;
     if (!objb.hasOwnProperty(p)) return false;
     if (obja[p] === objb[p]) continue;
-    if (typeof (obja[p]) !== "object") return false;
+    if (typeof (obja[p]) !== 'object') return false;
     if (!propertiesObjAinObjB(obja[p], objb[p])) return false; // Objects and Arrays must be tested recursively
   }
   return true;
@@ -202,14 +206,14 @@ function createObjectSIA(id, key) {
           common: parameter,
           native: {}
         }, function () {
-          adapter.log.debug("Create parameters for object " + sid);
+          adapter.log.debug('Create parameters for object ' + sid);
         });
       } else {
         parameter.name = obj.common.name;
         if (!propertiesObjAinObjB(parameter, obj.common)) {
           obj.common = parameter;
           adapter.extendObject(sid, obj, function () {
-            adapter.log.debug("Changed parameters for object " + sid);
+            adapter.log.debug('Changed parameters for object ' + sid);
           });
         }
       }
@@ -244,11 +248,11 @@ function getBytes(text) {
 }
 
 // *****************************************************************************************************
-// Padding /  str = customPadding(str, 16, 0x0, "hex"); // magic happens here
+// Padding /  str = customPadding(str, 16, 0x0, 'hex'); // magic happens here
 // *****************************************************************************************************
 function customPadding(str, bytelen, padder, format) {
   let blockSize = bytelen * 16;
-  str = new Buffer(str, "utf8").toString(format);
+  str = new Buffer(str, 'utf8').toString(format);
   //1 char = 8bytes
   let bitLength = str.length * 8;
   if (bitLength < blockSize) {
@@ -260,7 +264,7 @@ function customPadding(str, bytelen, padder, format) {
       str += padder;
     }
   }
-  return new Buffer(str, format).toString("utf8");
+  return new Buffer(str, format).toString('utf8');
 }
 
 // *****************************************************************************************************
@@ -273,7 +277,7 @@ function encrypt_hex(password, decrypted) {
     iv.fill(0);
     let crypted = decrypted;
     let aes;
-    // password = customPadding(password, 24, 0x0, "hex"); // magic happens here
+    // password = customPadding(password, 24, 0x0, 'hex'); // magic happens here
     switch (password.length) {
       case 16:
         aes = 'aes-128-cbc';
@@ -306,7 +310,7 @@ function decrypt_hex(password, encrypted) {
     iv.fill(0);
     let crypted = new Buffer(encrypted, 'hex').toString('binary');
     let aes;
-    //  password = customPadding(password, 24, 0x0, "hex"); // magic happens here
+    //  password = customPadding(password, 24, 0x0, 'hex'); // magic happens here
     switch (password.length) {
       case 16:
         aes = 'aes-128-cbc';
@@ -353,7 +357,7 @@ function getTimestamp(datum) {
 function isInTime(ts) {
   if (ts) {
     let [tt, dd] = ts.split(',');
-    let val = new Date(dd + "," + tt + " UTC");
+    let val = new Date(dd + ',' + tt + ' UTC');
     // val = val.toUTCString();
     [tt, dd] = getTimestamp().substring(1).split(',');
     let now = new Date();
@@ -361,8 +365,8 @@ function isInTime(ts) {
     let diff = Math.abs((val - now) / 1000);
     // if (diff > 20 || diff < -40) {
     if (adapter.config.timeout > 0 && diff > adapter.config.timeout) {
-      adapter.log.info("Timeout Error. Calculated diff between SIA message and ACK ist " + diff + "sec. . Allowed are max " + adapter.config.timeout + " sec. Sending NAK.");
-      adapter.log.debug("Timestamp difference. Time in message " + val.toUTCString() + ". Time now " + now.toUTCString());
+      adapter.log.info('Timeout Error. Calculated diff between SIA message and ACK ist ' + diff + 'sec. . Allowed are max ' + adapter.config.timeout + ' sec. Sending NAK.');
+      adapter.log.debug('Timestamp difference. Time in message ' + val.toUTCString() + '. Time now ' + now.toUTCString());
       return false;
     } else {
       return true;
@@ -382,7 +386,7 @@ function getAcctInfo(act) {
       return key;
     }
   }
-  // adapter.log.info("Could not found entries for accountnumber " + act + " in the configuration");
+  // adapter.log.info('Could not found entries for accountnumber ' + act + ' in the configuration');
   return undefined;
 }
 
@@ -401,7 +405,7 @@ function acctExist(act) {
 // *****************************************************************************************************
 // Acknowledge for SIA
 // *****************************************************************************************************
-function nackSIA(crcformat) {
+function nakSIA(crcformat) {
   let ts = getTimestamp(); // tiemstamp
   let str = '"NAK"' + '0000' + 'R0' + 'L0' + 'A0' + '[]' + ts;
   let crc = crc16str(str);
@@ -420,18 +424,17 @@ function nackSIA(crcformat) {
   if (crcformat === 'bin') {
     // Lupusec sends in 2 bin instead of 4 hex
     crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
-    adapter.log.info("Created NAK : <0x0A><0x" + crchex + ">" + lenhex + str + "<0x0D>");
+    adapter.log.info('Created NAK : <0x0A><0x' + crchex + '>' + lenhex + str + '<0x0D>');
   } else {
     crcbuf = new Buffer(crchex);
-    adapter.log.info("Created NAK : <0x0A>" + crchex + "" + lenhex + str + "<0x0D>");
+    adapter.log.info('Created NAK : <0x0A>' + crchex + '' + lenhex + str + '<0x0D>');
   }
   // let crcbuf = new Buffer(crchex);
   // let crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
   let lenbuf = new Buffer(lenhex);
   let buf = new Buffer(str);
   let nack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
-
-  adapter.log.debug("nackSIA : " + JSON.stringify(nack));
+  adapter.log.debug('nakSIA : ' + JSON.stringify(nack));
   return nack;
 }
 
@@ -442,20 +445,20 @@ function ackSIA(sia) {
   if (sia) {
     let ts = getTimestamp(); // tiemstamp
     let cfg = getAcctInfo(sia.act);
-    let str = "";
-    adapter.log.debug("ackSIA (cfg) : " + JSON.stringify(cfg));
-    adapter.log.debug("ackSIA (sia) : " + JSON.stringify(sia));
+    let str = '';
+    adapter.log.debug('ackSIA (cfg) : ' + JSON.stringify(cfg));
+    adapter.log.debug('ackSIA (sia) : ' + JSON.stringify(sia));
     if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg && isInTime(sia.ts)) {
       // if (sia.crc == sia.calc_crc && sia.len == sia.calc_len && cfg) {
-      let rpref = sia.rpref && sia.rpref.length > 0 ? "R" + sia.rpref : "";
-      let lpref = sia.lpref && sia.lpref.length > 0 ? "L" + sia.lpref : "";
-      if (sia.id[0] == "*") {
+      let rpref = sia.rpref && sia.rpref.length > 0 ? 'R' + sia.rpref : '';
+      let lpref = sia.lpref && sia.lpref.length > 0 ? 'L' + sia.lpref : '';
+      if (sia.id[0] == '*') {
         let msglen = ('|]' + ts).length;
         let padlen = 16 - (msglen % 16);
         // let pad = new Buffer(padlen);
         let pad = Buffer.alloc(padlen, padlen);
         /*
-        let pad = "";
+        let pad = '';
         if(padlen > 0) {
           padlen = 16 - padlen;
           pad = new Buffer(padlen);
@@ -470,7 +473,6 @@ function ackSIA(sia) {
       let len = str.length;
       let crchex = ('0000' + crc.toString(16)).substr(-4).toUpperCase();
       let lenhex = ('0000' + len.toString(16)).substr(-4).toUpperCase();
-
       /*
       let start = new Buffer([0x0a, crc >>> 8 & 0xff, crc & 0xff, len >>> 8 & 0xff, len & 0xff]);
       let end = new Buffer([0x0d]);
@@ -483,10 +485,10 @@ function ackSIA(sia) {
       if (sia && sia.crcformat === 'bin') {
         // Lupusec sends in 2 bin instead of 4 hex
         crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
-        adapter.log.info("Created ACK : <0x0A><0x" + crchex + ">" + lenhex + str + "<0x0D>");
+        adapter.log.info('Created ACK : <0x0A><0x' + crchex + '>' + lenhex + str + '<0x0D>');
       } else {
         crcbuf = new Buffer(crchex);
-        adapter.log.info("Created ACK : <0x0A>" + crchex + "" + lenhex + str + "<0x0D>");
+        adapter.log.info('Created ACK : <0x0A>' + crchex + '' + lenhex + str + '<0x0D>');
       }
       // let crcbuf = new Buffer(crchex);
       // let crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
@@ -494,7 +496,7 @@ function ackSIA(sia) {
       let buf = new Buffer(str);
       let ack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
 
-      adapter.log.debug("ackSIA : " + JSON.stringify(ack));
+      adapter.log.debug('ackSIA : ' + JSON.stringify(ack));
       return ack;
     }
   }
@@ -508,9 +510,9 @@ function setStatesSIA(sia) {
   var obj = dp.dpSIA || {};
   var val = null;
   if (sia) {
-    adapter.log.debug("setStatesSIA sia.act : " + sia.act);
+    adapter.log.debug('setStatesSIA sia.act : ' + sia.act);
     if (acctExist(sia.act)) {
-      adapter.log.debug("setStatesSIA for " + sia.act + " : " + JSON.stringify(sia));
+      adapter.log.debug('setStatesSIA for ' + sia.act + ' : ' + JSON.stringify(sia));
       var id = getAcountNumberID(sia.act);
       for (let prop in obj) {
         var sid = id + '.' + prop;
@@ -540,9 +542,9 @@ function setStatesSIA(sia) {
             /*
              var [tt, dd] = sia.ts.split(',');
              if (tt && dd) {
-               val = new Date(dd + "," + tt + " UTC");
+               val = new Date(dd + ',' + tt + ' UTC');
              } else {
-               val = "";
+               val = '';
              }
              */
             val = sia.ts;
@@ -556,7 +558,7 @@ function setStatesSIA(sia) {
           default:
             val = null;
         }
-        adapter.log.debug("ackSIA : set state for id " + sid + " with value " + val);
+        adapter.log.debug('ackSIA : set state for id ' + sid + ' with value ' + val);
         adapter.setState(sid, {
           val: val,
           ack: true
@@ -641,7 +643,7 @@ function parseSIA(data) {
     //tmp = data.toString().substring(3, 7);
     // let tmp = (data.subarray(3, 7)).toString();
     // sia.len = parseInt(tmp, 16); // length of data
-    adapter.log.debug("data : " + data);
+    adapter.log.debug('data : ' + data);
     sia.cr = data[len]; // <cr>
     // str = new Buffer((data.subarray(7, len)));
 
@@ -656,78 +658,78 @@ function parseSIA(data) {
     let lenhex = ('0000' + sia.len.toString(16)).substr(-4).toUpperCase();
     if (sia.crcformat === 'bin') {
       // Lupusec sends in 2 bin instead of 4 hex
-      adapter.log.info("SIA Message : <0x0A><0x" + crchex + ">" + lenhex + str + "<0x0D>");
+      adapter.log.info('SIA Message : <0x0A><0x' + crchex + '>' + lenhex + str + '<0x0D>');
     } else {
-      adapter.log.info("SIA Message : <0x0A>" + crchex + "" + lenhex + str + "<0x0D>");
+      adapter.log.info('SIA Message : <0x0A>' + crchex + '' + lenhex + str + '<0x0D>');
     }
 
-    adapter.log.debug("parseSIA sia.str : " + sia.str);
+    adapter.log.debug('parseSIA sia.str : ' + sia.str);
     if (sia.calc_len != sia.len || sia.calc_crc != sia.crc) {
-      adapter.log.info("CRC or Length different to the caclulated values");
-      adapter.log.debug("SIA crc= " + sia.crc + ", calc_crc=" + sia.calc_crc);
-      adapter.log.debug("SIA len= " + sia.len + ", calc_len=" + sia.calc_len);
-      adapter.log.debug("Message for CRC and LEN calculation" + sia.str);
-      adapter.log.debug("Message for CRC and LEN calculation (String)" + sia.str.toString());
+      adapter.log.info('CRC or Length different to the caclulated values');
+      adapter.log.debug('SIA crc= ' + sia.crc + ', calc_crc=' + sia.calc_crc);
+      adapter.log.debug('SIA len= ' + sia.len + ', calc_len=' + sia.calc_len);
+      adapter.log.debug('Message for CRC and LEN calculation' + sia.str);
+      adapter.log.debug('Message for CRC and LEN calculation (String)' + sia.str.toString());
       return undefined;
       // sia.calc_len = sia.len;
       // sia.calc_crc = sia.crc;
     }
     // Example str:
-    // "SIA-DCS"0002R1L232#78919[1234|NFA129][S123Main St., 55123]_11:10:00,10-12-2019
-    // "SIA-DCS"0002R1L232#78919[ ][ ]_11:10:00,10-12-2019
-    // "SIA-DCS"0266L0#alarm1[alarm2|Nri1OP0001*Familie*]_16:22:03,06-08-2018
+    // 'SIA-DCS'0002R1L232#78919[1234|NFA129][S123Main St., 55123]_11:10:00,10-12-2019
+    // 'SIA-DCS'0002R1L232#78919[ ][ ]_11:10:00,10-12-2019
+    // 'SIA-DCS'0266L0#alarm1[alarm2|Nri1OP0001*Familie*]_16:22:03,06-08-2018
     // http://s545463982.onlinehome.us/DC09Gen/
-    // "*SIA-DCS"9876R579BDFL789ABC#12345A[209c9d400b655df7a26aecb6a887e7ee6ed8103217079aae7cbd9dd7551e96823263460f7ef0514864897ae9789534f1
-    regex = /\"(.+)\"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))\#([\w\d]+)\[(.+)/gm;
+    // '*SIA-DCS'9876R579BDFL789ABC#12345A[209c9d400b655df7a26aecb6a887e7ee6ed8103217079aae7cbd9dd7551e96823263460f7ef0514864897ae9789534f1
+    regex = /"(.+)"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))#([\w\d]+)\[(.+)/gm;
     if ((m = regex.exec(sia.str)) !== null && m.length >= 8) {
-      adapter.log.debug("parseSIA regex   : " + JSON.stringify(sia));
+      adapter.log.debug('parseSIA regex   : ' + JSON.stringify(sia));
       sia.id = m[1] || undefined; // id (SIA-DCS, ACK) - required
       sia.seq = m[2] || undefined; // sqeuence number (0002 or 0003) - required
-      sia.rpref = m[4] || ""; // Receiver Number - optional (R0, R1, R123456)
+      sia.rpref = m[4] || ''; // Receiver Number - optional (R0, R1, R123456)
       sia.lpref = m[6] || undefined; // Prefix Acount number - required (L0, L1, L1232) - required
       sia.act = m[7] || undefined; // Acount number - required (1224, ABCD124) - required
-      sia.pad = ""; // Pad
-      let msg = m[8] || "";
+      sia.pad = ''; // Pad
+      let msg = m[8] || '';
       let cfg = getAcctInfo(sia.act);
       if (!cfg) {
-        adapter.log.info("Could not found entries for accountnumber " + sia.act + " in the configuration");
+        adapter.log.info('Could not found entries for accountnumber ' + sia.act + ' in the configuration');
         return undefined;
       }
       // if id starts with *, message is encrypted
-      if (sia.id && sia.id[0] == "*") {
+      if (sia.id && sia.id[0] == '*') {
         if (cfg.aes == true && cfg.password) {
           msg = decrypt_hex(cfg.password, msg);
           if (msg) {
-            let padlen = msg.indexOf("|");
+            let padlen = msg.indexOf('|');
             sia.pad = msg.substring(0, padlen); // len of pad
             msg = msg.substring(padlen + 1); // Data Message
           } else {
-            adapter.log.info("Could not decrypt message");
+            adapter.log.info('Could not decrypt message');
             return undefined;
           }
         } else {
-          adapter.log.info("Could not decrypt message, because AES encrypting disabled or password is missing");
+          adapter.log.info('Could not decrypt message, because AES encrypting disabled or password is missing');
           return undefined;
         }
       }
-      if (sia.id && sia.id[0] != "*" && cfg.aes == true) {
-        adapter.log.info("Encrypting enabled, message was sent not entcrypted");
+      if (sia.id && sia.id[0] != '*' && cfg.aes == true) {
+        adapter.log.info('Encrypting enabled, message was sent not entcrypted');
         return undefined;
       }
       regex = /(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
       if ((m = regex.exec(msg)) !== null && m.length >= 1) {
-        sia.data_message = m[1] || ""; // Message
-        sia.data_extended = m[3] || ""; // extended Message
-        sia.ts = m[5] || "";
+        sia.data_message = m[1] || ''; // Message
+        sia.data_extended = m[3] || ''; // extended Message
+        sia.ts = m[5] || '';
       }
     }
   }
-  adapter.log.debug("parseSIA : " + JSON.stringify(sia));
+  adapter.log.debug('parseSIA : ' + JSON.stringify(sia));
   // Test if all required fields will be sent
   if (sia && sia.id && sia.seq && sia.lpref && sia.act && sia.pad != undefined) {
     return sia;
   } else {
-    adapter.log.info("Required SIA fields missing");
+    adapter.log.info('Required SIA fields missing');
     return undefined;
   }
 }
@@ -756,11 +758,11 @@ function onClientConnected(sock) {
         setStatesSIA(sia);
       } else {
         let crcformat = getcrcFormat(data);
-        ack = nackSIA(crcformat);
+        ack = nakSIA(crcformat);
       }
     } else {
       let crcformat = getcrcFormat(data);
-      ack = nackSIA(crcformat);
+      ack = nakSIA(crcformat);
     }
     try {
       adapter.log.info('sending to ' + remoteAddress + ' following message: ' + ack.toString().trim());
@@ -834,7 +836,7 @@ function crc16str(str) {
 }
 
 // If started as allInOne mode => return function to create instance
-if (typeof module !== "undefined" && module.parent) {
+if (typeof module !== 'undefined' && module.parent) {
   module.exports = startAdapter;
 } else {
   // or start the instance directly

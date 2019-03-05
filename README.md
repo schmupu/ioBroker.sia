@@ -55,6 +55,9 @@ If you receive SIA messages you see them in the states tree
 
 ## Changelog
 
+### 1.0.2 (06.03.2019)
+* (Stübi) clean up source code 
+
 ### 1.0.1 (05.03.2019)
 * (Stübi) Saving password encrypted. 
 * (Stübi) ACK and NAC calculation extended.

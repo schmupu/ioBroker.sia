@@ -3,3 +3,5 @@ gulpfile.js
 /lib/utils.js
 /admin/
 /test/
+.eslintignore
+.eslintrc.js

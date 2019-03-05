@@ -1,0 +1,15 @@
+{
+    "ACK Timeout": "ACK Timeout",
+    "AES encrypting": "AES-codering",
+    "AES password": "AES-wachtwoord",
+    "AES password in Hex": "Wachtwoord in Hex",
+    "Accountnumber": "rekeningnummer",
+    "IP": "IP adres",
+    "Main settings": "Belangrijkste instellingen",
+    "Port": "Port",
+    "Subscribers": "abonnees",
+    "alarmsystem": "alarmsysteem",
+    "bind": "Bind het IP-adres",
+    "on save adapter restarts with new config immediately": "on save-adapter wordt onmiddellijk opnieuw opgestart met nieuwe config",
+    "subscriber": "abonnee"
+}

@@ -4,10 +4,10 @@
 # password encrypt: 0123456789ABCDEF
 
 # Linux
-cat siaCommand | netcat iobrokerip 50001;echo ""
-cat siaCommandEnc | netcat iobrokerip 50001;echo ""
+cat siaCommand | netcat localhost 50001;echo ""
+cat siaCommandEnc | netcat localhost 50001;echo ""
 
 # Mac
-cat siaCommand | nc iobrokerip 50001;echo ""
-cat siaCommandEnc | nc iobrokerip 50001;echo ""
+cat siaCommand | nc localhost 50001;echo ""
+cat siaCommandEnc | nc localhost 50001;echo ""
 
