@@ -362,7 +362,7 @@ function acctExist(act) {
 // *****************************************************************************************************
 // Acknowledge for SIA
 // *****************************************************************************************************
-function nackSIA() {
+function nackSIA(crcformat) {
   let ts = getTimestamp(); // tiemstamp
   let str = '"NAK"' + '0000' + 'R0' + 'L0' + 'A0' + '[]' + ts;
   let crc = crc16str(str);
@@ -377,14 +377,22 @@ function nackSIA() {
   */
   let start = new Buffer([0x0a]);
   let end = new Buffer([0x0d]);
+  let crcbuf;
+  if (crcformat === 'bin') {
+    // Lupusec sends in 2 bin instead of 4 hex
+    crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
+    adapter.log.info("Created NAK : <0x0A><0x" + crchex + ">" + lenhex + str + "<0x0D>");
+  } else {
+    crcbuf = new Buffer(crchex);
+    adapter.log.info("Created NAK : <0x0A>" + crchex + "" + lenhex + str + "<0x0D>");
+  }
   // let crcbuf = new Buffer(crchex);
-  let crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
+  // let crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
   let lenbuf = new Buffer(lenhex);
   let buf = new Buffer(str);
   let nack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
 
   adapter.log.debug("nackSIA : " + JSON.stringify(nack));
-  adapter.log.info("Created NAK : <0x0A><0x" + crchex + ">" + lenhex + buf +"<0x0D>");
   return nack;
 }
 
@@ -422,18 +430,27 @@ function ackSIA(sia) {
       */
       let start = new Buffer([0x0a]);
       let end = new Buffer([0x0d]);
+      let crcbuf;
+      if (sia && sia.crcformat === 'bin') {
+        // Lupusec sends in 2 bin instead of 4 hex
+        crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
+        adapter.log.info("Created ACK : <0x0A><0x" + crchex + ">" + lenhex + str + "<0x0D>");
+      } else {
+        crcbuf = new Buffer(crchex);
+        adapter.log.info("Created ACK : <0x0A>" + crchex + "" + lenhex + str + "<0x0D>");
+      }
       // let crcbuf = new Buffer(crchex);
-      let crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
+      // let crcbuf = new Buffer([crc >>> 8 & 0xff, crc & 0xff]);
       let lenbuf = new Buffer(lenhex);
       let buf = new Buffer(str);
       let ack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
 
       adapter.log.debug("ackSIA : " + JSON.stringify(ack));
-      adapter.log.info("Created ACK : <0x0A><0x" + crchex + ">" + lenhex + buf +"<0x0D>");
       return ack;
     }
   }
-  return nackSIA();
+  let crcformat = getcrcFormat(data);
+  return nackSIA(crcformat);
 }
 
 // *****************************************************************************************************
@@ -529,6 +546,24 @@ function byteToHexString(uint8arr) {
 }
 
 // *****************************************************************************************************
+// SIA CRC Format
+// *****************************************************************************************************
+function getcrcFormat(data) {
+  let crcformat = 'hex';
+  if (data) {
+    // Check if CRC 2 Byte Binary or 4 Byte HEX
+    if (data[5] == '0'.charCodeAt() && data[9] == '"'.charCodeAt()) {
+      crcformat = 'hex';
+    }
+    // Lupusec sends the CRC in binary forum
+    if (data[3] == '0'.charCodeAt() && data[7] == '"'.charCodeAt()) {
+      crcformat = 'bin';
+    }
+  }
+  return crcformat;
+}
+
+// *****************************************************************************************************
 // SIA Message parsen
 // *****************************************************************************************************
 function parseSIA(data) {
@@ -545,12 +580,14 @@ function parseSIA(data) {
       str = new Buffer((data.subarray(9, len)));
       sia.len = parseInt(data.toString().substring(5, 9), 16);
       sia.crc = parseInt(data.toString().substring(1, 5), 16);
+      sia.crcformat = 'hex';
     }
     // Lupusec sends the CRC in binary forum
     if (data[3] == '0'.charCodeAt() && data[7] == '"'.charCodeAt()) {
       str = new Buffer((data.subarray(7, len)));
       sia.len = parseInt(data.toString().substring(3, 7), 16);
       sia.crc = data[1] * 256 + data[2];
+      sia.crcformat = 'bin';
     }
     // Length of Message
     //tmp = data.toString().substring(3, 7);
@@ -654,7 +691,8 @@ function onClientConnected(sock) {
       setStatesSIA(sia);
       ack = ackSIA(sia);
     } else {
-      ack = nackSIA();
+      let crcformat = getcrcFormat(data);
+      ack = nackSIA(crcformat);
     }
     try {
       adapter.log.info('sending to ' + remoteAddress + ' following message: ' + ack.toString().trim());
