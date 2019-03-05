@@ -361,6 +361,7 @@ function isInTime(ts) {
     let diff = Math.abs((val - now) / 1000);
     // if (diff > 20 || diff < -40) {
     if (adapter.config.timeout > 0 && diff > adapter.config.timeout) {
+      adapter.log.info("Timeout Error. Calculated diff between SIA message and ACK ist " + diff + "sec. . Allowed are max " + adapter.config.timeout + " sec.");
       adapter.log.debug("Timestamp difference. Time in message " + val.toUTCString() + ". Time now " + now.toUTCString());
       return false;
     } else {
