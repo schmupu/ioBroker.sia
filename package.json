@@ -27,19 +27,28 @@
     "url": "https://github.com/schmupu/ioBroker.sia"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^1.0.3"
+    "@iobroker/adapter-core": "^1.0.3",
+    "dgram": "^1.0.1",
+    "udp4": "^4.1.0"
   },
   "devDependencies": {
     "gulp": "^4.0.0",
     "mocha": "^4.1.0",
     "chai": "^4.1.2",
+<<<<<<< HEAD
     "eslint": "^5.12.1",
     "eslint-plugin-react": "^7.12.4",
     "axios": "^0.18.0"
+=======
+    "@iobroker/testing": "^1.1.10"
+>>>>>>> e63ec03fdcb4c636039f47578ae7abc01b63fa7c
   },
   "main": "sia.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --exit"
+    "test": "npm run test:package && npm run test:unit",
+    "test:package": "mocha test/package --exit",
+    "test:unit": "mocha test/unit --exit",
+    "test:integration": "mocha test/integration --exit"
   },
   "bugs": {
     "url": "https://github.com/schmupu/ioBroker.sia/issues"

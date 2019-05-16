@@ -5,7 +5,7 @@
 
 [![Travis CI Build Status](https://travis-ci.org/schmupu/ioBroker.sia.svg?branch=master)](https://travis-ci.org/schmupu/ioBroker.sia)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/schmupu/ioBroker.sia?branch=master&svg=true)](https://ci.appveyor.com/project/schmupu/ioBroker-sia/)
-[![NPM version](http://img.shields.io/npm/v/iobroker.sia.svg)](https://www.npmjs.com/package/iobroker.sia)
+![Number of Installations](http://iobroker.live/badges/sia-installed.svg) ![Number of Installations](http://iobroker.live/badges/sia-stable.svg) [![NPM version](http://img.shields.io/npm/v/iobroker.sia.svg)](https://www.npmjs.com/package/iobroker.sia)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.sia.svg)](https://www.npmjs.com/package/iobroker.sia)
 
 [![NPM](https://nodei.co/npm/iobroker.sia.png?downloads=true)](https://nodei.co/npm/iobroker.sia/)
@@ -55,8 +55,13 @@ If you receive SIA messages you see them in the states tree
 
 ## Changelog
 
+<<<<<<< HEAD
 ### 1.0.2 (06.03.2019)
 * (Stübi) clean up source code 
+=======
+### 1.0.2 (16.05.2019)
+* (Stübi) Support of UDP. Same port listening as TCP 
+>>>>>>> e63ec03fdcb4c636039f47578ae7abc01b63fa7c
 
 ### 1.0.1 (05.03.2019)
 * (Stübi) Saving password encrypted. 
@@ -98,7 +103,7 @@ If you receive SIA messages you see them in the states tree
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2018 Thorsten <thorsten@stueben.de>
+Copyright (c) 2018-2019 Thorsten <thorsten@stueben.de>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

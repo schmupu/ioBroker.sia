@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "common": {
         "name": "sia",
         "version": "1.0.2",
@@ -181,6 +182,56 @@
         "loglevel": "info",
         "type": "alarm",
         "restartAdapters": []
+=======
+  "common": {
+    "name": "sia",
+    "version": "1.0.2",
+    "news": {
+      "1.0.2": {
+        "en": "UDP Support",
+        "de": "UDP Unterstüzung"
+      },
+      "1.0.1": {
+        "en": "ACK and NAC calculation extended",
+        "de": "ACK and NAC Berechnung angepasst"
+      },
+      "1.0.0": {
+        "en": "Support of compact mode",
+        "de": "Compact Modus Unterstützung"
+      },
+      "0.1.8": {
+        "en": "Update Adapter Core File",
+        "de": "Update Adapter Core File"
+      },
+      "0.1.6": {
+        "en": "Bugfxing (NAK) and AES support",
+        "de": "Fehlerbehbung (NAK) und AES Verschlüsselung"
+      },
+      "0.1.5": {
+        "en": "Translations",
+        "de": "Übersetzungen"
+      },
+      "0.0.5": {
+        "en": "Requires nodejs 6.0 or higther",
+        "de": "Mindestanforderung nodejs 6.0"
+      },
+      "0.0.4": {
+        "en": "Cleanup",
+        "de": "Aufräumaktion"
+      },
+      "0.0.3": {
+        "en": "SIA Regex optimized",
+        "de": "SIA Regex Ausdruck optimiert"
+      },
+      "0.0.2": {
+        "en": "Code improvement",
+        "de": "Anpassungen an der Entwicklung"
+      },
+      "0.0.1": {
+        "en": "Code improvement",
+        "de": "Anpassungen an der Entwicklung"
+      }
+>>>>>>> e63ec03fdcb4c636039f47578ae7abc01b63fa7c
     },
     "native": {
         "port": 50001,
