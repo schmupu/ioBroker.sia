@@ -35,13 +35,7 @@
     "gulp": "^4.0.0",
     "mocha": "^4.1.0",
     "chai": "^4.1.2",
-<<<<<<< HEAD
-    "eslint": "^5.12.1",
-    "eslint-plugin-react": "^7.12.4",
-    "axios": "^0.18.0"
-=======
     "@iobroker/testing": "^1.1.10"
->>>>>>> e63ec03fdcb4c636039f47578ae7abc01b63fa7c
   },
   "main": "sia.js",
   "scripts": {

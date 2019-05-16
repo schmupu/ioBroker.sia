@@ -55,13 +55,8 @@ If you receive SIA messages you see them in the states tree
 
 ## Changelog
 
-<<<<<<< HEAD
-### 1.0.2 (06.03.2019)
-* (Stübi) clean up source code 
-=======
 ### 1.0.2 (16.05.2019)
 * (Stübi) Support of UDP. Same port listening as TCP 
->>>>>>> e63ec03fdcb4c636039f47578ae7abc01b63fa7c
 
 ### 1.0.1 (05.03.2019)
 * (Stübi) Saving password encrypted. 
