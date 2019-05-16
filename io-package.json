@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "sia",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "news": {
+      "1.0.2": {
+        "en": "UDP Support",
+        "de": "UDP Unterstüzung"
+      },
       "1.0.1": {
         "en": "ACK and NAC calculation extended",
         "de": "ACK and NAC Berechnung angepasst"

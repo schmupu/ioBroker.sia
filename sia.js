@@ -8,10 +8,12 @@
 const utils = require('@iobroker/adapter-core');
 const dp = require(__dirname + '/lib/datapoints');
 const net = require('net');
+const dgram = require('dgram');
 const crypto = require('crypto');
 const adapterName = require('./package.json').name.split('.').pop();
 
-let server = null; // Server instance
+let servertcp; // Server instance TCP
+let serverudp; // Server instance UDP
 let adapter;
 
 function startAdapter(options) {
@@ -22,12 +24,11 @@ function startAdapter(options) {
   // *****************************************************************************************************
   // is called when adapter shuts down - callback has to be called under any circumstances!
   // *****************************************************************************************************
-  adapter.on('unload', function (callback) {
+  adapter.on('unload', (callback) => {
     try {
       adapter.log.info('Closing SIA Server');
-      if (server) {
-        server.close();
-      }
+      if (servertcp) servertcp.close();
+      if (serverudp) serverudp.close();
       callback();
     } catch (e) {
       callback();
@@ -38,7 +39,7 @@ function startAdapter(options) {
   // is called when databases are connected and adapter received configuration.
   // start here!
   // *****************************************************************************************************
-  adapter.on('ready', function () {
+  adapter.on('ready', () => {
     adapter.log.info("Starting " + adapter.namespace);
     adapter.getForeignObject('system.config', (err, obj) => {
       if (adapter.config.keys) {
@@ -102,7 +103,8 @@ function main() {
   // add object from configuration.
   createObjects();
   // start socket server
-  serverStart();
+  serverStartTCP();
+  serverStartUDP();
   // all states changes inside the adapters namespace are subscribed
   // adapter.subscribeStates('*');
 }
@@ -111,7 +113,7 @@ function main() {
 // convert subcriber to ID for using as channel name. Special characters and spaces are deleted.
 // *****************************************************************************************************
 function getAcountNumberID(accountnumber) {
-  var id = accountnumber.replace(/[.\s]+/g, '_');
+  let id = accountnumber.replace(/[.\s]+/g, '_');
   return id;
 }
 
@@ -127,12 +129,12 @@ function deleteChannel(obj) {
       deleteChannel(obj[key]); // recurse.
     } else {
       if (obj[key] == 'channel') {
-        var found = false;
-        var channelname = obj.common.name;
+        let found = false;
+        let channelname = obj.common.name;
         // Channel Name ist ein accountnumber
-        for (var i = 0; i < adapter.config.keys.length; i++) {
-          var keyc = adapter.config.keys[i];
-          var idc = getAcountNumberID(keyc.accountnumber);
+        for (let i = 0; i < adapter.config.keys.length; i++) {
+          let keyc = adapter.config.keys[i];
+          let idc = getAcountNumberID(keyc.accountnumber);
           if (idc == channelname) {
             found = true;
           }
@@ -150,7 +152,7 @@ function deleteChannel(obj) {
 // for deleting old (not used) channels in configuration
 // *****************************************************************************************************
 function deleteObjects() {
-  adapter.getAdapterObjects(function (obj) {
+  adapter.getAdapterObjects((obj) => {
     deleteChannel(obj);
   });
 }
@@ -195,20 +197,20 @@ function createObjectSIA(id, key) {
       native: {}
     });
     */
-    adapter.getObject(sid, function (err, obj) {
+    adapter.getObject(sid, (err, obj) => {
       if (!obj) {
         adapter.setObjectNotExists(sid, {
           type: 'state',
           common: parameter,
           native: {}
-        }, function () {
+        }, () => {
           adapter.log.debug("Create parameters for object " + sid);
         });
       } else {
         parameter.name = obj.common.name;
         if (!propertiesObjAinObjB(parameter, obj.common)) {
           obj.common = parameter;
-          adapter.extendObject(sid, obj, function () {
+          adapter.extendObject(sid, obj, () => {
             adapter.log.debug("Changed parameters for object " + sid);
           });
         }
@@ -221,9 +223,9 @@ function createObjectSIA(id, key) {
 // read configuration, and create for all accountnumbers a channel and states
 // *****************************************************************************************************
 function createObjects() {
-  for (var i = 0; i < adapter.config.keys.length; i++) {
-    var key = adapter.config.keys[i];
-    var id = getAcountNumberID(key.accountnumber);
+  for (let i = 0; i < adapter.config.keys.length; i++) {
+    let key = adapter.config.keys[i];
+    let id = getAcountNumberID(key.accountnumber);
     createObjectSIA(id, key);
   }
 }
@@ -505,15 +507,15 @@ function ackSIA(sia) {
 // Set state for SIA message
 // *****************************************************************************************************
 function setStatesSIA(sia) {
-  var obj = dp.dpSIA || {};
-  var val = null;
+  let obj = dp.dpSIA || {};
+  let val = null;
   if (sia) {
     adapter.log.debug("setStatesSIA sia.act : " + sia.act);
     if (acctExist(sia.act)) {
       adapter.log.debug("setStatesSIA for " + sia.act + " : " + JSON.stringify(sia));
-      var id = getAcountNumberID(sia.act);
+      let id = getAcountNumberID(sia.act);
       for (let prop in obj) {
-        var sid = id + '.' + prop;
+        let sid = id + '.' + prop;
         switch (prop) {
           case 'id':
             val = sia.id;
@@ -538,7 +540,7 @@ function setStatesSIA(sia) {
             break;
           case 'ts':
             /*
-             var [tt, dd] = sia.ts.split(',');
+             let [tt, dd] = sia.ts.split(',');
              if (tt && dd) {
                val = new Date(dd + "," + tt + " UTC");
              } else {
@@ -569,13 +571,27 @@ function setStatesSIA(sia) {
 // *****************************************************************************************************
 // start socket server for listining for SIA
 // *****************************************************************************************************
-function serverStart() {
-  server = net.createServer(onClientConnected);
-  server.listen(adapter.config.port, adapter.config.bind, function () {
-    var text = 'SIA Server listening on IP-Adress: ' + server.address().address + ':' + server.address().port;
+function serverStartTCP() {
+  servertcp = net.createServer(onClientConnectedTCP);
+  servertcp.listen(adapter.config.port, adapter.config.bind, () => {
+    let text = 'SIA Server listening on IP-Adress (TCP): ' + servertcp.address().address + ':' + servertcp.address().port;
     adapter.log.info(text);
   });
 }
+
+// *****************************************************************************************************
+// start socket server for listining for SIA by UDP
+// *****************************************************************************************************
+function serverStartUDP() {
+  serverudp = dgram.createSocket('udp4');
+  onClientConnectedUDP(serverudp);
+  serverudp.bind(adapter.config.port, adapter.config.bind, () => {
+    let text = 'SIA Server listening on IP-Adress (UDP): ' + serverudp.address().address + ':' + serverudp.address().port;
+    adapter.log.info(text);
+  });
+}
+
+
 
 // *****************************************************************************************************
 // Convert Byte to Hex String
@@ -584,9 +600,9 @@ function byteToHexString(uint8arr) {
   if (!uint8arr) {
     return '';
   }
-  var hexStr = '';
-  for (var i = 0; i < uint8arr.length; i++) {
-    var hex = (uint8arr[i] & 0xff).toString(16);
+  let hexStr = '';
+  for (let i = 0; i < uint8arr.length; i++) {
+    let hex = (uint8arr[i] & 0xff).toString(16);
     hex = (hex.length === 1) ? '0' + hex : hex;
     hexStr += hex;
   }
@@ -735,20 +751,20 @@ function parseSIA(data) {
 // *****************************************************************************************************
 // alarm system connected and sending SIA  message
 // *****************************************************************************************************
-function onClientConnected(sock) {
+function onClientConnectedTCP(sock) {
   // See https://nodejs.org/api/stream.html#stream_readable_setencoding_encoding
   // sock.setEncoding(null);
   // Hack that must be added to make this work as expected
   // delete sock._readableState.decoder;
-  var remoteAddress = sock.remoteAddress + ':' + sock.remotePort;
-  var ack = null;
+  let remoteAddress = sock.remoteAddress + ':' + sock.remotePort;
+  let ack = null;
   // adapter.log.info('New client connected: ' + remoteAddress);
-  sock.on('data', function (data) {
+  sock.on('data', (data) => {
     // data = Buffer.from(data,'binary');
     // data = new Buffer(data);
     adapter.log.debug('received from ' + remoteAddress + ' following data: ' + JSON.stringify(data));
     adapter.log.info('received from ' + remoteAddress + ' following message: ' + data.toString().trim());
-    var sia = parseSIA(data);
+    let sia = parseSIA(data);
     if (sia) {
       ack = ackSIA(sia);
       if (ack) {
@@ -769,11 +785,56 @@ function onClientConnected(sock) {
       // Error Message 
     }
   });
-  sock.on('close', function () {
+  sock.on('close', () => {
     adapter.log.info('connection from ' + remoteAddress + ' closed');
   });
-  sock.on('error', function (err) {
+  sock.on('error', (err) => {
     adapter.log.error('Connection ' + remoteAddress + ' error: ' + err.message);
+  });
+}
+
+
+function onClientConnectedUDP(sock) {
+  // See https://nodejs.org/api/stream.html#stream_readable_setencoding_encoding
+  // sock.setEncoding(null);
+  // Hack that must be added to make this work as expected
+  // delete sock._readableState.decoder;
+  let ack = null;
+  // adapter.log.info('New client connected: ' + remoteAddress);
+  sock.on('message', (data, remote) => {
+    // data = Buffer.from(data,'binary');
+    // data = new Buffer(data);
+    adapter.log.debug('received from ' + remote.address + ' following data: ' + JSON.stringify(data));
+    adapter.log.info('received from ' + remote.address + ' following message: ' + data.toString().trim());
+    let sia = parseSIA(data);
+    if (sia) {
+      ack = ackSIA(sia);
+      if (ack) {
+        // set states only if ACK okay
+        setStatesSIA(sia);
+      } else {
+        let crcformat = getcrcFormat(data);
+        ack = nackSIA(crcformat);
+      }
+    } else {
+      let crcformat = getcrcFormat(data);
+      ack = nackSIA(crcformat);
+    }
+    try {
+      adapter.log.info('sending to ' + remote.address + ' following message: ' + ack.toString().trim());
+      sock.send(ack, 0, ack.length, remote.port, remote.address, (err, bytes) => {
+      });
+    } catch (e) {
+      // Error Message
+      adapter.log.error('Error');
+    }
+  });
+  sock.on('close', () => {
+    adapter.log.info('UDP Connection closed');
+  });
+  sock.on('error', (err) => {
+    adapter.log.error('UDP Error: ' + err.message);
+    sock.close();
   });
 }
 
@@ -816,9 +877,9 @@ function crc16(data) {
     0x4400, 0x84C1, 0x8581, 0x4540, 0x8701, 0x47C0, 0x4680, 0x8641,
     0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040
   ]);
-  var len = data.length;
-  var buffer = 0;
-  var crc;
+  let len = data.length;
+  let buffer = 0;
+  let crc;
   while (len--) {
     crc = ((crc >>> 8) ^ (crctab16[(crc ^ (data[buffer++])) & 0xff]));
   }

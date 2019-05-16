@@ -1,6 +1,6 @@
 {
   "name": "iobroker.sia",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ioBroker SIA Server Adapter",
   "author": {
     "name": "Thorsten Stueben",
@@ -27,7 +27,9 @@
     "url": "https://github.com/schmupu/ioBroker.sia"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^1.0.3"
+    "@iobroker/adapter-core": "^1.0.3",
+    "dgram": "^1.0.1",
+    "udp4": "^4.1.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
