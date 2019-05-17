@@ -27,8 +27,7 @@
     "url": "https://github.com/schmupu/ioBroker.sia"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^1.0.3",
-    "dgram": "^1.0.1"
+    "@iobroker/adapter-core": "^1.0.3"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
