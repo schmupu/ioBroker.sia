@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "sia",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "news": {
+      "1.0.3": {
+        "en": "Bugfixing",
+        "de": "Bugfixing"
+      },
       "1.0.2": {
         "en": "UDP Support",
         "de": "UDP Unterstüzung"
