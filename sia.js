@@ -98,18 +98,20 @@ function main() {
   }
 
   /*
-  let data = [10, 53, 57, 70, 55, 48, 48, 51, 70, 34, 83, 73, 65, 45, 68, 67, 83, 34, 48, 48, 48, 49, 76, 35, 55, 51, 48, 51, 54, 53, 56, 53, 53, 48, 91, 35, 55, 51, 48, 51, 54, 53, 56, 53, 53, 48, 124, 78, 80, 65, 49, 93, 95, 49, 52, 58, 50, 57, 58, 52, 50, 44, 48, 54, 45, 48, 55, 45, 50, 48, 49, 57, 13, 0];
-  for (let i = data.length - 1; i > 0; i--) {
-    if (data[i] === 0x00) {
-      data.pop();
-    } else {
-      break;
+    let data = [10, 53, 57, 70, 55, 48, 48, 51, 70, 34, 83, 73, 65, 45, 68, 67, 83, 34, 48, 48, 48, 49, 76, 35, 55, 51, 48, 51, 54, 53, 56, 53, 53, 48, 91, 35, 55, 51, 48, 51, 54, 53, 56, 53, 53, 48, 124, 78, 80, 65, 49, 93, 95, 49, 52, 58, 50, 57, 58, 52, 50, 44, 48, 54, 45, 48, 55, 45, 50, 48, 49, 57, 13, 0];
+  
+    for (let i = data.length - 1; i > 0; i--) {
+      if (data[i] === 0x00) {
+        data.pop();
+      } else {
+        break;
+      }
+      let c = data;
     }
-    let c = data;
-  }
-  let test = new Buffer(data);
-  let sia = parseSIA(test);
-*/
+  
+    let test = new Buffer(data);
+    let sia = parseSIA(test);
+  */
 
   // delete not used / missing object in configuration
   deleteObjects();
@@ -645,7 +647,7 @@ function deleteAppendingZero(data) {
   if (data) {
     for (let i = data.length - 1; i > 0; i--) {
       if (data[i] === 0x00) {
-        data.pop();
+        data = data.slice(0, i);
       } else {
         break;
       }
