@@ -97,21 +97,6 @@ function main() {
     }
   }
 
-  /*
-    let data = [10, 53, 57, 70, 55, 48, 48, 51, 70, 34, 83, 73, 65, 45, 68, 67, 83, 34, 48, 48, 48, 49, 76, 35, 55, 51, 48, 51, 54, 53, 56, 53, 53, 48, 91, 35, 55, 51, 48, 51, 54, 53, 56, 53, 53, 48, 124, 78, 80, 65, 49, 93, 95, 49, 52, 58, 50, 57, 58, 52, 50, 44, 48, 54, 45, 48, 55, 45, 50, 48, 49, 57, 13, 0];
-  
-    for (let i = data.length - 1; i > 0; i--) {
-      if (data[i] === 0x00) {
-        data.pop();
-      } else {
-        break;
-      }
-      let c = data;
-    }
-  
-    let test = new Buffer(data);
-    let sia = parseSIA(test);
-  */
 
   // delete not used / missing object in configuration
   deleteObjects();
@@ -724,7 +709,7 @@ function parseSIA(data) {
     // "SIA-DCS"0266L0#alarm1[alarm2|Nri1OP0001*Familie*]_16:22:03,06-08-2018
     // http://s545463982.onlinehome.us/DC09Gen/
     // "*SIA-DCS"9876R579BDFL789ABC#12345A[209c9d400b655df7a26aecb6a887e7ee6ed8103217079aae7cbd9dd7551e96823263460f7ef0514864897ae9789534f1
-    // regex = /\"(.+)\"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))\#([\w\d]+)\[(.+)/gm;
+    // regex = /\"(.+)\"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))\#([\w\d]+)\[(.+)/gm; // befor Isue 11
     regex = /\"(.+)\"(\d{4})(R(.{0,6})){0,1}(L(.{0,6}))\#([\w\d]+)\[(.+)/gm; // Isue 11
     if ((m = regex.exec(sia.str)) !== null && m.length >= 8) {
       let lpref = undefined;

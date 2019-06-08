@@ -1,0 +1,15 @@
+{
+    "ACK Timeout": "ACK超时",
+    "AES encrypting": "AES加密",
+    "AES password": "AES密码",
+    "AES password in Hex": "十六进制密码",
+    "Accountnumber": "帐号",
+    "IP": "IP地址",
+    "Main settings": "主要设置",
+    "Port": "港口",
+    "Subscribers": "认购",
+    "alarmsystem": "警报系统",
+    "bind": "绑定IP地址",
+    "on save adapter restarts with new config immediately": "保存适配器立即重新启动新配置",
+    "subscriber": "订户"
+}

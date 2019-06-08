@@ -1,0 +1,15 @@
+{
+    "ACK Timeout": "ACK Timeout",
+    "AES encrypting": "AES-Verschlüsselung",
+    "AES password": "AES Passwort",
+    "AES password in Hex": "AES Passwort im Hex Format",
+    "Accountnumber": "Accountnummer",
+    "IP": "IP Adresse",
+    "Main settings": "Haupteinstellungen",
+    "Port": "Port",
+    "Subscribers": "Abonnenten",
+    "alarmsystem": "Alarmanlage",
+    "bind": "Bind IP-Adresse",
+    "on save adapter restarts with new config immediately": "Beim Speichern wird der Adapter sofort mit der neuen Konfiguration gestartet",
+    "subscriber": "Abonnement"
+}

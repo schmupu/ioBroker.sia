@@ -1,0 +1,15 @@
+{
+    "ACK Timeout": "ACK Timeout",
+    "AES encrypting": "Шифрование AES",
+    "AES password": "Пароль AES",
+    "AES password in Hex": "Пароль в шестнадцатеричном",
+    "Accountnumber": "номер аккаунта",
+    "IP": "Айпи адрес",
+    "Main settings": "Основные настройки",
+    "Port": "Port",
+    "Subscribers": "Подписчики",
+    "alarmsystem": "аварийная система",
+    "bind": "Связывание IP-адреса",
+    "on save adapter restarts with new config immediately": "на перезаписываемом адаптере перезагружается с новой конфигурацией немедленно",
+    "subscriber": "подписчик"
+}
