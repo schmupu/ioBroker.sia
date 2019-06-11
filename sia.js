@@ -290,7 +290,7 @@ function encrypt_hex(password, decrypted) {
         return undefined;
     }
     let cipher = crypto.createCipheriv(aes, password, iv);
-    //cipher.setAutoPadding(false);
+    cipher.setAutoPadding(false);
     let encoded = cipher.update(crypted, 'utf8', 'hex');
     encoded += cipher.final('hex');
     return (encoded ? encoded : undefined);
@@ -456,14 +456,10 @@ function ackSIA(sia) {
         let padlen = 16 - (msglen % 16);
         // let pad = new Buffer(padlen);
         let pad = Buffer.alloc(padlen, padlen);
-        /*
-        let pad = "";
-        if(padlen > 0) {
-          padlen = 16 - padlen;
-          pad = new Buffer(padlen);
-        }
-        */
+        // let pad = Buffer.alloc(padlen, 0x00); 
         let msg = encrypt_hex(cfg.password, pad + '|]' + ts);
+        let dmsg = decrypt_hex(cfg.password, msg); // only for deguging
+        let dmsghex = new Buffer(dmsg).toString('hex'); 
         str = '"*ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[' + msg;
       } else {
         str = '"ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[]';
