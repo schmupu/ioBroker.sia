@@ -87,7 +87,8 @@ function main() {
     if (adapter.config.keys[i].aes === true) {
       if (adapter.config.keys[i].hex === true) {
         // if password is hex instead of byte, convert hex to byte
-        adapter.config.keys[i].password = new Buffer(adapter.config.keys[i].password, 'hex').toString();
+        // adapter.config.keys[i].password = new Buffer(adapter.config.keys[i].password, 'hex').toString();
+        adapter.config.keys[i].password = new Buffer(adapter.config.keys[i].password, 'hex');
       }
       let len = adapter.config.keys[i].password.length;
       // Password for AES is not allowed to be longer than 16, 24 and 32 characters 
@@ -96,7 +97,6 @@ function main() {
       }
     }
   }
-
 
   // delete not used / missing object in configuration
   deleteObjects();
@@ -306,7 +306,8 @@ function decrypt_hex(password, encrypted) {
   try {
     let iv = new Buffer(16);
     iv.fill(0);
-    let crypted = new Buffer(encrypted, 'hex').toString('binary');
+    // let crypted = new Buffer(encrypted, 'hex').toString('binary');
+    let crypted = new Buffer(encrypted, 'hex');
     let aes;
     //  password = customPadding(password, 24, 0x0, "hex"); // magic happens here
     switch (password.length) {
@@ -324,7 +325,9 @@ function decrypt_hex(password, encrypted) {
     }
     let decipher = crypto.createDecipheriv(aes, password, iv);
     decipher.setAutoPadding(false);
-    let decoded = decipher.update(crypted, 'binary', 'utf8');
+    // let decoded = decipher.update(crypted, 'binary', 'utf8');
+    // decoded += decipher.final('utf8');
+    let decoded = decipher.update(crypted, 'hex', 'utf8');
     decoded += decipher.final('utf8');
     return (decoded ? decoded : undefined);
   } catch (e) {
@@ -459,7 +462,7 @@ function ackSIA(sia) {
         // let pad = Buffer.alloc(padlen, 0x00); 
         let msg = encrypt_hex(cfg.password, pad + '|]' + ts);
         let dmsg = decrypt_hex(cfg.password, msg); // only for deguging
-        let dmsghex = new Buffer(dmsg).toString('hex'); 
+        let dmsghex = new Buffer(dmsg).toString('hex');
         str = '"*ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[' + msg;
       } else {
         str = '"ACK"' + sia.seq + rpref + lpref + '#' + sia.act + '[]';
@@ -731,6 +734,7 @@ function parseSIA(data) {
             let padlen = msg.indexOf("|");
             sia.pad = msg.substring(0, padlen); // len of pad
             msg = msg.substring(padlen + 1); // Data Message
+            adapter.log.info("SIA Message decrypted part: " + msg);
           } else {
             adapter.log.info("Could not decrypt message");
             return undefined;
