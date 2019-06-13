@@ -21,9 +21,9 @@ function startAdapter(options) {
   options.name = adapterName;
   adapter = new utils.Adapter(options);
 
-  // *****************************************************************************************************
-  // is called when adapter shuts down - callback has to be called under any circumstances!
-  // *****************************************************************************************************
+  /**
+   * is called when adapter shuts down - callback has to be called under any circumstances!
+   */
   adapter.on('unload', (callback) => {
     try {
       adapter.log.info('Closing SIA Server');
@@ -35,10 +35,10 @@ function startAdapter(options) {
     }
   });
 
-  // *****************************************************************************************************
-  // is called when databases are connected and adapter received configuration.
-  // start here!
-  // *****************************************************************************************************
+  /**
+   * is called when databases are connected and adapter received configuration.
+   * start here!
+   */
   adapter.on('ready', () => {
     adapter.log.info("Starting " + adapter.namespace);
     adapter.getForeignObject('system.config', (err, obj) => {
@@ -61,10 +61,11 @@ function startAdapter(options) {
   return adapter;
 }
 
-// *****************************************************************************************************
-// Password decrypt
-// *****************************************************************************************************
-// decrypt password
+/**
+ * Decrypting password in admin HTML page  
+ * @param {string or buffer} key - decrypting message  
+ * @param {string} value - encrypted messages
+ */
 function decrypt(key, value) {
   let result = '';
   if (value.startsWith('(crypt)')) {
@@ -78,11 +79,10 @@ function decrypt(key, value) {
   return result;
 }
 
-// *****************************************************************************************************
-// Main function
-// *****************************************************************************************************
+/**
+ * Main function
+ */
 function main() {
-
   for (let i in adapter.config.keys) {
     if (adapter.config.keys[i].aes === true) {
       if (adapter.config.keys[i].hex === true) {
@@ -97,7 +97,6 @@ function main() {
       }
     }
   }
-
   // delete not used / missing object in configuration
   deleteObjects();
   // add object from configuration.
@@ -109,17 +108,19 @@ function main() {
   // adapter.subscribeStates('*');
 }
 
-// *****************************************************************************************************
-// convert subcriber to ID for using as channel name. Special characters and spaces are deleted.
-// *****************************************************************************************************
+/**
+ * convert subcriber to ID for using as channel name. Special characters and spaces are deleted.
+ * @param {string} accountnumber - accountnumber 
+ */
 function getAcountNumberID(accountnumber) {
   let id = accountnumber.replace(/[.\s]+/g, '_');
   return id;
 }
 
-// *****************************************************************************************************
-// delete channel and states which are missing in configuration
-// *****************************************************************************************************
+/**
+ *  delete channel and states which are missing in configuration
+ * @param {object} obj 
+ */
 function deleteChannel(obj) {
   // adapter.log.info('deleteChannel: ' + JSON.stringify(obj));
   // search recrusive for channel name. If found and missing in
@@ -147,19 +148,21 @@ function deleteChannel(obj) {
   });
 }
 
-// *****************************************************************************************************
-// list of all objects (devices, channel, states) for this instance. call function  deleteChannel
-// for deleting old (not used) channels in configuration
-// *****************************************************************************************************
+/**
+ * list of all objects (devices, channel, states) for this instance. call function  deleteChannel
+ * for deleting old (not used) channels in configuration
+ */
 function deleteObjects() {
   adapter.getAdapterObjects((obj) => {
     deleteChannel(obj);
   });
 }
 
-// *******************************************************************************
-// Compare if propierties of object a exist in  object b
-// *******************************************************************************
+/**
+ * ompare if propierties of object a exist in  object b
+ * @param {object} obja - object 1 for comapring
+ * @param {object} objb - object 2 for comparing
+ */
 function propertiesObjAinObjB(obja, objb) {
   if (obja === objb) return true;
   if (!(obja instanceof Object) || !(objb instanceof Object)) return false;
@@ -174,9 +177,11 @@ function propertiesObjAinObjB(obja, objb) {
   return true;
 }
 
-// *****************************************************************************************************
-// create for every ID a channel and create a few states
-// *****************************************************************************************************
+/**
+ * Create for every ID, channel and states
+ * @param {string} id - accountnumer
+ * @param {string} key - key
+ */
 function createObjectSIA(id, key) {
   let obj = dp.dpSIA || {};
   adapter.setObjectNotExists(id, {
@@ -190,13 +195,6 @@ function createObjectSIA(id, key) {
     let sid = id + '.' + prop;
     let parameter = JSON.parse(JSON.stringify(obj[prop]));
     parameter.name = key.accountnumber + ' ' + parameter.name;
-    /*
-    adapter.setObjectNotExists(sid, {
-      type: 'state',
-      common: parameter,
-      native: {}
-    });
-    */
     adapter.getObject(sid, (err, obj) => {
       if (!obj) {
         adapter.setObjectNotExists(sid, {
@@ -219,9 +217,9 @@ function createObjectSIA(id, key) {
   }
 }
 
-// *****************************************************************************************************
-// read configuration, and create for all accountnumbers a channel and states
-// *****************************************************************************************************
+/**
+ * read configuration, and create for all accountnumbers a channel and states
+ */
 function createObjects() {
   for (let i = 0; i < adapter.config.keys.length; i++) {
     let key = adapter.config.keys[i];
@@ -230,9 +228,10 @@ function createObjects() {
   }
 }
 
-// *****************************************************************************************************
-// ASCII Text -> BYTES
-// *****************************************************************************************************
+/**
+ * convert ASCII Text -> BYTES
+ * @param {string} text - string in ASCII format
+ */
 function getBytes(text) {
   let bytes = [];
   for (let i = 0; i < text.length; i++) {
@@ -245,9 +244,13 @@ function getBytes(text) {
   return bytes;
 }
 
-// *****************************************************************************************************
-// Padding /  str = customPadding(str, 16, 0x0, "hex"); // magic happens here
-// *****************************************************************************************************
+/**
+ * Padding  /  str = customPadding(str, 16, 0x0, "hex"); // magic happens here
+ * @param {*} str 
+ * @param {*} bytelen 
+ * @param {*} padder 
+ * @param {*} format 
+ */
 function customPadding(str, bytelen, padder, format) {
   let blockSize = bytelen * 16;
   str = new Buffer(str, "utf8").toString(format);
@@ -268,6 +271,11 @@ function customPadding(str, bytelen, padder, format) {
 // *****************************************************************************************************
 // Encrypt / Input: ASCII , Output: HEX
 // *****************************************************************************************************
+/**
+ * Encrypt messages
+ * @param {string or buffer} password - key / password for decrypting message  
+ * @param {string} decrypted - messages for encrypting
+ */
 function encrypt_hex(password, decrypted) {
   try {
     let test = decrypted.length;
@@ -299,9 +307,11 @@ function encrypt_hex(password, decrypted) {
   }
 }
 
-// *****************************************************************************************************
-// Decrypt / Input: HEX, Output ASCII
-// *****************************************************************************************************
+/**
+ * Decrypt messages
+ * @param {string or buffer} password - key / password for decrypting message  
+ * @param {string} value - messages to decrypt
+ */
 function decrypt_hex(password, encrypted) {
   try {
     let iv = new Buffer(16);
@@ -335,9 +345,11 @@ function decrypt_hex(password, encrypted) {
   }
 }
 
-// *****************************************************************************************************
-// get timestamp in following format <_HH:MM:SS,MM-DD-YYYY>
-// *****************************************************************************************************
+/**
+ * get timestamp in following format <_HH:MM:SS,MM-DD-YYYY>
+ * @param {date} datum - date object or leave empty
+ */
+
 function getTimestamp(datum) {
   if (!datum) {
     datum = new Date();
@@ -352,9 +364,10 @@ function getTimestamp(datum) {
   return str;
 }
 
-// *****************************************************************************************************
-// Is SIA Message in time (+20 or -40 seconds)
-// *****************************************************************************************************
+/**
+ * Is SIA Message in time (+20 or -40 seconds)
+ * @param {number} ts - timestamp in seconds, for examp -20, +20
+ */
 function isInTime(ts) {
   if (ts) {
     let [tt, dd] = ts.split(',');
@@ -377,9 +390,10 @@ function isInTime(ts) {
   }
 }
 
-// *****************************************************************************************************
-// Acount configuration
-// *****************************************************************************************************
+/**
+ * Acount configuration
+ * @param {string} act - accountnumber
+ */
 function getAcctInfo(act) {
   for (let i = 0; i < adapter.config.keys.length; i++) {
     let key = adapter.config.keys[i];
@@ -391,9 +405,10 @@ function getAcctInfo(act) {
   return undefined;
 }
 
-// *****************************************************************************************************
-// Accountnumber exist in Config
-// *****************************************************************************************************
+/**
+ * Accountnumber exist in Config
+ * @param {string} act - accountnumber
+ */
 function acctExist(act) {
   let key = getAcctInfo(act);
   if (key) {
@@ -440,9 +455,10 @@ function nackSIA(crcformat) {
   return nack;
 }
 
-// *****************************************************************************************************
-// Acknowledge for SIA
-// *****************************************************************************************************
+/**
+ * Craete Acknowledge for SIA
+ * @param {string} sia - SIA Message
+ */
 function ackSIA(sia) {
   if (sia) {
     let ts = getTimestamp(); // tiemstamp
@@ -502,9 +518,10 @@ function ackSIA(sia) {
   return undefined;
 }
 
-// *****************************************************************************************************
-// Set state for SIA message
-// *****************************************************************************************************
+/**
+ * Set state for SIA message
+ * @param {string} sia - SIA Message
+ */
 function setStatesSIA(sia) {
   let obj = dp.dpSIA || {};
   let val = null;
@@ -567,9 +584,9 @@ function setStatesSIA(sia) {
   }
 }
 
-// *****************************************************************************************************
-// start socket server for listining for SIA
-// *****************************************************************************************************
+/**
+ * start socket server for listining for SIA
+ */
 function serverStartTCP() {
   servertcp = net.createServer(onClientConnectedTCP);
   servertcp.listen(adapter.config.port, adapter.config.bind, () => {
@@ -578,9 +595,9 @@ function serverStartTCP() {
   });
 }
 
-// *****************************************************************************************************
-// start socket server for listining for SIA by UDP
-// *****************************************************************************************************
+/**
+ * start socket server for listining for SIA by UDP
+ */
 function serverStartUDP() {
   serverudp = dgram.createSocket('udp4');
   onClientConnectedUDP(serverudp);
@@ -590,11 +607,10 @@ function serverStartUDP() {
   });
 }
 
-
-
-// *****************************************************************************************************
-// Convert Byte to Hex String
-// *****************************************************************************************************
+/**
+ * Convert Byte to Hex String
+ * @param {byte} uint8arr - btyte buffer
+ */
 function byteToHexString(uint8arr) {
   if (!uint8arr) {
     return '';
@@ -608,9 +624,10 @@ function byteToHexString(uint8arr) {
   return hexStr.toUpperCase();
 }
 
-// *****************************************************************************************************
-// SIA CRC Format
-// *****************************************************************************************************
+/**
+ * SIA CRC Format
+ * @param {string} data - CRC
+ */
 function getcrcFormat(data) {
   let crcformat = 'hex';
   if (data) {
@@ -627,6 +644,10 @@ function getcrcFormat(data) {
 }
 
 
+/**
+ * delete 0x00 at the end of the buffer
+ * @param {buffer} data - string buffer
+ */
 function deleteAppendingZero(data) {
   if (data) {
     for (let i = data.length - 1; i > 0; i--) {
@@ -640,9 +661,10 @@ function deleteAppendingZero(data) {
   return data;
 }
 
-// *****************************************************************************************************
-// SIA Message parsen
-// *****************************************************************************************************
+/**
+ * parse SIA message
+ * @param {string} data - SIA Message
+ */
 function parseSIA(data) {
   data = deleteAppendingZero(data);
   let sia = {};
@@ -709,7 +731,8 @@ function parseSIA(data) {
     // http://s545463982.onlinehome.us/DC09Gen/
     // "*SIA-DCS"9876R579BDFL789ABC#12345A[209c9d400b655df7a26aecb6a887e7ee6ed8103217079aae7cbd9dd7551e96823263460f7ef0514864897ae9789534f1
     // regex = /\"(.+)\"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))\#([\w\d]+)\[(.+)/gm; // befor Isue 11
-    regex = /\"(.+)\"(\d{4})(R(.{0,6})){0,1}(L(.{0,6}))\#([\w\d]+)\[(.+)/gm; // Isue 11
+    // regex = /\"(.+)\"(\d{4})(R(.{0,6})){0,1}(L(.{0,6}))\#([\w\d]+)\[(.+)/gm; // Isue 11
+    regex = /"(.+)"(\d{4})(R(.{0,6})){0,1}(L(.{0,6}))#([\w\d]+)\[(.+)/gm; // Isue 11
     if ((m = regex.exec(sia.str)) !== null && m.length >= 8) {
       let lpref = undefined;
       adapter.log.debug("parseSIA regex   : " + JSON.stringify(sia));
@@ -766,9 +789,10 @@ function parseSIA(data) {
   }
 }
 
-// *****************************************************************************************************
-// alarm system connected and sending SIA  message
-// *****************************************************************************************************
+/**
+ * alarm system connected and sending SIA  message (TCP/IP)
+ * @param {socet} sock - socket
+ */
 function onClientConnectedTCP(sock) {
   // See https://nodejs.org/api/stream.html#stream_readable_setencoding_encoding
   // sock.setEncoding(null);
@@ -811,7 +835,10 @@ function onClientConnectedTCP(sock) {
   });
 }
 
-
+/**
+ * alarm system connected and sending SIA message (UDP)
+ * @param {socket} sock - socket
+ */
 function onClientConnectedUDP(sock) {
   // See https://nodejs.org/api/stream.html#stream_readable_setencoding_encoding
   // sock.setEncoding(null);
@@ -856,9 +883,10 @@ function onClientConnectedUDP(sock) {
   });
 }
 
-// *****************************************************************************************************
-// CRC Calculation. Example. crc16([0x20, 0x22])
-// *****************************************************************************************************
+/**
+ * CRC Calculation. Example. crc16([0x20, 0x22])
+ * @param {string} data - string
+ */
 function crc16(data) {
   /* CRC table for the CRC-16. The poly is 0x8005 (x^16 + x^15 + x^2 + 1) */
   const crctab16 = new Uint16Array([
@@ -905,9 +933,10 @@ function crc16(data) {
   // return [(crc >>> 8 & 0xff), (crc & 0xff)];
 }
 
-// *****************************************************************************************************
-// CRC Calculation. Example. crc16([0x20, 0x22])
-// *****************************************************************************************************
+/**
+ * CRC Calculation. Example. crc16([0x20, 0x22])
+ * @param {*} str 
+ */
 function crc16str(str) {
   return crc16(new Buffer(str));
 }
