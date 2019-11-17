@@ -354,7 +354,8 @@ function getTimestamp(datum) {
   if (!datum) {
     datum = new Date();
   }
-  let month = ('0' + datum.getUTCMonth()).slice(-2); // liefert 0 - 11
+  // let month = ('0' + datum.getUTCMonth()).slice(-2); // liefert 0 - 11
+  let month = (('0' + datum.getUTCMonth() + 1) < 10 ? '0' : '') + (datum.getMonth() + 1);
   let year = datum.getUTCFullYear(); // YYYY (startet nicht bei 0)
   let day = ('0' + datum.getUTCDate()).slice(-2); // liefert 1 - 31
   let hour = ('0' + datum.getUTCHours()).slice(-2); // liefert 0 - 23
