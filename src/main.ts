@@ -67,7 +67,7 @@ class sia extends utils.Adapter {
                 this.log.error(`Error (3): ${err}`);
             }
         });
-        this.siaclient.on('data', async (data: any) => {
+        this.siaclient.on('data', (data: any) => {
             if (data) {
                 this.log.debug(`Data: ${JSON.stringify(data)}`);
             }
@@ -108,8 +108,9 @@ class sia extends utils.Adapter {
      * @param id id of state
      * @param state state
      */
-    private async onStateChange(id: string, state: ioBroker.State | null | undefined): Promise<void> {
+    private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
         if (state && !state.ack) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const stateId = id.replace(`${this.namespace}.`, '');
         }
     }
@@ -120,10 +121,10 @@ class sia extends utils.Adapter {
      *
      * @param obj object
      */
-    private async onMessage(obj: ioBroker.Message): Promise<void> {
+    private onMessage(obj: ioBroker.Message): void {
         if (typeof obj === 'object' && obj.message) {
             switch (obj.command) {
-                case 'dial': {
+                case 'msg': {
                     break;
                 }
                 default:

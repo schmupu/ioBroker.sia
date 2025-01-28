@@ -1,7 +1,13 @@
+/**
+ * Interface sia
+ */
 export interface ifSIA {
     [index: string]: object;
 }
 
+/**
+ * Datatpoints
+ */
 export const dpSIA: ifSIA = {
     id: {
         type: 'string',

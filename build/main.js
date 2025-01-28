@@ -77,7 +77,7 @@ class sia extends utils.Adapter {
         this.log.error(`Error (3): ${err}`);
       }
     });
-    this.siaclient.on("data", async (data) => {
+    this.siaclient.on("data", (data) => {
       if (data) {
         this.log.debug(`Data: ${JSON.stringify(data)}`);
       }
@@ -113,7 +113,7 @@ class sia extends utils.Adapter {
    * @param id id of state
    * @param state state
    */
-  async onStateChange(id, state) {
+  onStateChange(id, state) {
     if (state && !state.ack) {
       const stateId = id.replace(`${this.namespace}.`, "");
     }
@@ -124,10 +124,10 @@ class sia extends utils.Adapter {
    *
    * @param obj object
    */
-  async onMessage(obj) {
+  onMessage(obj) {
     if (typeof obj === "object" && obj.message) {
       switch (obj.command) {
-        case "dial": {
+        case "msg": {
           break;
         }
         default:

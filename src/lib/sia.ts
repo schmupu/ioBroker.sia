@@ -763,12 +763,14 @@ export class sia extends EventEmitter {
                 const sia = this.parseSIA(data);
                 const ack = this.ackSIA(sia);
                 // set states only if ACK okay
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err: any, bytes: any) => {});
                 this.emit('sia', { sia, undefined });
                 this.adapter.log.info(`sending to ${remote.address} following message: ${ack.toString().trim()}`);
             } catch (err) {
                 const crcformat = this.getcrcFormat(data);
                 const ack = this.nackSIA(crcformat);
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err: any, bytes: any) => {});
                 this.emit('sia', undefined, tools.getErrorMessage(err));
             }
