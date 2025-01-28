@@ -14,7 +14,8 @@
                 "it": "Correzione di bug, modifica del calcolo del tempo per i messaggi ACK e NACK",
                 "es": "Corrección de errores, cambiando el cálculo del tiempo para mensajes ACK y NACK",
                 "pl": "Naprawianie błędów, zmiana obliczania czasu dla wiadomości ACK i NACK",
-                "zh-cn": "错误修正，更改ACK和NACK消息的时间计算"
+                "zh-cn": "错误修正，更改ACK和NACK消息的时间计算",
+                "uk": "Помилка, зміна розрахунку часу для повідомлень ACK та NACK"
             }
         },
         "titleLang": {
@@ -27,7 +28,8 @@
             "it": "Server SIA per allarmi anti-intrusione",
             "es": "Servidor SIA para alarmas antirrobo",
             "pl": "Serwer SIA do alarmów antywłamaniowych",
-            "zh-cn": "用于防盗警报的SIA服务器"
+            "zh-cn": "用于防盗警报的SIA服务器",
+            "uk": "Sia Server для крадіжок"
         },
         "desc": {
             "en": "ioBroker SIA Server Adapter for burglar alarms",
@@ -39,10 +41,18 @@
             "it": "ioBroker SIA Server Adapter per gli allarmi anti-intrusione",
             "es": "ioBroker SIA Server Adapter para alarmas antirrobo",
             "pl": "Adapter serwera SIA ioBroker do alarmów antywłamaniowych",
-            "zh-cn": "用于防盗报警的ioBroker SIA服务器适配器"
+            "zh-cn": "用于防盗报警的ioBroker SIA服务器适配器",
+            "uk": "Адаптер сервера iObroker SIA для тривоги"
         },
-        "authors": ["Thorsten Stueben <thorsten@stueben.de>"],
-        "keywords": ["sia", "burglar", "alarm", "iobroker"],
+        "authors": [
+            "Thorsten Stueben <thorsten@stueben.de>"
+        ],
+        "keywords": [
+            "sia",
+            "burglar",
+            "alarm",
+            "iobroker"
+        ],
         "licenseInformation": {
             "license": "MIT",
             "type": "free"
@@ -73,8 +83,12 @@
             }
         ]
     },
-    "protectedNative": ["keys.password"],
-    "encryptedNative": ["keys.password"],
+    "protectedNative": [
+        "keys.password"
+    ],
+    "encryptedNative": [
+        "keys.password"
+    ],
     "native": {
         "port": 50001,
         "bind": "0.0.0.0",
