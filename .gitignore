@@ -1,8 +1,18 @@
-.git
-.idea
+# No dot-directories except github/vscode
+.*/
+!.vscode/
+!.github/
+
+*.code-workspace
 node_modules
 nbproject
+
+# npm package files
+iobroker.*.tgz
+
+Thumbs.db
+.DS_Store
+
+# i18n intermediate files
 admin/i18n/flat.txt
 admin/i18n/*/flat.txt
-.DS_Store
-package-lock.json

@@ -1,26 +1,29 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    // Verwendet IntelliSense zum Ermitteln möglicher Attribute.
+    // Zeigen Sie auf vorhandene Attribute, um die zugehörigen Beschreibungen anzuzeigen.
+    // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
             "type": "node",
             "request": "launch",
             "name": "Programm starten",
-            "program": "${workspaceFolder}/sia.js",
+            "program": "${workspaceFolder}/build/main.js",
             "cwd": "${workspaceRoot}",
-            "args": [
-                "--debug", "--force", "--logs", "--trace-warnings"
-            ],
-            "outputCapture": "std"
+            "args": ["--debug", "--force", "--logs", "--trace-warnings", "--inspect-brk"],
+            "outputCapture": "std",
+            "preLaunchTask": "npm: build"
         },
         {
             "type": "node",
             "request": "attach",
-            "name": "An den Prozess anfügen",
-            "port": 5858
+            "name": "An den ioBroker Prozess anfügen",
+            "address": "localhost",
+            "port": 5858,
+            "localRoot": "${workspaceRoot}",
+            "smartStep": true,
+            "outputCapture": "std",
+            "skipFiles": ["<node_internals>/**"]
         }
     ]
 }
-
