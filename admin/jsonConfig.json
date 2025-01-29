@@ -101,7 +101,9 @@
                                 "width": "calc(100%)"
                             },
                             "visible": true,
-                            "repeat": false
+                            "repeat": false,
+                            "validator": "(!data.aes || data.password) && (data.aes || !data.password)",
+                            "validatorNoSaveOnError": true
                         },
                         {
                             "type": "checkbox",
@@ -125,7 +127,10 @@
                             "sort": false,
                             "style": {
                                 "width": "calc(100%)"
-                            }
+                            },
+                            "validator": "!data.hex || data.aes",
+                            "validatorNoSaveOnError": true,
+                            "disabled": "data.aes === false"
                         }
                     ]
                 }

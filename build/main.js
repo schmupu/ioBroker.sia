@@ -58,7 +58,7 @@ class sia extends utils.Adapter {
         timeout: this.config.timeout,
         host: this.config.bind,
         port: this.config.port,
-        adapter: this
+        logger: this.log
       });
       this.siaclient.setAccounts(accounts);
       this.siaclient.serverStartTCP();
@@ -82,7 +82,7 @@ class sia extends utils.Adapter {
       if (data) {
         this.log.debug(`Data: ${JSON.stringify(data)}`);
         if (this.config.save) {
-          const filename = `${tools.addSlashToPath(this.config.path)}sia_msg_${tools.getGuid()}.txt`;
+          const filename = `${tools.addSlashToPath(this.config.path)}sia_msg_${Date.now()}.txt`;
           try {
             fs.writeFileSync(filename, data, "binary");
             if (fs.existsSync(filename)) {
@@ -236,7 +236,7 @@ class sia extends utils.Adapter {
       const date = new Date(year, month - 1, day, hours, minutes, seconds);
       return date;
     } catch (err) {
-      throw new Error(`Ung\xFCltiges Zeitformat`);
+      throw new Error(`Ung\xFCltiges Zeitformat ${timeString}`);
     }
   }
   /**
@@ -248,12 +248,12 @@ class sia extends utils.Adapter {
     const obj = dp.dpSIA || {};
     let val = void 0;
     if (!(sia2 == null ? void 0 : sia2.act)) {
-      return;
+      throw new Error(`Accountnumber is missing in SIA message.`);
     }
     this.log.debug(`setStatesSIA for ${sia2.act} : ${JSON.stringify(sia2)}`);
     const id = `accounts.${this.getAcountNumberID(sia2.act)}`;
     if (!await this.objectExists(id)) {
-      return;
+      throw new Error(`Object ${id} for accountnumber ${sia2.act} is missing in SIA message.`);
     }
     for (const prop in obj) {
       const sid = `${id}.${prop}`;

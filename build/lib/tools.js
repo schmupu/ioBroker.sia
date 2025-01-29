@@ -34,6 +34,7 @@ __export(tools_exports, {
   getFilenameWithoutExtension: () => getFilenameWithoutExtension,
   getGuid: () => getGuid,
   isArray: () => isArray,
+  isHexString: () => isHexString,
   isObject: () => isObject,
   isWindow: () => isWindow,
   propertiesObjAinObjB: () => propertiesObjAinObjB,
@@ -52,6 +53,9 @@ function substr(text, start, length) {
   length = length === void 0 || length > text.length ? text.length : length;
   const retstr = text.substring(start, start + length);
   return retstr;
+}
+function isHexString(text) {
+  return /^[0-9A-Fa-f]+$/.test(text);
 }
 function getGuid() {
   function _p8(s) {
@@ -155,6 +159,7 @@ function propertiesObjAinObjB(obja, objb) {
   getFilenameWithoutExtension,
   getGuid,
   isArray,
+  isHexString,
   isObject,
   isWindow,
   propertiesObjAinObjB,

@@ -29,6 +29,16 @@ export function substr(text: string, start: number, length?: number): string {
 }
 
 /**
+ * Checks if a text contains only letters between 0-9, a-f or A-F
+ *
+ * @param text to check
+ * @returns true or false
+ */
+export function isHexString(text: string): boolean {
+    return /^[0-9A-Fa-f]+$/.test(text);
+}
+
+/**
  *
  * @returns guid
  */

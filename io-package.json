@@ -1,9 +1,22 @@
 {
     "common": {
         "name": "sia",
-        "version": "2.0.1",
+        "version": "2.0.2",
         "tier": 3,
         "news": {
+            "2.0.2": {
+                "en": "Bug fixing and some new features",
+                "de": "Fehlerbehebung und einige neue Funktionen",
+                "ru": "Исправление ошибок и некоторые новые функции",
+                "pt": "Corrigação de bugs e alguns novos recursos",
+                "nl": "Bug -fixing en enkele nieuwe functies",
+                "fr": "Fixation de bogues et de nouvelles fonctionnalités",
+                "it": "Fissaggio di bug e alcune nuove funzionalità",
+                "es": "Corrección de errores y algunas características nuevas",
+                "pl": "Naprawienie błędów i kilka nowych funkcji",
+                "uk": "Виправлення помилок та деякі нові функції",
+                "zh-cn": "错误修复和一些新功能"
+            },
             "2.0.1": {
                 "en": "Redesign of SIA adapter",
                 "de": "Neugestaltung des SIA -Adapters",

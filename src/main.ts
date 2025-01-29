@@ -48,7 +48,7 @@ class sia extends utils.Adapter {
                 timeout: this.config.timeout,
                 host: this.config.bind,
                 port: this.config.port,
-                adapter: this,
+                logger: this.log,
             });
             this.siaclient.setAccounts(accounts);
             this.siaclient.serverStartTCP();
@@ -72,7 +72,7 @@ class sia extends utils.Adapter {
             if (data) {
                 this.log.debug(`Data: ${JSON.stringify(data)}`);
                 if (this.config.save) {
-                    const filename = `${tools.addSlashToPath(this.config.path)}sia_msg_${tools.getGuid()}.txt`;
+                    const filename = `${tools.addSlashToPath(this.config.path)}sia_msg_${Date.now()}.txt`;
                     try {
                         fs.writeFileSync(filename, data, 'binary');
                         if (fs.existsSync(filename)) {
@@ -243,7 +243,7 @@ class sia extends utils.Adapter {
             return date;
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
-            throw new Error(`Ungültiges Zeitformat`);
+            throw new Error(`Ungültiges Zeitformat ${timeString}`);
         }
     }
 
@@ -256,12 +256,12 @@ class sia extends utils.Adapter {
         const obj = dp.dpSIA || {};
         let val: any = undefined;
         if (!sia?.act) {
-            return;
+            throw new Error(`Accountnumber is missing in SIA message.`);
         }
         this.log.debug(`setStatesSIA for ${sia.act} : ${JSON.stringify(sia)}`);
         const id = `accounts.${this.getAcountNumberID(sia.act)}`;
         if (!(await this.objectExists(id))) {
-            return;
+            throw new Error(`Object ${id} for accountnumber ${sia.act} is missing in SIA message.`);
         }
         for (const prop in obj) {
             const sid = `${id}.${prop}`;

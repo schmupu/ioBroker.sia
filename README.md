@@ -73,6 +73,12 @@ cat /tmp/sia/sia_msg_fa165cc0-8e3a-faa1-eb5c-fd3e47479044.txt | nc localhost 550
 ```
 
 ## Changelog
+
+### 2.0.2 (2025-01-30)
+
+- (Stübi) add: checking accountnumber for exact syntax
+- (Stübi) add: checking admin interface aes entries
+
 ### 2.0.1 (2025-01-29)
 
 - (Stübi) Redesign of Contact ID Adapter.
@@ -84,7 +90,7 @@ cat /tmp/sia/sia_msg_fa165cc0-8e3a-faa1-eb5c-fd3e47479044.txt | nc localhost 550
 
 - (Stübi) Major Release
 
-### 1.0.4 (17.11.2019)
+### 1.0.4 (2019-11-17)
 
 - (Stübi) Bugfixing, changing the time calculation for ACK and NACK messages
 - (Stübi) Small improvements to the SIA protocol
