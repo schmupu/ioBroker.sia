@@ -73,12 +73,17 @@ cat /tmp/sia/sia_msg_fa165cc0-8e3a-faa1-eb5c-fd3e47479044.txt | nc localhost 550
 ```
 
 ## Changelog
-### 2.0.0 (2025-01-29)
+
+### **WORK IN PROGRESS**
 
 - (Stübi) Redesign of Contact ID Adapter.
 - (Stübi) Wokring now with nodejs 20 and 22
 - (Stübi) js-controller in version 6 and 7 will be supported
 - (Stübi) Ability to save SIA messages.
+
+### 2.0.0 (2025-01-29)
+
+- (Stübi) Major Release
 
 ### 1.0.4 (17.11.2019)
 
