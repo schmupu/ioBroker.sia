@@ -24,7 +24,9 @@
         "node": ">= 20"
     },
     "dependencies": {
-        "@iobroker/adapter-core": "^3.2.3"
+        "@iobroker/adapter-core": "^3.2.3",
+        "node-ssh": "^13.2.0",
+        "axios": "^1.7.9"
     },
     "devDependencies": {
         "@alcalzone/release-script": "^3.8.0",
