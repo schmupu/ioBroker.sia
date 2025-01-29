@@ -73,8 +73,7 @@ cat /tmp/sia/sia_msg_fa165cc0-8e3a-faa1-eb5c-fd3e47479044.txt | nc localhost 550
 ```
 
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 2.0.0 (2025-01-29)
 
 - (Stübi) Redesign of Contact ID Adapter.
 - (Stübi) Wokring now with nodejs 20 and 22
