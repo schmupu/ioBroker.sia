@@ -1,9 +1,22 @@
 {
     "common": {
         "name": "sia",
-        "version": "2.0.0",
+        "version": "2.0.1",
         "tier": 3,
         "news": {
+            "2.0.1": {
+                "en": "Redesign of SIA adapter",
+                "de": "Neugestaltung des SIA -Adapters",
+                "ru": "Редизайна адаптера SIA",
+                "pt": "Redesenho do adaptador SIA",
+                "nl": "Herontwerp van SIA -adapter",
+                "fr": "Refonte de l'adaptateur SIA",
+                "it": "Riprogettazione dell'adattatore SIA",
+                "es": "Rediseño del adaptador SIA",
+                "pl": "Przeprojektowanie adaptera SIA",
+                "uk": "Переробка адаптера SIA",
+                "zh-cn": "SIA适配器的重新设计"
+            },
             "2.0.0": {
                 "en": "Major updates",
                 "de": "Hauptaktualisierungen",
