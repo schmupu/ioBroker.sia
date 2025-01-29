@@ -1,0 +1,6 @@
+chore: release v2.0.0
+
+- (Stübi) Redesign of Contact ID Adapter.
+- (Stübi) Wokring now with nodejs 20 and 22
+- (Stübi) js-controller in version 6 and 7 will be supported
+- (Stübi) Ability to save SIA messages.
