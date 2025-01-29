@@ -221,6 +221,33 @@ class sia extends utils.Adapter {
     }
 
     /**
+     * convert timestring from format HH:MM:SS,MM-DD-YYYY to Date()
+     *
+     * @param timeString in format HH:MM:SS,MM-DD-YYYY
+     * @returns Date
+     */
+    private convertToUnixTime(timeString: string): Date {
+        // Zerlege den String in seine Bestandteile
+        const regex = /(\d{2}):(\d{2}):(\d{2}),(\d{2})-(\d{2})-(\d{4})/;
+        const match = timeString.match(regex);
+        if (!match) {
+            throw new Error(`Ungültiges Zeitformat`);
+        }
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const [_, hours, minutes, seconds, month, day, year] = match.map(Number);
+            // Erstelle ein Date-Objekt (Monate in JS sind 0-basiert, daher -1)
+            const date = new Date(year, month - 1, day, hours, minutes, seconds);
+            // Unix-Timestamp in Sekunden zurückgeben
+            // return Math.floor(date.getTime() / 1000);
+            return date;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (err) {
+            throw new Error(`Ungültiges Zeitformat`);
+        }
+    }
+
+    /**
      * Set state for SIA message
      *
      * @param sia - SIA Message
@@ -261,7 +288,12 @@ class sia extends utils.Adapter {
                     val = sia.data_extended;
                     break;
                 case 'ts':
-                    val = sia.ts;
+                    try {
+                        val = this.convertToUnixTime(sia.ts).toString();
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    } catch (err) {
+                        val = sia.ts;
+                    }
                     break;
                 case 'crc':
                     val = sia.crc;

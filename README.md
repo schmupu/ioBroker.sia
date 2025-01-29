@@ -62,9 +62,15 @@ In the issue I need the following information:
 2. The SIA message as a file. You can create a file if you activate it in the instance configuration.
 3. If you use encryption (AES), then I need the key to decrypt the message again.
 4. The debug output from ioBroker when processing the message
-5. Detailed description of the error
+5. Detailed description of the bug
 
 After you have completed points 2 and 3, please change the key.
+You can test saved SIA message with following command
+
+```
+# cat fileanme_of_sia_message | nc ip_address_of_iobroker sia_port
+cat /tmp/sia/sia_msg_fa165cc0-8e3a-faa1-eb5c-fd3e47479044.txt | nc localhost 55001
+```
 
 ## Changelog
 

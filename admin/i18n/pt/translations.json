@@ -1,1 +1,17 @@
-{}
+{
+    "Path for saving SIA messages": "Caminho para salvar mensagens da SIA",
+    "ACK Timeout": "Timeout de ACK",
+    "AES encrypting": "Aes criptografando",
+    "AES password": "Senha AES",
+    "AES password in Hex": "Senha AES em formato hexadecimal",
+    "Accountnumber": "número de conta",
+    "Listen IP": "Address IP",
+    "Main settings": "Configurações principais",
+    "Listen Port": "Porta",
+    "Accounts": "Contas",
+    "alarmsystem": "Alarmsystem",
+    "bind": "Vincular o endereço IP",
+    "on save adapter restarts with new config immediately": "Salvar reinicializa o adaptador com nova configuração imediatamente",
+    "subscriber": "Assinante",
+    "Save incomming SIA messages": "Salvar mensagens SIA incríveis"
+}

@@ -1,1 +1,17 @@
-{}
+{
+    "Path for saving SIA messages": "Ścieżka zapisywania wiadomości SIA",
+    "ACK Timeout": "Limit czasu ACK",
+    "AES encrypting": "Szyfrowanie AES",
+    "AES password": "Hasło AES",
+    "AES password in Hex": "Hasło AES w formacie sześciokątnym",
+    "Accountnumber": "numer konta",
+    "Listen IP": "Zakład IP",
+    "Main settings": "Główne ustawienia",
+    "Listen Port": "Port",
+    "Accounts": "Konta",
+    "alarmsystem": "Alarmsystem",
+    "bind": "Powiązaj zaatakiem IP",
+    "on save adapter restarts with new config immediately": "Podczas zapisu adaptera ponownie uruchamia się z nową konfiguracją",
+    "subscriber": "Abonent",
+    "Save incomming SIA messages": "Zapisz wywołujące wiadomości SIA"
+}

@@ -1,1 +1,17 @@
-{}
+{
+    "ACK Timeout": "ACK Timeout",
+    "AES encrypting": "AES encrypting",
+    "AES password": "AES password",
+    "AES password in Hex": "AES password in Hex format",
+    "Accountnumber": "account number",
+    "Listen IP": "IP-Address",
+    "Main settings": "Main settings",
+    "Listen Port": "Port",
+    "Accounts": "Accounts",
+    "alarmsystem": "alarmsystem",
+    "bind": "Bind IP-Address",
+    "on save adapter restarts with new config immediately": "on save adapter restarts with new config immediately",
+    "subscriber": "Subscriber",
+    "Path for saving SIA messages": "Path for saving SIA messages",
+    "Save incomming SIA messages": "Save incomming SIA messages"
+}

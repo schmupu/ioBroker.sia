@@ -1,1 +1,17 @@
-{}
+{
+    "Path for saving SIA messages": "Path pour enregistrer les messages SIA",
+    "ACK Timeout": "Délai d'expiration",
+    "AES encrypting": "Cryport",
+    "AES password": "Mot de passe AES",
+    "AES password in Hex": "Mot de passe AES au format hexadécimal",
+    "Accountnumber": "numéro de compte",
+    "Listen IP": "Adresse IP",
+    "Main settings": "Paramètres principaux",
+    "Listen Port": "Port",
+    "Accounts": "Comptes",
+    "alarmsystem": "système d'alarme",
+    "bind": "Bind IP-Address",
+    "on save adapter restarts with new config immediately": "sur les redémarrages de l'adaptateur enregistré avec une nouvelle configuration immédiatement",
+    "subscriber": "Abonné",
+    "Save incomming SIA messages": "Enregistrer les messages SIA incorporés"
+}

@@ -220,6 +220,26 @@ class sia extends utils.Adapter {
     }
   }
   /**
+   * convert timestring from format HH:MM:SS,MM-DD-YYYY to Date()
+   *
+   * @param timeString in format HH:MM:SS,MM-DD-YYYY
+   * @returns Date
+   */
+  convertToUnixTime(timeString) {
+    const regex = /(\d{2}):(\d{2}):(\d{2}),(\d{2})-(\d{2})-(\d{4})/;
+    const match = timeString.match(regex);
+    if (!match) {
+      throw new Error(`Ung\xFCltiges Zeitformat`);
+    }
+    try {
+      const [_, hours, minutes, seconds, month, day, year] = match.map(Number);
+      const date = new Date(year, month - 1, day, hours, minutes, seconds);
+      return date;
+    } catch (err) {
+      throw new Error(`Ung\xFCltiges Zeitformat`);
+    }
+  }
+  /**
    * Set state for SIA message
    *
    * @param sia - SIA Message
@@ -260,7 +280,11 @@ class sia extends utils.Adapter {
           val = sia2.data_extended;
           break;
         case "ts":
-          val = sia2.ts;
+          try {
+            val = this.convertToUnixTime(sia2.ts).toString();
+          } catch (err) {
+            val = sia2.ts;
+          }
           break;
         case "crc":
           val = sia2.crc;

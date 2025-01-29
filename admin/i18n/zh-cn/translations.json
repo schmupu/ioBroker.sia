@@ -1,1 +1,17 @@
-{}
+{
+    "Path for saving SIA messages": "保存SIA消息的路径",
+    "ACK Timeout": "ACK超时",
+    "AES encrypting": "AES加密",
+    "AES password": "AES密码",
+    "AES password in Hex": "AES格式的AES密码",
+    "Accountnumber": "帐号",
+    "Listen IP": "IP地址",
+    "Main settings": "主要设置",
+    "Listen Port": "港口",
+    "Accounts": "帐户",
+    "alarmsystem": "警报系统",
+    "bind": "绑定IP地址",
+    "on save adapter restarts with new config immediately": "在保存适配器上，请立即使用新的配置重新启动",
+    "subscriber": "订户",
+    "Save incomming SIA messages": "保存不断的SIA消息"
+}
