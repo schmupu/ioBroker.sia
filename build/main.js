@@ -22,6 +22,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var utils = __toESM(require("@iobroker/adapter-core"));
+var fs = __toESM(require("fs"));
 var dp = __toESM(require("./lib/datapoints"));
 var siamanager = __toESM(require("./lib/sia"));
 var tools = __toESM(require("./lib/tools"));
@@ -54,12 +55,12 @@ class sia extends utils.Adapter {
     const accounts = this.config.keys;
     try {
       this.siaclient = new siamanager.sia({
-        accounts,
         timeout: this.config.timeout,
         host: this.config.bind,
         port: this.config.port,
         adapter: this
       });
+      this.siaclient.setAccounts(accounts);
       this.siaclient.serverStartTCP();
       this.siaclient.serverStartUDP();
     } catch (err) {
@@ -80,6 +81,21 @@ class sia extends utils.Adapter {
     this.siaclient.on("data", (data) => {
       if (data) {
         this.log.debug(`Data: ${JSON.stringify(data)}`);
+        if (this.config.save) {
+          const filename = `${tools.addSlashToPath(this.config.path)}sia_msg_${tools.getGuid()}.txt`;
+          try {
+            fs.writeFileSync(filename, data, "binary");
+            if (fs.existsSync(filename)) {
+              this.log.info(`Save SIA message to ${filename}`);
+            } else {
+              this.log.error(`Could not write SIA message to file ${filename}.`);
+            }
+          } catch (err) {
+            this.log.error(
+              `Could not write SIA message to file ${filename}. ${tools.getErrorMessage(err)}`
+            );
+          }
+        }
       }
     });
   }

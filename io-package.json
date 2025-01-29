@@ -44,15 +44,8 @@
             "zh-cn": "用于防盗报警的ioBroker SIA服务器适配器",
             "uk": "Адаптер сервера iObroker SIA для тривоги"
         },
-        "authors": [
-            "Thorsten Stueben <thorsten@stueben.de>"
-        ],
-        "keywords": [
-            "sia",
-            "burglar",
-            "alarm",
-            "iobroker"
-        ],
+        "authors": ["Thorsten Stueben <thorsten@stueben.de>"],
+        "keywords": ["sia", "burglar", "alarm", "iobroker"],
         "licenseInformation": {
             "license": "MIT",
             "type": "free"
@@ -83,16 +76,14 @@
             }
         ]
     },
-    "protectedNative": [
-        "keys.password"
-    ],
-    "encryptedNative": [
-        "keys.password"
-    ],
+    "protectedNative": ["keys.password"],
+    "encryptedNative": ["keys.password"],
     "native": {
-        "port": 50001,
+        "port": 55001,
         "bind": "0.0.0.0",
         "timeout": 0,
+        "path": "/tmp/sia/",
+        "save": false,
         "keys": [
             {
                 "accountnumber": "test",

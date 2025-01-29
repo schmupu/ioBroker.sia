@@ -39,6 +39,28 @@
                     "xs": 12,
                     "label": "ACK Timeout",
                     "newLine": true
+                },
+                "path": {
+                    "newLine": true,
+                    "type": "text",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4,
+                    "xs": 12,
+                    "help": "Path for saving SIA messages",
+                    "validator": "!data.save || data.path",
+                    "validatorNoSaveOnError": true
+                },
+                "save": {
+                    "type": "checkbox",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4,
+                    "xs": 12,
+                    "label": "Save incomming SIA messages",
+                    "tooltip": "Save incomming SIA messages"
                 }
             }
         },

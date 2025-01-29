@@ -11,7 +11,7 @@
 
 [![NPM](https://nodei.co/npm/iobroker.sia.png?downloads=true)](https://nodei.co/npm/iobroker.sia/)
 
-Requires node.js 6.0 or higher and Admin v3!
+Requires node.js 20.0 or higher and Admin v5!
 
 The protocol SIA DC-09 is used by alarm systems to communicate with the central stations.
 
@@ -35,10 +35,10 @@ In the field ACK timeout, you define how old the message can be in sec. If you d
 
 3. Configure your burglar system to send SIA messages
 
-    - Lupusec XT1+/XT2/XT2+/XT3:
+    - Lupusec XT1+/XT2/XT2+/XT3/XT4:
 
         Einstellungen -> Contact ID : ip://subcriber@ip-address-iobroker:port/SIA
-        Example: ip://test@192.168.20.1:50001/SIA
+        Example: ip://test@192.168.20.1:55001/SIA
 
         ![sia_lupusec1](admin/sia_lupusec1.png)
 
@@ -49,9 +49,22 @@ In the field ACK timeout, you define how old the message can be in sec. If you d
 
 4. SIA Objects / States
 
-If you receive SIA messages you see them in the states tree
+If you receive SIA messages, you see them in the states tree under the chanel accounts
 
 ![sia_adapter3](admin/sia_adapter3.png)
+
+5. Problems / Issues
+
+If you have problems processing SIA messages, please create an issue.
+In the issue I need the following information:
+
+1. Manufacturer and type of alarm system
+2. The SIA message as a file. You can create a file if you activate it in the instance configuration.
+3. If you use encryption (AES), then I need the key to decrypt the message again.
+4. The debug output from ioBroker when processing the message
+5. Detailed description of the error
+
+After you have completed points 2 and 3, please change the key.
 
 ## Changelog
 
@@ -60,6 +73,7 @@ If you receive SIA messages you see them in the states tree
 - (Stübi) Redesign of Contact ID Adapter.
 - (Stübi) Wokring now with nodejs 20 and 22
 - (Stübi) js-controller in version 6 and 7 will be supported
+- (Stübi) Ability to save SIA messages.
 
 ### 1.0.4 (17.11.2019)
 

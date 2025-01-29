@@ -5,6 +5,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from '@iobroker/adapter-core';
+import * as fs from 'fs';
 import * as dp from './lib/datapoints';
 import * as siamanager from './lib/sia';
 import * as tools from './lib/tools';
@@ -44,12 +45,12 @@ class sia extends utils.Adapter {
         const accounts: siamanager.ifaccount[] = this.config.keys as any;
         try {
             this.siaclient = new siamanager.sia({
-                accounts: accounts,
                 timeout: this.config.timeout,
                 host: this.config.bind,
                 port: this.config.port,
                 adapter: this,
             });
+            this.siaclient.setAccounts(accounts);
             this.siaclient.serverStartTCP();
             this.siaclient.serverStartUDP();
         } catch (err) {
@@ -70,6 +71,21 @@ class sia extends utils.Adapter {
         this.siaclient.on('data', (data: any) => {
             if (data) {
                 this.log.debug(`Data: ${JSON.stringify(data)}`);
+                if (this.config.save) {
+                    const filename = `${tools.addSlashToPath(this.config.path)}sia_msg_${tools.getGuid()}.txt`;
+                    try {
+                        fs.writeFileSync(filename, data, 'binary');
+                        if (fs.existsSync(filename)) {
+                            this.log.info(`Save SIA message to ${filename}`);
+                        } else {
+                            this.log.error(`Could not write SIA message to file ${filename}.`);
+                        }
+                    } catch (err) {
+                        this.log.error(
+                            `Could not write SIA message to file ${filename}. ${tools.getErrorMessage(err)}`,
+                        );
+                    }
+                }
             }
         });
     }

@@ -7,6 +7,8 @@ declare global {
             port: number;
             bind: string;
             timeout: number;
+            path: string;
+            save: boolean;
             keys: {
                 accountnumber: string;
                 aes: boolean;

@@ -54,17 +54,19 @@ class sia extends import_events.EventEmitter {
    */
   constructor(parameter) {
     super();
-    this.accounts = parameter.accounts;
     this.timeout = parameter.timeout === void 0 ? 10 : parameter.timeout;
     this.adapter = parameter.adapter;
     this.host = parameter.host;
     this.port = parameter.port;
-    this.init();
+    this.accounts = [];
   }
   /**
-   * Init function
+   * Set accounts
+   *
+   * @param accounts accounts
    */
-  init() {
+  setAccounts(accounts) {
+    this.accounts = accounts;
     for (const account of this.accounts) {
       if (account.aes === true) {
         if (account.hex === true) {
@@ -77,6 +79,9 @@ class sia extends import_events.EventEmitter {
           );
         }
       }
+    }
+    if (this.accounts.length === 0) {
+      throw new Error(`Accounts are missing!`);
     }
   }
   /**
@@ -229,7 +234,7 @@ class sia extends import_events.EventEmitter {
    * @param crcformat crcformat
    * @returns NAK Message
    */
-  nackSIA(crcformat) {
+  createNACK(crcformat) {
     const ts = this.getTimestamp();
     const str = `"NAK"0000R0L0A0[]${ts}`;
     const crc = this.crc16str(str);
@@ -249,7 +254,7 @@ class sia extends import_events.EventEmitter {
     const lenbuf = Buffer.from(lenhex);
     const buf = Buffer.from(str);
     const nack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
-    this.adapter.log.debug(`nackSIA : ${JSON.stringify(nack)}`);
+    this.adapter.log.debug(`createNACK : ${JSON.stringify(nack)}`);
     return nack;
   }
   /**
@@ -273,13 +278,13 @@ class sia extends import_events.EventEmitter {
    * @param sia - SIA Message
    * @returns ack message
    */
-  ackSIA(sia2) {
+  createACK(sia2) {
     if (sia2) {
       const ts = this.getTimestamp();
       const cfg = this.getAcctInfo(sia2.act);
       let str = "";
-      this.adapter.log.debug(`ackSIA (cfg) : ${JSON.stringify(cfg)}`);
-      this.adapter.log.debug(`ackSIA (sia) : ${JSON.stringify(sia2)}`);
+      this.adapter.log.debug(`createACK (cfg) : ${JSON.stringify(cfg)}`);
+      this.adapter.log.debug(`createACK (sia) : ${JSON.stringify(sia2)}`);
       if (sia2.crc == sia2.calc_crc && sia2.len == sia2.calc_len && cfg && this.isInTime(sia2.ts)) {
         const rpref = sia2.rpref && sia2.rpref.length > 0 ? `R${sia2.rpref}` : "";
         const lpref = sia2.lpref && sia2.lpref.length > 0 ? `L${sia2.lpref}` : "";
@@ -301,15 +306,15 @@ class sia extends import_events.EventEmitter {
         let crcbuf;
         if (sia2 && sia2.crcformat === "bin") {
           crcbuf = Buffer.from([crc >>> 8 & 255, crc & 255]);
-          this.adapter.log.info(`Created ACK : <0x0A><0x${crchex}>${lenhex}${str}<0x0D>`);
+          this.adapter.log.debug(`Created ACK : <0x0A><0x${crchex}>${lenhex}${str}<0x0D>`);
         } else {
           crcbuf = Buffer.from(crchex);
-          this.adapter.log.info(`Created ACK : <0x0A>${crchex}${lenhex}${str}<0x0D>`);
+          this.adapter.log.debug(`Created ACK : <0x0A>${crchex}${lenhex}${str}<0x0D>`);
         }
         const lenbuf = Buffer.from(lenhex);
         const buf = Buffer.from(str);
         const ack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
-        this.adapter.log.debug(`ackSIA : ${JSON.stringify(ack)}`);
+        this.adapter.log.debug(`createACK : ${JSON.stringify(ack)}`);
         return ack;
       }
     }
@@ -375,115 +380,6 @@ class sia extends import_events.EventEmitter {
    * @param data - SIA Message
    * @returns parsed sia data
    */
-  parseSIA_old(data) {
-    data = this.deleteAppendingZero(data);
-    const sia2 = {};
-    const len = data.length - 1;
-    let str = null;
-    let m = null;
-    let regex = null;
-    if (data && data[0] == 10 && data[len] == 13) {
-      sia2.data = data;
-      sia2.lf = data[0];
-      if (data[5] == "0".charCodeAt(0) && data[9] == '"'.charCodeAt(0)) {
-        str = Buffer.from(data.subarray(9, len));
-        sia2.len = parseInt(data.toString().substring(5, 9), 16);
-        sia2.crc = parseInt(data.toString().substring(1, 5), 16);
-        sia2.crcformat = "hex";
-      }
-      if (data[3] == "0".charCodeAt(0) && data[7] == '"'.charCodeAt(0)) {
-        str = Buffer.from(data.subarray(7, len));
-        sia2.len = parseInt(data.toString().substring(3, 7), 16);
-        sia2.crc = data[1] * 256 + data[2];
-        sia2.crcformat = "bin";
-      }
-      this.adapter.log.debug(`data : ${data}`);
-      sia2.cr = data[len];
-      if (!str) {
-        return void 0;
-      }
-      sia2.str = str.toString() || "";
-      sia2.calc_len = str.length;
-      sia2.calc_crc = this.crc16str(str);
-      const crchex = `0000${sia2.crc.toString(16)}`.slice(-4).toUpperCase();
-      const lenhex = `0000${sia2.len.toString(16)}`.slice(-4).toUpperCase();
-      if (sia2.crcformat === "bin") {
-        this.adapter.log.info(`SIA Message : <0x0A><0x${crchex}>${lenhex}${str.toString()}<0x0D>`);
-      } else {
-        this.adapter.log.info(`SIA Message : <0x0A>${crchex}${lenhex}${str.toString()}<0x0D>`);
-      }
-      this.adapter.log.debug(`parseSIA sia.str : ${sia2.str}`);
-      if (sia2.calc_len != sia2.len || sia2.calc_crc != sia2.crc) {
-        this.adapter.log.info("CRC or Length different to the caclulated values");
-        this.adapter.log.debug(`SIA crc= ${sia2.crc}, calc_crc=${sia2.calc_crc}`);
-        this.adapter.log.debug(`SIA len= ${sia2.len}, calc_len=${sia2.calc_len}`);
-        this.adapter.log.debug(`Message for CRC and LEN calculation${sia2.str}`);
-        this.adapter.log.debug(`Message for CRC and LEN calculation (String)${sia2.str.toString()}`);
-        return void 0;
-      }
-      regex = /"(.+)"(\d{4})(R(.{0,6})){0,1}(L(.{0,6}))#([\w\d]+)\[(.+)/gm;
-      if ((m = regex.exec(sia2.str)) !== null && m.length >= 8) {
-        let lpref = void 0;
-        this.adapter.log.debug(`parseSIA regex   : ${JSON.stringify(sia2)}`);
-        sia2.id = m[1] || void 0;
-        sia2.seq = m[2] || void 0;
-        sia2.rpref = m[4] || "";
-        if (m[5] === "L") {
-          lpref = 0;
-        }
-        sia2.lpref = m[6] || lpref;
-        sia2.act = m[7] || void 0;
-        sia2.pad = "";
-        let msg = m[8] || "";
-        const cfg = this.getAcctInfo(sia2.act);
-        if (!cfg) {
-          this.adapter.log.info(`Could not found entries for accountnumber ${sia2.act} in the configuration`);
-          return void 0;
-        }
-        if (sia2.id && sia2.id[0] == "*") {
-          if (cfg.aes == true && cfg.password) {
-            msg = this.decrypt_hex(cfg.password, msg);
-            if (msg) {
-              const padlen = msg.indexOf("|");
-              sia2.pad = msg.substring(0, padlen);
-              msg = msg.substring(padlen + 1);
-              this.adapter.log.info(`SIA Message decrypted part: ${msg}`);
-            } else {
-              this.adapter.log.info("Could not decrypt message");
-              return void 0;
-            }
-          } else {
-            this.adapter.log.info(
-              "Could not decrypt message, because AES encrypting disabled or password is missing"
-            );
-            return void 0;
-          }
-        }
-        if (sia2.id && sia2.id[0] != "*" && cfg.aes == true) {
-          this.adapter.log.info("Encrypting enabled, message was sent not entcrypted");
-          return void 0;
-        }
-        regex = /(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
-        if ((m = regex.exec(msg)) !== null && m.length >= 1) {
-          sia2.data_message = m[1] || "";
-          sia2.data_extended = m[3] || "";
-          sia2.ts = m[5] || "";
-        }
-      }
-    }
-    this.adapter.log.debug(`parseSIA : ${JSON.stringify(sia2)}`);
-    if (sia2 && sia2.id && sia2.seq && sia2.lpref && sia2.act && sia2.pad != void 0) {
-      return sia2;
-    }
-    this.adapter.log.info("Required SIA fields missing");
-    return void 0;
-  }
-  /**
-   * parse SIA message
-   *
-   * @param data - SIA Message
-   * @returns parsed sia data
-   */
   parseSIA(data) {
     data = this.deleteAppendingZero(data);
     const datalen = data.length - 1;
@@ -534,13 +430,13 @@ class sia extends import_events.EventEmitter {
       const crchex = `0000${sia2.crc.toString(16)}`.slice(-4).toUpperCase();
       const lenhex = `0000${sia2.len.toString(16)}`.slice(-4).toUpperCase();
       if (sia2.crcformat === "bin") {
-        this.adapter.log.info(`SIA Message : <0x0A><0x${crchex}>${lenhex}${str.toString()}<0x0D>`);
+        this.adapter.log.debug(`SIA Message : <0x0A><0x${crchex}>${lenhex}${str.toString()}<0x0D>`);
       } else {
-        this.adapter.log.info(`SIA Message : <0x0A>${crchex}${lenhex}${str.toString()}<0x0D>`);
+        this.adapter.log.debug(`SIA Message : <0x0A>${crchex}${lenhex}${str.toString()}<0x0D>`);
       }
       this.adapter.log.debug(`parseSIA sia.str : ${sia2.str}`);
       if (sia2.calc_len != sia2.len || sia2.calc_crc != sia2.crc) {
-        this.adapter.log.info("CRC or Length different to the caclulated values");
+        this.adapter.log.debug("CRC or Length different to the caclulated values");
         this.adapter.log.debug(`SIA crc= ${sia2.crc}, calc_crc=${sia2.calc_crc}`);
         this.adapter.log.debug(`SIA len= ${sia2.len}, calc_len=${sia2.calc_len}`);
         this.adapter.log.debug(`Message for CRC and LEN calculation${sia2.str}`);
@@ -575,7 +471,7 @@ class sia extends import_events.EventEmitter {
               const padlen = msg.indexOf("|");
               sia2.pad = msg.substring(0, padlen);
               msg = msg.substring(padlen + 1);
-              this.adapter.log.info(`SIA Message decrypted part: ${msg}`);
+              this.adapter.log.debug(`SIA Message decrypted part: ${msg}`);
             } else {
               throw new Error(`Could not parse SIA message. Could not decrypt message`);
             }
@@ -618,15 +514,20 @@ class sia extends import_events.EventEmitter {
           );
           this.emit("data", data);
           const sia2 = this.parseSIA(data);
-          const ack = this.ackSIA(sia2);
+          const ack = this.createACK(sia2);
           sock.end(ack);
           this.emit("sia", sia2, void 0);
-          this.adapter.log.info(`sending to ${remoteAddress} following message: ${ack.toString().trim()}`);
+          this.adapter.log.info(
+            `sending to ${remoteAddress} following ACK message: ${ack.toString().trim()}`
+          );
         } catch (err) {
           const crcformat = this.getcrcFormat(data);
-          const ack = this.nackSIA(crcformat);
+          const ack = this.createNACK(crcformat);
           sock.end(ack);
           this.emit("sia", void 0, tools.getErrorMessage(err));
+          this.adapter.log.info(
+            `sending to ${remoteAddress} following NACK message: ${ack.toString().trim()}`
+          );
         }
       });
       sock.on("close", () => {
@@ -637,8 +538,7 @@ class sia extends import_events.EventEmitter {
       });
     });
     servertcp.listen(this.port, this.host, () => {
-      const text = `SIA Server listening on IP-Adress (TCP): ${this.host}:${this.port}`;
-      this.adapter.log.info(text);
+      this.adapter.log.info(`SIA Server listening on IP-Adress (TCP): ${this.host}:${this.port}`);
     });
   }
   /**
@@ -652,17 +552,18 @@ class sia extends import_events.EventEmitter {
         this.adapter.log.info(`received from ${remote.address} following message: ${data.toString().trim()}`);
         this.emit("data", data);
         const sia2 = this.parseSIA(data);
-        const ack = this.ackSIA(sia2);
+        const ack = this.createACK(sia2);
         serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err, bytes) => {
         });
         this.emit("sia", { sia: sia2, undefined: void 0 });
-        this.adapter.log.info(`sending to ${remote.address} following message: ${ack.toString().trim()}`);
+        this.adapter.log.info(`sending to ${remote.address} following ACK message: ${ack.toString().trim()}`);
       } catch (err) {
         const crcformat = this.getcrcFormat(data);
-        const ack = this.nackSIA(crcformat);
+        const ack = this.createNACK(crcformat);
         serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err2, bytes) => {
         });
         this.emit("sia", void 0, tools.getErrorMessage(err));
+        this.adapter.log.info(`sending to ${remote.address} following NACK message: ${ack.toString().trim()}`);
       }
     });
     serverudp.on("close", () => {
@@ -673,8 +574,9 @@ class sia extends import_events.EventEmitter {
       serverudp.close();
     });
     serverudp.bind(this.port, this.host, () => {
-      const text = `SIA Server listening on IP-Adress (UDP): ${serverudp.address().address}:${serverudp.address().port}`;
-      this.adapter.log.info(text);
+      this.adapter.log.info(
+        `SIA Server listening on IP-Adress (UDP): ${serverudp.address().address}:${serverudp.address().port}`
+      );
     });
   }
   /**
