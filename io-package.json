@@ -89,8 +89,7 @@
         "keywords": [
             "sia",
             "burglar",
-            "alarm",
-            "iobroker"
+            "alarm"
         ],
         "licenseInformation": {
             "license": "MIT",
@@ -104,7 +103,7 @@
         "loglevel": "info",
         "messagebox": true,
         "mode": "daemon",
-        "type": "communication",
+        "type": "alarm",
         "compact": true,
         "connectionType": "local",
         "dataSource": "push",

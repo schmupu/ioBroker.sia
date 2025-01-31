@@ -71,7 +71,7 @@
                 "keys": {
                     "type": "table",
                     "sm": 12,
-                    "md": 6,
+                    "md": 11,
                     "lg": 10,
                     "xl": 10,
                     "xs": 12,
@@ -102,8 +102,7 @@
                             },
                             "visible": true,
                             "repeat": false,
-                            "validator": "(!data.aes || data.password) && (data.aes || !data.password)",
-                            "validatorNoSaveOnError": true
+                            "disabled": "data.aes === false"
                         },
                         {
                             "type": "checkbox",
@@ -128,8 +127,6 @@
                             "style": {
                                 "width": "calc(100%)"
                             },
-                            "validator": "!data.hex || data.aes",
-                            "validatorNoSaveOnError": true,
                             "disabled": "data.aes === false"
                         }
                     ]

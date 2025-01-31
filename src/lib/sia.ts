@@ -181,7 +181,7 @@ export class sia extends EventEmitter {
             encrypt = Buffer.concat([encrypt, cipher.final()]);
             return encrypt.toString('hex');
         } catch (err) {
-            throw new Error(`Could not encrypt to hex: ${tools.getErrorMessage(err)}`);
+            throw new Error(`Could not encrypt message`, { cause: err });
         }
     }
 
@@ -217,7 +217,7 @@ export class sia extends EventEmitter {
             decrypt += decipher.final('utf-8');
             return decrypt;
         } catch (err) {
-            throw new Error(`Could not decrypt from hex: ${tools.getErrorMessage(err)}`);
+            throw new Error(`Could not decrypt message`, { cause: err });
         }
     }
 
@@ -533,7 +533,7 @@ export class sia extends EventEmitter {
             // "*SIA-DCS"9876R579BDFL789ABC#12345A[209c9d400b655df7a26aecb6a887e7ee6ed8103217079aae7cbd9dd7551e96823263460f7ef0514864897ae9789534f1
             // regex = /\"(.+)\"(\d{4})(R(.{1,6})){0,1}(L(.{1,6}))\#([\w\d]+)\[(.+)/gm; // befor Isue 11
             // regex = /\"(.+)\"(\d{4})(R(.{0,6})){0,1}(L(.{0,6}))\#([\w\d]+)\[(.+)/gm; // Isue 11
-            const regexstr = /"(.+)"(\d{4})(R(.{0,6})){0,1}(L(.{0,6}))#([\w\d]+)\[(.+)/gm; // Isue 11
+            const regexstr = /"(.+)"(\d{4})(R(.{0,6})){0,1}(L(.{0,6}))#([\w\d]+)\[(.+)/gm; // Issue 11
             const regexstr_result = regexstr.exec(sia.str);
             if (regexstr_result && regexstr_result.length >= 8) {
                 let lpref = undefined;
@@ -585,10 +585,10 @@ export class sia extends EventEmitter {
         }
         this.logger && this.logger.debug(`parseSIA : ${JSON.stringify(sia)}`);
         // Test if all required fields will be sent
-        if (sia && sia.id && sia.seq && sia.lpref && sia.act && sia.pad != undefined) {
+        if (sia && sia.id && sia.seq && sia.lpref && sia.act && sia.data_message) {
             return sia;
         }
-        throw new Error(`Could not parse SIA message. Required SIA fields missing`);
+        throw new Error(`Could not parse SIA message ${data}. Required SIA fields missing`);
     }
 
     /**
@@ -624,8 +624,8 @@ export class sia extends EventEmitter {
                     sock.end(ack);
                     this.emit('sia', undefined, tools.getErrorMessage(err));
                     this.logger &&
-                        this.logger.info(
-                            `sending to ${remoteAddress} following NACK message: ${ack.toString().trim()}`,
+                        this.logger.error(
+                            `sending to ${remoteAddress} following NACK message: ${ack.toString().trim()} because of error ${tools.getErrorMessage(err)}`,
                         );
                 }
             });
@@ -669,7 +669,9 @@ export class sia extends EventEmitter {
                 serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err: any, bytes: any) => {});
                 this.emit('sia', undefined, tools.getErrorMessage(err));
                 this.logger &&
-                    this.logger.info(`sending to ${remote.address} following NACK message: ${ack.toString().trim()}`);
+                    this.logger.error(
+                        `sending to ${remote.address} following NACK message: ${ack.toString().trim()}  because of error ${tools.getErrorMessage(err)}`,
+                    );
             }
         });
         serverudp.on('close', () => {

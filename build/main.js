@@ -84,6 +84,10 @@ class sia extends utils.Adapter {
         if (this.config.save) {
           const filename = `${tools.addSlashToPath(this.config.path)}sia_msg_${Date.now()}.txt`;
           try {
+            if (!fs.existsSync(this.config.path)) {
+              this.log.info(`Creating path ${this.config.path}`);
+              fs.mkdirSync(this.config.path, { recursive: true });
+            }
             fs.writeFileSync(filename, data, "binary");
             if (fs.existsSync(filename)) {
               this.log.info(`Save SIA message to ${filename}`);

@@ -167,7 +167,7 @@ class sia extends import_events.EventEmitter {
       encrypt = Buffer.concat([encrypt, cipher.final()]);
       return encrypt.toString("hex");
     } catch (err) {
-      throw new Error(`Could not encrypt to hex: ${tools.getErrorMessage(err)}`);
+      throw new Error(`Could not encrypt message`, { cause: err });
     }
   }
   /**
@@ -201,7 +201,7 @@ class sia extends import_events.EventEmitter {
       decrypt += decipher.final("utf-8");
       return decrypt;
     } catch (err) {
-      throw new Error(`Could not decrypt from hex: ${tools.getErrorMessage(err)}`);
+      throw new Error(`Could not decrypt message`, { cause: err });
     }
   }
   /**
@@ -513,10 +513,10 @@ class sia extends import_events.EventEmitter {
       }
     }
     this.logger && this.logger.debug(`parseSIA : ${JSON.stringify(sia2)}`);
-    if (sia2 && sia2.id && sia2.seq && sia2.lpref && sia2.act && sia2.pad != void 0) {
+    if (sia2 && sia2.id && sia2.seq && sia2.lpref && sia2.act && sia2.data_message) {
       return sia2;
     }
-    throw new Error(`Could not parse SIA message. Required SIA fields missing`);
+    throw new Error(`Could not parse SIA message ${data}. Required SIA fields missing`);
   }
   /**
    * Listen Server TCP
@@ -540,8 +540,8 @@ class sia extends import_events.EventEmitter {
           const ack = this.createNACK(crcformat);
           sock.end(ack);
           this.emit("sia", void 0, tools.getErrorMessage(err));
-          this.logger && this.logger.info(
-            `sending to ${remoteAddress} following NACK message: ${ack.toString().trim()}`
+          this.logger && this.logger.error(
+            `sending to ${remoteAddress} following NACK message: ${ack.toString().trim()} because of error ${tools.getErrorMessage(err)}`
           );
         }
       });
@@ -578,7 +578,9 @@ class sia extends import_events.EventEmitter {
         serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err2, bytes) => {
         });
         this.emit("sia", void 0, tools.getErrorMessage(err));
-        this.logger && this.logger.info(`sending to ${remote.address} following NACK message: ${ack.toString().trim()}`);
+        this.logger && this.logger.error(
+          `sending to ${remote.address} following NACK message: ${ack.toString().trim()}  because of error ${tools.getErrorMessage(err)}`
+        );
       }
     });
     serverudp.on("close", () => {
