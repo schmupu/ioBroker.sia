@@ -30,19 +30,6 @@
                 "uk": "Переробка адаптера SIA",
                 "zh-cn": "SIA适配器的重新设计"
             },
-            "2.0.0": {
-                "en": "Major updates",
-                "de": "Hauptaktualisierungen",
-                "ru": "Основные обновления",
-                "pt": "Principais atualizações",
-                "nl": "Grote updates",
-                "fr": "Mises à jour majeures",
-                "it": "Importanti aggiornamenti",
-                "es": "Actualizaciones importantes",
-                "pl": "Główne aktualizacje",
-                "uk": "Основні оновлення",
-                "zh-cn": "主要更新"
-            },
             "1.0.4": {
                 "en": "Bugfixing, changing the time calculation for ACK and NACK messages",
                 "de": "Bugfixing, Änderung der Zeitberechnung für ACK- und NACK-Nachrichten",
@@ -83,14 +70,8 @@
             "zh-cn": "用于防盗报警的ioBroker SIA服务器适配器",
             "uk": "Адаптер сервера iObroker SIA для тривоги"
         },
-        "authors": [
-            "Thorsten Stueben <thorsten@stueben.de>"
-        ],
-        "keywords": [
-            "sia",
-            "burglar",
-            "alarm"
-        ],
+        "authors": ["Thorsten Stueben <thorsten@stueben.de>"],
+        "keywords": ["sia", "burglar", "alarm"],
         "licenseInformation": {
             "license": "MIT",
             "type": "free"
@@ -121,12 +102,8 @@
             }
         ]
     },
-    "protectedNative": [
-        "keys.password"
-    ],
-    "encryptedNative": [
-        "keys.password"
-    ],
+    "protectedNative": ["keys.password"],
+    "encryptedNative": ["keys.password"],
     "native": {
         "port": 55001,
         "bind": "0.0.0.0",
