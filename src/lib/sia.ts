@@ -634,6 +634,7 @@ export class sia extends EventEmitter {
             });
             sock.on('error', (err: any) => {
                 this.logger && this.logger.error(`Connection ${remoteAddress} error:  ${tools.getErrorMessage(err)}`);
+                this.emit('error', tools.getErrorMessage(err));
             });
         });
 
@@ -680,6 +681,7 @@ export class sia extends EventEmitter {
         serverudp.on('error', (err: any) => {
             this.logger && this.logger.error(`UDP Error: ${tools.getErrorMessage(err)}`);
             serverudp.close();
+            this.emit('error', tools.getErrorMessage(err));
         });
         serverudp.bind(this.port, this.host, () => {
             this.logger &&

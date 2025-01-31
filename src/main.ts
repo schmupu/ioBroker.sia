@@ -92,6 +92,10 @@ class sia extends utils.Adapter {
                 }
             }
         });
+        this.siaclient.on('error', async (err: any) => {
+            this.log.error(`Error ${err}`);
+            await this.setState('info.connection', { val: false, ack: true });
+        });
     }
 
     /**

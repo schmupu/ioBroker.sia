@@ -74,6 +74,11 @@ cat /tmp/sia/sia_msg_fa165cc0-8e3a-faa1-eb5c-fd3e47479044.txt | nc localhost 550
 
 ## Changelog
 
+### **WORK IN PROGRESS**
+
+- (Stübi) add error envent if connction close
+- (Stübi) fix translations
+
 ### 2.0.2 (2025-01-30)
 
 - (Stübi) add: checking accountnumber for exact syntax

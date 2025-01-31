@@ -13,5 +13,7 @@
     "bind": "Lega l'indirizzo IP",
     "on save adapter restarts with new config immediately": "su salvataggio dell'adattatore si riavvia immediatamente con una nuova configurazione",
     "subscriber": "Abbonato",
-    "Save incomming SIA messages": "Salva messaggi SIA intrecciati"
+    "Save incomming SIA messages": "Salva messaggi SIA intrecciati",
+    "Main Settings": "Impostazioni principali",
+    "List of Accounts": "Elenco degli account"
 }

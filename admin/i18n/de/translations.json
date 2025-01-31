@@ -1,17 +1,19 @@
 {
-    "Path for saving SIA messages": "Pfad zum Speichern von SIA -Nachrichten",
+    "Path for saving SIA messages": "Pfad zum Speichern von SIA Nachrichten",
     "ACK Timeout": "ACK Timeout",
     "AES encrypting": "AES verschlüsseln",
     "AES password": "AES Passwort",
-    "AES password in Hex": "AES Passwort im HEX -Format",
-    "Accountnumber": "Kontonummer",
+    "AES password in Hex": "AES Passwort im HEX Format",
+    "Accountnumber": "Accountnumber",
     "Listen IP": "IP-Addesse",
     "Main settings": "Haupteinstellungen",
     "Listen Port": "Port",
-    "Accounts": "Konten",
+    "Accounts": "Accounts",
     "alarmsystem": "Alarmsystem",
     "bind": "Binden Sie IP-Addesse",
     "on save adapter restarts with new config immediately": "Beim Save -Adapter -Neustart mit neuer Konfiguration sofort neu gestartet",
     "subscriber": "Teilnehmer",
-    "Save incomming SIA messages": "Speichern Sie die nicht steigenden SIA -Nachrichten"
+    "Save incomming SIA messages": "Speichern von eingehenden SIA Nachrichten",
+    "Main Settings": "Haupteinstellungen",
+    "List of Accounts": "Liste der Accounts"
 }

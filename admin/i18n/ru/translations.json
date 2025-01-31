@@ -13,5 +13,7 @@
     "bind": "Свяжите ip-address",
     "on save adapter restarts with new config immediately": "При сохранении адаптера перезагружается с новой конфигурацией немедленно",
     "subscriber": "Подписчик",
-    "Save incomming SIA messages": "Сохранить сообщения SIA SIA"
+    "Save incomming SIA messages": "Сохранить сообщения SIA SIA",
+    "Main Settings": "Основные настройки",
+    "List of Accounts": "Список учетных записей"
 }

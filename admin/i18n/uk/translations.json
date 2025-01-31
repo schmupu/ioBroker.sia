@@ -13,5 +13,7 @@
     "bind": "Зв’язувати IP-адресу",
     "on save adapter restarts with new config immediately": "Після збереження адаптерів з перезапуском з новою конфігурацією негайно",
     "subscriber": "Абонент",
-    "Save incomming SIA messages": "Зберегти інформування повідомлень SIA"
+    "Save incomming SIA messages": "Зберегти інформування повідомлень SIA",
+    "Main Settings": "Основні налаштування",
+    "List of Accounts": "Список рахунків"
 }

@@ -13,5 +13,7 @@
     "bind": "Bind ip-address",
     "on save adapter restarts with new config immediately": "op opslaan adapter start met nieuwe configures onmiddellijk opnieuw op",
     "subscriber": "Abonnee",
-    "Save incomming SIA messages": "Bewaar Incomming SIA -berichten"
+    "Save incomming SIA messages": "Bewaar Incomming SIA -berichten",
+    "Main Settings": "Hoofdinstellingen",
+    "List of Accounts": "Lijst met accounts"
 }

@@ -5,7 +5,7 @@
     "AES password in Hex": "AES password in Hex format",
     "Accountnumber": "account number",
     "Listen IP": "IP-Address",
-    "Main settings": "Main settings",
+    "Main Settings": "Main Settings",
     "Listen Port": "Port",
     "Accounts": "Accounts",
     "alarmsystem": "alarmsystem",
@@ -13,5 +13,6 @@
     "on save adapter restarts with new config immediately": "on save adapter restarts with new config immediately",
     "subscriber": "Subscriber",
     "Path for saving SIA messages": "Path for saving SIA messages",
-    "Save incomming SIA messages": "Save incomming SIA messages"
+    "Save incomming SIA messages": "Save incomming SIA messages",
+    "List of Accounts": "List of Accounts"
 }

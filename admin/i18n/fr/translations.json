@@ -13,5 +13,7 @@
     "bind": "Bind IP-Address",
     "on save adapter restarts with new config immediately": "sur les redémarrages de l'adaptateur enregistré avec une nouvelle configuration immédiatement",
     "subscriber": "Abonné",
-    "Save incomming SIA messages": "Enregistrer les messages SIA incorporés"
+    "Save incomming SIA messages": "Enregistrer les messages SIA incorporés",
+    "Main Settings": "Paramètres principaux",
+    "List of Accounts": "Liste des comptes"
 }

@@ -550,6 +550,7 @@ class sia extends import_events.EventEmitter {
       });
       sock.on("error", (err) => {
         this.logger && this.logger.error(`Connection ${remoteAddress} error:  ${tools.getErrorMessage(err)}`);
+        this.emit("error", tools.getErrorMessage(err));
       });
     });
     servertcp.listen(this.port, this.host, () => {
@@ -589,6 +590,7 @@ class sia extends import_events.EventEmitter {
     serverudp.on("error", (err) => {
       this.logger && this.logger.error(`UDP Error: ${tools.getErrorMessage(err)}`);
       serverudp.close();
+      this.emit("error", tools.getErrorMessage(err));
     });
     serverudp.bind(this.port, this.host, () => {
       this.logger && this.logger.info(

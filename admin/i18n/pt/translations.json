@@ -13,5 +13,7 @@
     "bind": "Vincular o endereço IP",
     "on save adapter restarts with new config immediately": "Salvar reinicializa o adaptador com nova configuração imediatamente",
     "subscriber": "Assinante",
-    "Save incomming SIA messages": "Salvar mensagens SIA incríveis"
+    "Save incomming SIA messages": "Salvar mensagens SIA incríveis",
+    "Main Settings": "Configurações principais",
+    "List of Accounts": "Lista de contas"
 }

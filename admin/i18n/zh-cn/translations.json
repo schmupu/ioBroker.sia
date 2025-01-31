@@ -13,5 +13,7 @@
     "bind": "绑定IP地址",
     "on save adapter restarts with new config immediately": "在保存适配器上，请立即使用新的配置重新启动",
     "subscriber": "订户",
-    "Save incomming SIA messages": "保存不断的SIA消息"
+    "Save incomming SIA messages": "保存不断的SIA消息",
+    "Main Settings": "主要设置",
+    "List of Accounts": "帐户列表"
 }
