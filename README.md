@@ -97,6 +97,31 @@ You can use ioBroker with this adapter as central station. For example. you can 
 
     Interessting is the object: msgdata (message data). Here you can see the thrown event of the alarm system. How to interpret the event, you have to ask your alarm system manufactor.
 
+    An example javascript in ioBroker to get an event:
+
+    ```
+    // example message: A444F|1401 02 001
+    on({ id: 'sia.0.accounts.A444F.msgdata'/*A444F - Message Data*/ },  (obj) => {
+        if(obj.state.ack === true) {
+            const id = getState('sia.0.accounts.A444F.id'/*A444F - ID Token*/).val;
+            if(id === 'ADM-CID' || id === '*ADM-CID') {
+                const cid = parseMessage(obj.state.val);
+                console.log(`Contact ID Message ${JSON.stringify(cid)}`);
+                console.log(`Event: ${cid.event} for accountnumber ${cid.accountNumber}`);
+            }
+        }
+    });
+    ```
+
+    Output:
+
+    ```
+    Contact ID Message {"accountNumber":"A444F","qualifier":"1","event":"401","area":"02","zone":"001"}
+    Event: 401 for accountnumber A444F
+    ```
+
+    Event 401 means "Remote Arm/Disarm, when the system is armed or disarmed by SMS message or web access"
+
 5. Bugs / Issues
 
     If you have problems processing SIA messages or you found a bug, please create an issue.
