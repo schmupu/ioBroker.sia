@@ -1,6 +1,7 @@
-chore: release v2.0.1
+chore: release v2.0.3
 
-- (Stübi) Redesign of Contact ID Adapter.
-- (Stübi) Wokring now with nodejs 20 and 22
-- (Stübi) js-controller in version 6 and 7 will be supported
-- (Stübi) Ability to save SIA messages.
+- (Stübi) add error envent if connction close
+- (Stübi) add the proctocol ADM-CID and \*ADM-CID (Ademco Contact ID)
+- (Stübi) add translations
+- (Stübi) fix bugs by receiving messages by udp
+- (Stübi) adjust readme
