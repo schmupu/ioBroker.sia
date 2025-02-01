@@ -142,8 +142,7 @@ You can use ioBroker with this adapter as central station. For example. you can 
     ```
 
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 2.0.3 (2025-02-01)
 
 - (Stübi) add error envent if connction close
 - (Stübi) add the proctocol ADM-CID and \*ADM-CID (Ademco Contact ID)

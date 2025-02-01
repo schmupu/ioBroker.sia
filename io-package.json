@@ -1,164 +1,177 @@
 {
-    "common": {
-        "name": "sia",
-        "version": "2.0.2",
-        "tier": 3,
-        "news": {
-            "2.0.2": {
-                "en": "Bug fixing and some new features",
-                "de": "Fehlerbehebung und einige neue Funktionen",
-                "ru": "Исправление ошибок и некоторые новые функции",
-                "pt": "Corrigação de bugs e alguns novos recursos",
-                "nl": "Bug -fixing en enkele nieuwe functies",
-                "fr": "Fixation de bogues et de nouvelles fonctionnalités",
-                "it": "Fissaggio di bug e alcune nuove funzionalità",
-                "es": "Corrección de errores y algunas características nuevas",
-                "pl": "Naprawienie błędów i kilka nowych funkcji",
-                "uk": "Виправлення помилок та деякі нові функції",
-                "zh-cn": "错误修复和一些新功能"
-            },
-            "2.0.1": {
-                "en": "Redesign of SIA adapter",
-                "de": "Neugestaltung des SIA -Adapters",
-                "ru": "Редизайна адаптера SIA",
-                "pt": "Redesenho do adaptador SIA",
-                "nl": "Herontwerp van SIA -adapter",
-                "fr": "Refonte de l'adaptateur SIA",
-                "it": "Riprogettazione dell'adattatore SIA",
-                "es": "Rediseño del adaptador SIA",
-                "pl": "Przeprojektowanie adaptera SIA",
-                "uk": "Переробка адаптера SIA",
-                "zh-cn": "SIA适配器的重新设计"
-            },
-            "1.0.4": {
-                "en": "Bugfixing, changing the time calculation for ACK and NACK messages",
-                "de": "Bugfixing, Änderung der Zeitberechnung für ACK- und NACK-Nachrichten",
-                "ru": "Исправление ошибок, изменение расчета времени для сообщений ACK и NACK",
-                "pt": "Correção de erros, alterando o cálculo do tempo para mensagens ACK e NACK",
-                "nl": "Bugfixing, het wijzigen van de tijdberekening voor ACK- en NACK-berichten",
-                "fr": "Correction de bugs, modification du calcul de l'heure pour les messages ACK et NACK",
-                "it": "Correzione di bug, modifica del calcolo del tempo per i messaggi ACK e NACK",
-                "es": "Corrección de errores, cambiando el cálculo del tiempo para mensajes ACK y NACK",
-                "pl": "Naprawianie błędów, zmiana obliczania czasu dla wiadomości ACK i NACK",
-                "zh-cn": "错误修正，更改ACK和NACK消息的时间计算",
-                "uk": "Помилка, зміна розрахунку часу для повідомлень ACK та NACK"
-            }
-        },
-        "titleLang": {
-            "en": "SIA Server for burglar alarms",
-            "de": "SIA Server für Alarmanlagen",
-            "ru": "SIA сервер для охранной сигнализации",
-            "pt": "Servidor SIA para alarmes contra roubo",
-            "nl": "SIA-server voor inbraakalarmen",
-            "fr": "SIA Server pour les alarmes antivol",
-            "it": "Server SIA per allarmi anti-intrusione",
-            "es": "Servidor SIA para alarmas antirrobo",
-            "pl": "Serwer SIA do alarmów antywłamaniowych",
-            "zh-cn": "用于防盗警报的SIA服务器",
-            "uk": "Sia Server для крадіжок"
-        },
-        "desc": {
-            "en": "ioBroker SIA Server Adapter for burglar alarms",
-            "de": "ioBroker SIA Server Adapter für Alarmanlagen",
-            "ru": "ioBroker SIA Серверный адаптер для охранной сигнализации",
-            "pt": "Adaptador de servidor ioBroker SIA para alarmes contra roubo",
-            "nl": "ioBroker SIA Serveradapter voor inbraakalarmen",
-            "fr": "ioBroker SIA Server Adapter pour les alarmes antivol",
-            "it": "ioBroker SIA Server Adapter per gli allarmi anti-intrusione",
-            "es": "ioBroker SIA Server Adapter para alarmas antirrobo",
-            "pl": "Adapter serwera SIA ioBroker do alarmów antywłamaniowych",
-            "zh-cn": "用于防盗报警的ioBroker SIA服务器适配器",
-            "uk": "Адаптер сервера iObroker SIA для тривоги"
-        },
-        "authors": [
-            "Thorsten Stueben <thorsten@stueben.de>"
-        ],
-        "keywords": [
-            "sia",
-            "burglar",
-            "alarm"
-        ],
-        "licenseInformation": {
-            "license": "MIT",
-            "type": "free"
-        },
-        "platform": "Javascript/Node.js",
-        "icon": "sia.png",
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/schmupu/ioBroker.sia/master/admin/sia.png",
-        "readme": "https://github.com/schmupu/ioBroker.sia/blob/master/README.md",
-        "loglevel": "info",
-        "messagebox": true,
-        "mode": "daemon",
-        "type": "alarm",
-        "compact": true,
-        "connectionType": "local",
-        "dataSource": "push",
-        "adminUI": {
-            "config": "json"
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=5.0.19"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=6.4.4"
-            }
-        ]
+  "common": {
+    "name": "sia",
+    "version": "2.0.3",
+    "tier": 3,
+    "news": {
+      "2.0.3": {
+        "en": "add error envent if connction close\nadd the proctocol ADM-CID and \\*ADM-CID (Ademco Contact ID)\nadd translations\nfix bugs by receiving messages by udp\nadjust readme",
+        "de": "fehler-erfinden hinzufügen, wenn konnktion schließen\ndie proctocol ADM-CID und \\*ADM-CID (Ademco Contact ID) hinzufügen\nübersetzungen hinzufügen\nfehler beheben, indem sie nachrichten von udp empfangen\ndas lesegerät",
+        "ru": "добавить ошибку, если коннкция закрыта\nдобавить проктокол ADM-CID и \\*ADM-CID (Ademco Contact ID)\nдобавить переводы\nисправить ошибки, получая сообщения от udp\nнастроить считывание",
+        "pt": "adicionar erro envent se connction fechar\nadicione o proctocol ADM-CID e \\*ADM-CID (Ademco Contact ID)\nadicionar traduções\ncorrigir bugs recebendo mensagens por udp\najustar a leitura",
+        "nl": "fout toevoegen als verbinding sluiten\nde proctocol ADM-CID en \\*ADM-CID (Ademco Contact ID) toevoegen\nvertalingen toevoegen\nbugs herstellen door berichten te ontvangen door udp\nreadme aanpassen",
+        "fr": "ajouter une erreur envent si connction close\najouter le protocole ADM-CID et \\*ADM-CID (ID de contact d'Ademco)\najouter des traductions\ncorrection des bugs en recevant des messages par udp\najuster la lecture",
+        "it": "aggiungere errore inventare se la connzione si chiude\naggiungere il proctocollo ADM-CID e \\*ADM-CID (Ademco Contact ID)\naggiungere le traduzioni\ncorreggere bug ricevendo messaggi da udp\nregolare la lettura",
+        "es": "añadir error envent si connction close\nañadir el proctocol ADM-CID y \\*ADM-CID (Ademco Contact ID)\nañadir traducciones\nsolucionar errores recibiendo mensajes por udp\najuste readme",
+        "pl": "dodać błąd envent jeśli connction close\ndodaj ADM- CID i\\ * ADM- CID (Adres Ademco)\ndodaj tłumaczenia\nnaprawić błędy poprzez odbieranie wiadomości przez udp\ndostosować readme",
+        "uk": "додавати повідомлення про помилку, якщо конвекція закрита\nдодати протокол ADM-CID і \\ * ADM-CID (Ademco Контакт ID)\nдодати переклади\nвиправити помилки шляхом отримання повідомлень udp\nрегульований зчитувач",
+        "zh-cn": "关闭连接时添加错误代理\n添加 Proctocol ADM- CID 和 QQADM- CID (Ademco Contact ID)\n添加翻译\n通过 udp 接收消息来修正错误\n调整读取器"
+      },
+      "2.0.2": {
+        "en": "Bug fixing and some new features",
+        "de": "Fehlerbehebung und einige neue Funktionen",
+        "ru": "Исправление ошибок и некоторые новые функции",
+        "pt": "Corrigação de bugs e alguns novos recursos",
+        "nl": "Bug -fixing en enkele nieuwe functies",
+        "fr": "Fixation de bogues et de nouvelles fonctionnalités",
+        "it": "Fissaggio di bug e alcune nuove funzionalità",
+        "es": "Corrección de errores y algunas características nuevas",
+        "pl": "Naprawienie błędów i kilka nowych funkcji",
+        "uk": "Виправлення помилок та деякі нові функції",
+        "zh-cn": "错误修复和一些新功能"
+      },
+      "2.0.1": {
+        "en": "Redesign of SIA adapter",
+        "de": "Neugestaltung des SIA -Adapters",
+        "ru": "Редизайна адаптера SIA",
+        "pt": "Redesenho do adaptador SIA",
+        "nl": "Herontwerp van SIA -adapter",
+        "fr": "Refonte de l'adaptateur SIA",
+        "it": "Riprogettazione dell'adattatore SIA",
+        "es": "Rediseño del adaptador SIA",
+        "pl": "Przeprojektowanie adaptera SIA",
+        "uk": "Переробка адаптера SIA",
+        "zh-cn": "SIA适配器的重新设计"
+      },
+      "1.0.4": {
+        "en": "Bugfixing, changing the time calculation for ACK and NACK messages",
+        "de": "Bugfixing, Änderung der Zeitberechnung für ACK- und NACK-Nachrichten",
+        "ru": "Исправление ошибок, изменение расчета времени для сообщений ACK и NACK",
+        "pt": "Correção de erros, alterando o cálculo do tempo para mensagens ACK e NACK",
+        "nl": "Bugfixing, het wijzigen van de tijdberekening voor ACK- en NACK-berichten",
+        "fr": "Correction de bugs, modification du calcul de l'heure pour les messages ACK et NACK",
+        "it": "Correzione di bug, modifica del calcolo del tempo per i messaggi ACK e NACK",
+        "es": "Corrección de errores, cambiando el cálculo del tiempo para mensajes ACK y NACK",
+        "pl": "Naprawianie błędów, zmiana obliczania czasu dla wiadomości ACK i NACK",
+        "zh-cn": "错误修正，更改ACK和NACK消息的时间计算",
+        "uk": "Помилка, зміна розрахунку часу для повідомлень ACK та NACK"
+      }
     },
-    "protectedNative": [
-        "keys.password"
-    ],
-    "encryptedNative": [
-        "keys.password"
-    ],
-    "native": {
-        "port": 55001,
-        "bind": "0.0.0.0",
-        "timeout": 0,
-        "path": "/tmp/sia/",
-        "save": false,
-        "keys": [
-            {
-                "accountnumber": "test",
-                "aes": false,
-                "hex": false,
-                "password": ""
-            }
-        ]
+    "titleLang": {
+      "en": "SIA Server for burglar alarms",
+      "de": "SIA Server für Alarmanlagen",
+      "ru": "SIA сервер для охранной сигнализации",
+      "pt": "Servidor SIA para alarmes contra roubo",
+      "nl": "SIA-server voor inbraakalarmen",
+      "fr": "SIA Server pour les alarmes antivol",
+      "it": "Server SIA per allarmi anti-intrusione",
+      "es": "Servidor SIA para alarmas antirrobo",
+      "pl": "Serwer SIA do alarmów antywłamaniowych",
+      "zh-cn": "用于防盗警报的SIA服务器",
+      "uk": "Sia Server для крадіжок"
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "Device or service connected",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "accounts",
-            "type": "channel",
-            "common": {
-                "name": "Subscriber"
-            },
-            "native": {}
-        }
+    "desc": {
+      "en": "ioBroker SIA Server Adapter for burglar alarms",
+      "de": "ioBroker SIA Server Adapter für Alarmanlagen",
+      "ru": "ioBroker SIA Серверный адаптер для охранной сигнализации",
+      "pt": "Adaptador de servidor ioBroker SIA para alarmes contra roubo",
+      "nl": "ioBroker SIA Serveradapter voor inbraakalarmen",
+      "fr": "ioBroker SIA Server Adapter pour les alarmes antivol",
+      "it": "ioBroker SIA Server Adapter per gli allarmi anti-intrusione",
+      "es": "ioBroker SIA Server Adapter para alarmas antirrobo",
+      "pl": "Adapter serwera SIA ioBroker do alarmów antywłamaniowych",
+      "zh-cn": "用于防盗报警的ioBroker SIA服务器适配器",
+      "uk": "Адаптер сервера iObroker SIA для тривоги"
+    },
+    "authors": [
+      "Thorsten Stueben <thorsten@stueben.de>"
+    ],
+    "keywords": [
+      "sia",
+      "burglar",
+      "alarm"
+    ],
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
+    "platform": "Javascript/Node.js",
+    "icon": "sia.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/schmupu/ioBroker.sia/master/admin/sia.png",
+    "readme": "https://github.com/schmupu/ioBroker.sia/blob/master/README.md",
+    "loglevel": "info",
+    "messagebox": true,
+    "mode": "daemon",
+    "type": "alarm",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "adminUI": {
+      "config": "json"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=5.0.19"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=6.4.4"
+      }
     ]
+  },
+  "protectedNative": [
+    "keys.password"
+  ],
+  "encryptedNative": [
+    "keys.password"
+  ],
+  "native": {
+    "port": 55001,
+    "bind": "0.0.0.0",
+    "timeout": 0,
+    "path": "/tmp/sia/",
+    "save": false,
+    "keys": [
+      {
+        "accountnumber": "test",
+        "aes": false,
+        "hex": false,
+        "password": ""
+      }
+    ]
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "accounts",
+      "type": "channel",
+      "common": {
+        "name": "Subscriber"
+      },
+      "native": {}
+    }
+  ]
 }
