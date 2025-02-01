@@ -33,6 +33,7 @@ __export(tools_exports, {
   getErrorMessage: () => getErrorMessage,
   getFilenameWithoutExtension: () => getFilenameWithoutExtension,
   getGuid: () => getGuid,
+  getTimeStrFromUnixTime: () => getTimeStrFromUnixTime,
   isArray: () => isArray,
   isHexString: () => isHexString,
   isObject: () => isObject,
@@ -48,6 +49,17 @@ var import_axios = __toESM(require("axios"));
 var import_node_ssh = require("node-ssh");
 function wait(seconds) {
   return new Promise((resolve) => setTimeout(resolve, seconds * 1e3));
+}
+function getTimeStrFromUnixTime(timestamp = Date.now()) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
+  return `${year}${month}${day}_${hours}${minutes}${seconds}${milliseconds}`;
 }
 function substr(text, start, length) {
   length = length === void 0 || length > text.length ? text.length : length;
@@ -158,6 +170,7 @@ function propertiesObjAinObjB(obja, objb) {
   getErrorMessage,
   getFilenameWithoutExtension,
   getGuid,
+  getTimeStrFromUnixTime,
   isArray,
   isHexString,
   isObject,

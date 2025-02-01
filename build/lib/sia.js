@@ -49,11 +49,10 @@ class sia extends import_events.EventEmitter {
    * Constructor
    *
    * @param parameter parameter
-   * @param parameter.accounts acccounts
    * @param parameter.timeout timeout
    * @param parameter.host bind host
    * @param parameter.port bind port
-   * @param parameter.adapter iobroker adapter
+   * @param parameter.logger logger
    */
   constructor(parameter) {
     super();
@@ -307,19 +306,28 @@ class sia extends import_events.EventEmitter {
       if (sia2.crc == sia2.calc_crc && sia2.len == sia2.calc_len && cfg && this.isInTime(sia2.ts)) {
         const rpref = sia2.rpref && sia2.rpref.length > 0 ? `R${sia2.rpref}` : "";
         const lpref = sia2.lpref && sia2.lpref.length > 0 ? `L${sia2.lpref}` : "";
-        if (sia2.id[0] === "*") {
-          if (!cfg.aes || !cfg.password) {
-            throw new Error(
-              `Could not create ACK. Could not encrypt message, because AES encrypting disabled or password is missing for ${cfg.accountnumber}`
-            );
+        switch (sia2.id) {
+          case "*SIA-DCS":
+          case "*ADM-CID": {
+            if (!cfg.aes || !cfg.password) {
+              throw new Error(
+                `Could not create ACK. Could not encrypt message, because AES encrypting disabled or password is missing for ${cfg.accountnumber}`
+              );
+            }
+            const msglen = `|]${ts}`.length;
+            const padlen = 16 - msglen % 16;
+            const pad = Buffer.alloc(padlen, 0);
+            const msg = this.encrypt_hex(cfg.password, `${pad.toString()}|] ${ts}`);
+            str = `"*ACK"${sia2.seq}${rpref}${lpref}#${sia2.act}[${msg}`;
+            break;
           }
-          const msglen = `|]${ts}`.length;
-          const padlen = 16 - msglen % 16;
-          const pad = Buffer.alloc(padlen, 0);
-          const msg = this.encrypt_hex(cfg.password, `${pad.toString()}|] ${ts}`);
-          str = `"*ACK"${sia2.seq}${rpref}${lpref}#${sia2.act}[${msg}`;
-        } else {
-          str = `"ACK"${sia2.seq}${rpref}${lpref}#${sia2.act}[]`;
+          case "SIA-DCS":
+          case "ADM-CID": {
+            str = `"ACK"${sia2.seq}${rpref}${lpref}#${sia2.act}[]`;
+            break;
+          }
+          default:
+            break;
         }
         const crc = this.crc16str(str);
         const len = str.length;
@@ -443,7 +451,7 @@ class sia extends import_events.EventEmitter {
         sia2.crc = data[1] * 256 + data[2];
         sia2.crcformat = "bin";
       }
-      this.logger && this.logger.debug(`data : ${data}`);
+      this.logger && this.logger.debug(`data : ${data.toString()}`);
       sia2.cr = data[datalen];
       if (!str) {
         throw new Error(`Could not parse SIA message. Message (str) ist empay`);
@@ -488,24 +496,34 @@ class sia extends import_events.EventEmitter {
             `Could not parse SIA message. Accountnumber ${sia2.act} missing in the configuration`
           );
         }
-        if (sia2.id && sia2.id[0] == "*") {
-          if (!cfg.aes || !cfg.password) {
-            throw new Error(
-              `Could not parse SIA message. Could not decrypt message, because AES encrypting disabled or password is missing for ${cfg.accountnumber}`
-            );
-          }
-          msg = this.decrypt_hex(cfg.password, msg);
-          if (msg) {
-            const padlen = msg.indexOf("|");
-            sia2.pad = msg.substring(0, padlen);
-            msg = msg.substring(padlen + 1);
-            this.logger && this.logger.debug(`SIA Message decrypted part: ${msg}`);
-          } else {
-            throw new Error(`Could not parse SIA message. Could not decrypt message`);
-          }
-        }
-        if (sia2.id && sia2.id[0] != "*" && cfg.aes == true) {
-          throw new Error(`Could not parse SIA message. Encrypting enabled, message was sent not entcrypted`);
+        switch (sia2.id) {
+          case "*SIA-DCS":
+          case "*ADM-CID":
+            if (!cfg.aes || !cfg.password) {
+              throw new Error(
+                `Could not parse SIA message. Could not decrypt message, because AES encrypting disabled or password is missing for ${cfg.accountnumber}`
+              );
+            }
+            msg = this.decrypt_hex(cfg.password, msg);
+            if (msg) {
+              const padlen = msg.indexOf("|");
+              sia2.pad = msg.substring(0, padlen);
+              msg = msg.substring(padlen + 1);
+              this.logger && this.logger.debug(`SIA Message decrypted part: ${msg}`);
+            } else {
+              throw new Error(`Could not parse SIA message. Could not decrypt message`);
+            }
+            break;
+          case "SIA-DCS":
+          case "ADM-CID":
+            if (cfg.aes) {
+              throw new Error(
+                `Could not parse SIA message. Encrypting enabled, message was sent not entcrypted`
+              );
+            }
+            break;
+          default:
+            break;
         }
         const regexmsg = /(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
         const regexmsg_result = regexmsg.exec(msg);
@@ -520,7 +538,7 @@ class sia extends import_events.EventEmitter {
     if (sia2 && sia2.id && sia2.seq && sia2.lpref && sia2.act && sia2.data_message) {
       return sia2;
     }
-    throw new Error(`Could not parse SIA message ${data}. Required SIA fields missing`);
+    throw new Error(`Could not parse SIA message ${data.toString()}. Required SIA fields missing`);
   }
   /**
    * Listen Server TCP
@@ -637,7 +655,7 @@ class sia extends import_events.EventEmitter {
    * @param data - string
    * @returns crc
    */
-  crc16(data) {
+  crc16old(data) {
     const crctab16 = new Uint16Array([
       0,
       49345,
@@ -907,11 +925,33 @@ class sia extends import_events.EventEmitter {
   /**
    * CRC Calculation. Example. crc16([0x20, 0x22])
    *
-   * @param str string
-   * @returns crc as sting
+   * @param buffer has to bei a Buffer like crc16([0x20, 0x22])
+   * @returns crc as number
+   */
+  crc16(buffer) {
+    let crc = 0;
+    for (const byte of buffer) {
+      let temp = byte & 255;
+      for (let i = 0; i < 8; i++) {
+        temp ^= crc & 1;
+        crc >>= 1;
+        if (temp & 1) {
+          crc ^= 40961;
+        }
+        temp >>= 1;
+      }
+    }
+    return crc;
+  }
+  /**
+   * CRC Calculation. Example. crc16str([0x20, 0x22]) or crc16src('hello');
+   *
+   * @param str kann ein String oder Buffer sein
+   * @returns crc as number
    */
   crc16str(str) {
-    return this.crc16(Buffer.from(str));
+    const crc = this.crc16(Buffer.from(str));
+    return crc;
   }
 }
 // Annotate the CommonJS export names for ESM import in node:
