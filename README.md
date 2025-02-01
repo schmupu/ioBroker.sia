@@ -78,6 +78,7 @@ cat /tmp/sia/sia_msg_fa165cc0-8e3a-faa1-eb5c-fd3e47479044.txt | nc localhost 550
 
 - (Stübi) add error envent if connction close
 - (Stübi) fix translations
+- (Stübi) fix a bug by receiving messages by udp
 
 ### 2.0.2 (2025-01-30)
 

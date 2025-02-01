@@ -48,6 +48,8 @@ export class sia extends EventEmitter {
     private port: number;
     private host: string;
     private logger: any;
+    private serverudp: dgram.Socket;
+    private servertcp: net.Server;
 
     /**
      * Constructor
@@ -72,6 +74,8 @@ export class sia extends EventEmitter {
                 error: parameter.logger.error ? parameter.logger.error : parameter.logger,
             };
         }
+        this.serverudp = dgram.createSocket('udp4');
+        this.servertcp = net.createServer();
     }
 
     /**
@@ -595,7 +599,8 @@ export class sia extends EventEmitter {
      * Listen Server TCP
      */
     public serverStartTCP(): void {
-        const servertcp = net.createServer(sock => {
+        // this.servertcp = net.createServer();
+        this.servertcp.on('connection', sock => {
             // See https://nodejs.org/api/stream.html#stream_readable_setencoding_encoding
             // sock.setEncoding(null);
             // Hack that must be added to make this work as expected
@@ -637,18 +642,36 @@ export class sia extends EventEmitter {
                 this.emit('error', tools.getErrorMessage(err));
             });
         });
-
-        servertcp.listen(this.port, this.host, () => {
+        this.servertcp.on('close', () => {
+            this.logger && this.logger.info(`TCP Listen server on ${this.host}:${this.port} closed`);
+            this.emit('close');
+        });
+        this.servertcp.listen(this.port, this.host, () => {
             this.logger && this.logger.info(`SIA Server listening on IP-Adress (TCP): ${this.host}:${this.port}`);
         });
+    }
+
+    /**
+     * Stop TCP Server
+     */
+    public serverStopTCP(): void {
+        if (this.servertcp) {
+            this.servertcp.close(err => {
+                if (err) {
+                    throw new Error(`Could not close TCP Listen server on : ${this.host}:${this.port}`);
+                } else {
+                    this.logger.info(`Close TCP Listen server on: ${this.host}:${this.port}`);
+                }
+            });
+        }
     }
 
     /**
      * Listen Server UDP
      */
     public serverStartUDP(): void {
-        const serverudp = dgram.createSocket('udp4');
-        serverudp.on('message', (data: any, remote: any) => {
+        // const serverudp = dgram.createSocket('udp4');
+        this.serverudp.on('message', (data: any, remote: any) => {
             try {
                 this.logger &&
                     this.logger.debug(`received from ${remote.address} following data: ${JSON.stringify(data)}`);
@@ -659,15 +682,15 @@ export class sia extends EventEmitter {
                 const ack = this.createACK(sia);
                 // set states only if ACK okay
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err: any, bytes: any) => {});
-                this.emit('sia', { sia, undefined });
+                this.serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err: any, bytes: any) => {});
+                this.emit('sia', sia, undefined);
                 this.logger &&
                     this.logger.info(`sending to ${remote.address} following ACK message: ${ack.toString().trim()}`);
             } catch (err) {
                 const crcformat = this.getcrcFormat(data);
                 const ack = this.createNACK(crcformat);
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err: any, bytes: any) => {});
+                this.serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err: any, bytes: any) => {});
                 this.emit('sia', undefined, tools.getErrorMessage(err));
                 this.logger &&
                     this.logger.error(
@@ -675,20 +698,33 @@ export class sia extends EventEmitter {
                     );
             }
         });
-        serverudp.on('close', () => {
+        this.serverudp.on('close', () => {
             this.logger && this.logger.info(`UDP Connection closed`);
+            this.emit('close');
         });
-        serverudp.on('error', (err: any) => {
+        this.serverudp.on('error', (err: any) => {
             this.logger && this.logger.error(`UDP Error: ${tools.getErrorMessage(err)}`);
-            serverudp.close();
             this.emit('error', tools.getErrorMessage(err));
         });
-        serverudp.bind(this.port, this.host, () => {
+        this.serverudp.bind(this.port, this.host, () => {
             this.logger &&
                 this.logger.info(
-                    `SIA Server listening on IP-Adress (UDP): ${serverudp.address().address}:${serverudp.address().port}`,
+                    `SIA Server listening on IP-Adress (UDP): ${this.serverudp.address().address}:${this.serverudp.address().port}`,
                 );
         });
+    }
+
+    /**
+     * Stop UDP Server
+     */
+    public serverStopUDP(): void {
+        if (this.serverudp) {
+            this.serverudp.close(() => {
+                this.logger.info(
+                    `Close UDP Listen server on: ${this.serverudp.address().address}:${this.serverudp.address().port}`,
+                );
+            });
+        }
     }
 
     /**

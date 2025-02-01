@@ -43,6 +43,8 @@ class sia extends import_events.EventEmitter {
   port;
   host;
   logger;
+  serverudp;
+  servertcp;
   /**
    * Constructor
    *
@@ -66,6 +68,8 @@ class sia extends import_events.EventEmitter {
         error: parameter.logger.error ? parameter.logger.error : parameter.logger
       };
     }
+    this.serverudp = import_dgram.default.createSocket("udp4");
+    this.servertcp = import_net.default.createServer();
   }
   /**
    * Set accounts
@@ -522,7 +526,7 @@ class sia extends import_events.EventEmitter {
    * Listen Server TCP
    */
   serverStartTCP() {
-    const servertcp = import_net.default.createServer((sock) => {
+    this.servertcp.on("connection", (sock) => {
       const remoteAddress = `${sock.remoteAddress}:${sock.remotePort}`;
       this.logger && this.logger.debug(`New client connected: ${remoteAddress}`);
       sock.on("data", (data) => {
@@ -553,30 +557,47 @@ class sia extends import_events.EventEmitter {
         this.emit("error", tools.getErrorMessage(err));
       });
     });
-    servertcp.listen(this.port, this.host, () => {
+    this.servertcp.on("close", () => {
+      this.logger && this.logger.info(`TCP Listen server on ${this.host}:${this.port} closed`);
+      this.emit("close");
+    });
+    this.servertcp.listen(this.port, this.host, () => {
       this.logger && this.logger.info(`SIA Server listening on IP-Adress (TCP): ${this.host}:${this.port}`);
     });
+  }
+  /**
+   * Stop TCP Server
+   */
+  serverStopTCP() {
+    if (this.servertcp) {
+      this.servertcp.close((err) => {
+        if (err) {
+          throw new Error(`Could not close TCP Listen server on : ${this.host}:${this.port}`);
+        } else {
+          this.logger.info(`Close TCP Listen server on: ${this.host}:${this.port}`);
+        }
+      });
+    }
   }
   /**
    * Listen Server UDP
    */
   serverStartUDP() {
-    const serverudp = import_dgram.default.createSocket("udp4");
-    serverudp.on("message", (data, remote) => {
+    this.serverudp.on("message", (data, remote) => {
       try {
         this.logger && this.logger.debug(`received from ${remote.address} following data: ${JSON.stringify(data)}`);
         this.logger && this.logger.info(`received from ${remote.address} following message: ${data.toString().trim()}`);
         this.emit("data", data);
         const sia2 = this.parseSIA(data);
         const ack = this.createACK(sia2);
-        serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err, bytes) => {
+        this.serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err, bytes) => {
         });
-        this.emit("sia", { sia: sia2, undefined: void 0 });
+        this.emit("sia", sia2, void 0);
         this.logger && this.logger.info(`sending to ${remote.address} following ACK message: ${ack.toString().trim()}`);
       } catch (err) {
         const crcformat = this.getcrcFormat(data);
         const ack = this.createNACK(crcformat);
-        serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err2, bytes) => {
+        this.serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err2, bytes) => {
         });
         this.emit("sia", void 0, tools.getErrorMessage(err));
         this.logger && this.logger.error(
@@ -584,19 +605,31 @@ class sia extends import_events.EventEmitter {
         );
       }
     });
-    serverudp.on("close", () => {
+    this.serverudp.on("close", () => {
       this.logger && this.logger.info(`UDP Connection closed`);
+      this.emit("close");
     });
-    serverudp.on("error", (err) => {
+    this.serverudp.on("error", (err) => {
       this.logger && this.logger.error(`UDP Error: ${tools.getErrorMessage(err)}`);
-      serverudp.close();
       this.emit("error", tools.getErrorMessage(err));
     });
-    serverudp.bind(this.port, this.host, () => {
+    this.serverudp.bind(this.port, this.host, () => {
       this.logger && this.logger.info(
-        `SIA Server listening on IP-Adress (UDP): ${serverudp.address().address}:${serverudp.address().port}`
+        `SIA Server listening on IP-Adress (UDP): ${this.serverudp.address().address}:${this.serverudp.address().port}`
       );
     });
+  }
+  /**
+   * Stop UDP Server
+   */
+  serverStopUDP() {
+    if (this.serverudp) {
+      this.serverudp.close(() => {
+        this.logger.info(
+          `Close UDP Listen server on: ${this.serverudp.address().address}:${this.serverudp.address().port}`
+        );
+      });
+    }
   }
   /**
    * CRC Calculation. Example. crc16([0x20, 0x22])
