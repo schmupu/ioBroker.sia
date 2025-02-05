@@ -39,7 +39,6 @@ var tools = __toESM(require("./tools"));
 class sia extends import_events.EventEmitter {
   timeout;
   accounts;
-  adapter;
   port;
   host;
   logger;
@@ -208,72 +207,54 @@ class sia extends import_events.EventEmitter {
     }
   }
   /**
-   * get timestamp in following format <_HH:MM:SS,MM-DD-YYYY>
+   * get timestamp in GMT in following format <HH:MM:SS,MM-DD-YYYY>
    *
-   * @param datum date object or leave empty
    * @returns timestamp as strng
    */
-  getTimestamp(datum) {
-    if (!datum) {
-      datum = /* @__PURE__ */ new Date();
-    }
-    const month = `0${datum.getUTCMonth() + 1}`.slice(-2);
-    const year = datum.getUTCFullYear();
-    const day = `0${datum.getUTCDate()}`.slice(-2);
-    const hour = `0${datum.getUTCHours()}`.slice(-2);
-    const minute = `0${datum.getUTCMinutes()}`.slice(-2);
-    const second = `0${datum.getUTCSeconds()}`.slice(-2);
-    const str = `_${hour}:${minute}:${second},${month}-${day}-${year}`;
-    return str;
+  getSIATimestampFromUTCDateNow() {
+    const date = /* @__PURE__ */ new Date();
+    const hours = String(date.getUTCHours()).padStart(2, "0");
+    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+    const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const year = date.getUTCFullYear();
+    return `${hours}:${minutes}:${seconds},${month}-${day}-${year}`;
   }
   /**
-   * Is SIA Message in time (+20 or -40 seconds)
+   * you get local Timen from GMT timestamp in format <HH:MM:SS,MM-DD-YYYY>
    *
-   * @param ts timestamp in seconds, for examp -20, +20
+   * @param ts date string in format HH:MM:SS,MM-DD-YYY
+   * @returns localtime as Date
+   */
+  getUTCDateFromSIATimestamp(ts) {
+    const [timePart, datePart] = ts.split(",");
+    const [hours, minutes, seconds] = timePart.split(":").map(Number);
+    const [month, day, year] = datePart.split("-").map(Number);
+    const gmtDate = new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds));
+    return gmtDate;
+  }
+  /**
+   * Is SIA Message in timerange (for example +20 or -40 seconds)
+   *
+   * @param ts1 date string in format HH:MM:SS,MM-DD-YYY
+   * @param ts2 date string in format HH:MM:SS,MM-DD-YYY
    * @returns true if timestamp in range, else false
    */
-  isInTime(ts) {
-    if (ts) {
-      let [tt, dd] = ts.split(",");
-      const val = /* @__PURE__ */ new Date(`${dd},${tt} UTC`);
-      [tt, dd] = this.getTimestamp().substring(1).split(",");
-      const now = /* @__PURE__ */ new Date();
-      const diff = Math.abs((val.getMilliseconds() - now.getMilliseconds()) / 1e3);
-      if (this.timeout > 0 && diff > this.timeout) {
-        return false;
-      }
+  isInTime(ts1, ts2) {
+    if (!ts1 || ts1.length === 0) {
       return true;
     }
-    return true;
-  }
-  /**
-   * SIA Message was not succesfull, create NAK
-   *
-   * @param crcformat crcformat
-   * @returns NAK Message
-   */
-  createNACK(crcformat) {
-    const ts = this.getTimestamp();
-    const str = `"NAK"0000R0L0A0[]${ts}`;
-    const crc = this.crc16str(str);
-    const len = str.length;
-    const crchex = `0000${crc.toString(16)}`.slice(-4).toUpperCase();
-    const lenhex = `0000${len.toString(16)}`.slice(-4).toUpperCase();
-    const start = Buffer.from([10]);
-    const end = Buffer.from([13]);
-    let crcbuf;
-    if (crcformat === "bin") {
-      crcbuf = Buffer.from([crc >>> 8 & 255, crc & 255]);
-      this.logger && this.logger.debug(`Created NAK : <0x0A><0x${crchex}>${lenhex}${str}<0x0D>`);
-    } else {
-      crcbuf = Buffer.from(crchex);
-      this.logger && this.logger.debug(`Created NAK : <0x0A>${crchex}${lenhex}${str}<0x0D>`);
+    const date_ts1 = this.getUTCDateFromSIATimestamp(ts1);
+    ts2 = ts2 && ts2.length > 0 ? ts2 : this.getSIATimestampFromUTCDateNow();
+    const date_ts2 = this.getUTCDateFromSIATimestamp(ts2);
+    this.logger && this.logger.debug(`Timestamp date_ts: ${date_ts1.toLocaleString()}`);
+    this.logger && this.logger.debug(`Timestamp date_now: ${date_ts2.toLocaleString()}`);
+    const diff = Math.abs((date_ts2.valueOf() - date_ts1.valueOf()) / 1e3);
+    if (this.timeout > 0 && diff > this.timeout) {
+      return false;
     }
-    const lenbuf = Buffer.from(lenhex);
-    const buf = Buffer.from(str);
-    const nack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
-    this.logger && this.logger.debug(`createNACK : ${JSON.stringify(nack)}`);
-    return nack;
+    return true;
   }
   /**
    * get Account from config
@@ -291,66 +272,120 @@ class sia extends import_events.EventEmitter {
     throw new Error(`Acoocunt ${act} unknown. Not found in configuratin!`);
   }
   /**
+   * SIA Message was not succesfull, create NAK
+   *
+   * @param data message
+   * @returns NAK Message
+   */
+  createNACK(data) {
+    const ts = this.getSIATimestampFromUTCDateNow();
+    const str = `"NAK"0000R0L0A0[]_${ts}`;
+    const crc = this.crc16str(str);
+    const len = str.length;
+    const crchex = `0000${crc.toString(16)}`.slice(-4).toUpperCase();
+    const lenhex = `0000${len.toString(16)}`.slice(-4).toUpperCase();
+    const start = Buffer.from([10]);
+    const end = Buffer.from([13]);
+    let crcbuf;
+    const crcformat = this.getcrcFormat(data);
+    switch (crcformat) {
+      case "bin":
+        crcbuf = Buffer.from([crc >>> 8 & 255, crc & 255]);
+        this.logger && this.logger.debug(`Created NAK : <0x0A><0x${crchex}>${lenhex}${str}<0x0D>`);
+        break;
+      case "hex":
+        crcbuf = Buffer.from(crchex);
+        this.logger && this.logger.debug(`Created NAK : <0x0A>${crchex}${lenhex}${str}<0x0D>`);
+        break;
+      default:
+        crcbuf = Buffer.from("");
+        this.logger && this.logger.eror(`Created NAK : <0x0A><0x0D>`);
+        break;
+    }
+    const lenbuf = Buffer.from(lenhex);
+    const buf = Buffer.from(str);
+    const nack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
+    this.logger && this.logger.debug(`createNACK : ${JSON.stringify(nack)}`);
+    return nack;
+  }
+  /**
    * Craete Acknowledge for SIA
    *
    * @param sia - SIA Message
    * @returns ack message
    */
   createACK(sia2) {
-    if (sia2) {
-      const ts = this.getTimestamp();
-      const cfg = this.getAccountInfo(sia2.act);
-      let str = "";
-      this.logger && this.logger.debug(`createACK (cfg) : ${JSON.stringify(cfg)}`);
-      this.logger && this.logger.debug(`createACK (sia) : ${JSON.stringify(sia2)}`);
-      if (sia2.crc == sia2.calc_crc && sia2.len == sia2.calc_len && cfg && this.isInTime(sia2.ts)) {
-        const rpref = sia2.rpref && sia2.rpref.length > 0 ? `R${sia2.rpref}` : "";
-        const lpref = sia2.lpref && sia2.lpref.length > 0 ? `L${sia2.lpref}` : "";
-        switch (sia2.id) {
-          case "*SIA-DCS":
-          case "*ADM-CID": {
-            if (!cfg.aes || !cfg.password) {
-              throw new Error(
-                `Could not create ACK. Could not encrypt message, because AES encrypting disabled or password is missing for ${cfg.accountnumber}`
-              );
-            }
-            const msglen = `|]${ts}`.length;
-            const padlen = 16 - msglen % 16;
-            const pad = Buffer.alloc(padlen, 0);
-            const msg = this.encrypt_hex(cfg.password, `${pad.toString()}|] ${ts}`);
-            str = `"*ACK"${sia2.seq}${rpref}${lpref}#${sia2.act}[${msg}`;
-            break;
-          }
-          case "SIA-DCS":
-          case "ADM-CID": {
-            str = `"ACK"${sia2.seq}${rpref}${lpref}#${sia2.act}[]`;
-            break;
-          }
-          default:
-            break;
-        }
-        const crc = this.crc16str(str);
-        const len = str.length;
-        const crchex = `0000${crc.toString(16)}`.slice(-4).toUpperCase();
-        const lenhex = `0000${len.toString(16)}`.slice(-4).toUpperCase();
-        const start = Buffer.from([10]);
-        const end = Buffer.from([13]);
-        let crcbuf;
-        if (sia2 && sia2.crcformat === "bin") {
-          crcbuf = Buffer.from([crc >>> 8 & 255, crc & 255]);
-          this.logger && this.logger.debug(`Created ACK : <0x0A><0x${crchex}>${lenhex}${str}<0x0D>`);
-        } else {
-          crcbuf = Buffer.from(crchex);
-          this.logger && this.logger.debug(`Created ACK : <0x0A>${crchex}${lenhex}${str}<0x0D>`);
-        }
-        const lenbuf = Buffer.from(lenhex);
-        const buf = Buffer.from(str);
-        const ack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
-        this.logger && this.logger.debug(`createACK : ${JSON.stringify(ack)}`);
-        return ack;
-      }
+    if (!sia2) {
+      throw new Error(`Could not create ACK for message!`);
     }
-    throw new Error(`Could not create ACK for message!`);
+    const ts = this.getSIATimestampFromUTCDateNow();
+    const cfg = this.getAccountInfo(sia2.act);
+    if (!cfg) {
+      throw new Error(`Could not create ACK. Accountnumber ${sia2.act} missing in the configuration`);
+    }
+    const intime = sia2.ts && sia2.ts.length > 0 ? this.isInTime(sia2.ts, ts) : true;
+    this.logger && this.logger.debug(`createACK (cfg) : ${JSON.stringify(cfg)}`);
+    this.logger && this.logger.debug(`createACK (sia) : ${JSON.stringify(sia2)}`);
+    let str = "";
+    if (!intime) {
+      throw new Error(`Could not create ACK. Message to old (timestamp msg: ${sia2.ts}, timestamp now: ${ts})`);
+    }
+    if (sia2.calc_len != sia2.len) {
+      throw new Error(`Could not create ACK. Length of message is not correct!`);
+    }
+    if (sia2.calc_crc != sia2.crc) {
+      throw new Error(`Could not create ACK. CRC of message is not correct!`);
+    }
+    const rpref = sia2.rpref && sia2.rpref.length > 0 ? `R${sia2.rpref}` : "";
+    const lpref = sia2.lpref && sia2.lpref.length > 0 ? `L${sia2.lpref}` : "";
+    switch (sia2.id) {
+      case "*SIA-DCS":
+      case "*ADM-CID": {
+        if (!cfg.aes || !cfg.password) {
+          throw new Error(
+            `Could not create ACK. Could not encrypt message, because AES encrypting disabled or password is missing for ${cfg.accountnumber}`
+          );
+        }
+        const msglen = `|]_${ts}`.length;
+        const padlen = 16 - msglen % 16;
+        const pad = Buffer.alloc(padlen, 0);
+        const msg = this.encrypt_hex(cfg.password, `${pad.toString()}|]_${ts}`);
+        str = `"*ACK"${sia2.seq}${rpref}${lpref}#${sia2.act}[${msg}`;
+        break;
+      }
+      case "SIA-DCS":
+      case "ADM-CID": {
+        str = `"ACK"${sia2.seq}${rpref}${lpref}#${sia2.act}[]`;
+        break;
+      }
+      default:
+        break;
+    }
+    const crc = this.crc16str(str);
+    const len = str.length;
+    const crchex = `0000${crc.toString(16)}`.slice(-4).toUpperCase();
+    const lenhex = `0000${len.toString(16)}`.slice(-4).toUpperCase();
+    const start = Buffer.from([10]);
+    const end = Buffer.from([13]);
+    let crcbuf;
+    switch (sia2 == null ? void 0 : sia2.crcformat) {
+      case "bin":
+        crcbuf = Buffer.from([crc >>> 8 & 255, crc & 255]);
+        this.logger && this.logger.debug(`Created ACK : <0x0A><0x${crchex}>${lenhex}${str}<0x0D>`);
+        break;
+      case "hex":
+        crcbuf = Buffer.from(crchex);
+        this.logger && this.logger.debug(`Created ACK : <0x0A>${crchex}${lenhex}${str}<0x0D>`);
+        break;
+      default:
+        throw new Error(`Could not create ACK for message. Message not in BIN or HEX foramt!`);
+        break;
+    }
+    const lenbuf = Buffer.from(lenhex);
+    const buf = Buffer.from(str);
+    const ack = Buffer.concat([start, crcbuf, lenbuf, buf, end]);
+    this.logger && this.logger.debug(`createACK : ${JSON.stringify(ack)}`);
+    return ack;
   }
   /**
    * Convert Byte to Hex String
@@ -377,16 +412,15 @@ class sia extends import_events.EventEmitter {
    * @returns crc format
    */
   getcrcFormat(data) {
-    let crcformat = "hex";
     if (data) {
       if (data[5] == "0".charCodeAt(0) && data[9] == '"'.charCodeAt(0)) {
-        crcformat = "hex";
+        return "hex";
       }
       if (data[3] == "0".charCodeAt(0) && data[7] == '"'.charCodeAt(0)) {
-        crcformat = "bin";
+        return "bin";
       }
     }
-    return crcformat;
+    return "";
   }
   /**
    * delete 0x00 at the end of the buffer
@@ -398,7 +432,7 @@ class sia extends import_events.EventEmitter {
     if (data) {
       for (let i = data.length - 1; i > 0; i--) {
         if (data[i] === 0) {
-          data = data.slice(0, i);
+          data = data.subarray(0, i);
         } else {
           break;
         }
@@ -407,7 +441,7 @@ class sia extends import_events.EventEmitter {
     return data;
   }
   /**
-   * parse SIA message
+   * parse SIA message (https://dc09gen.northlat.com/)
    *
    * @param data - SIA Message
    * @returns parsed sia data
@@ -415,127 +449,109 @@ class sia extends import_events.EventEmitter {
   parseSIA(data) {
     data = this.deleteAppendingZero(data);
     const datalen = data.length - 1;
-    const sia2 = {
-      id: "",
-      seq: "",
-      rpref: void 0,
-      lpref: void 0,
-      act: "",
-      data: void 0,
-      data_message: void 0,
-      data_extended: void 0,
-      ts: void 0,
-      crc: void 0,
-      calc_crc: void 0,
-      calc_len: 0,
-      len: void 0,
-      crcformat: "",
-      lf: void 0,
-      cr: void 0,
-      str: void 0,
-      pad: void 0
-    };
-    let str = void 0;
-    if (data && data[0] == 10 && data[datalen] == 13) {
-      sia2.data = data;
-      sia2.lf = data[0];
-      if (data[5] == "0".charCodeAt(0) && data[9] == '"'.charCodeAt(0)) {
-        str = Buffer.from(data.subarray(9, datalen));
-        sia2.len = parseInt(data.toString().substring(5, 9), 16);
-        sia2.crc = parseInt(data.toString().substring(1, 5), 16);
-        sia2.crcformat = "hex";
-      }
-      if (data[3] == "0".charCodeAt(0) && data[7] == '"'.charCodeAt(0)) {
-        str = Buffer.from(data.subarray(7, datalen));
-        sia2.len = parseInt(data.toString().substring(3, 7), 16);
-        sia2.crc = data[1] * 256 + data[2];
-        sia2.crcformat = "bin";
-      }
-      this.logger && this.logger.debug(`data : ${data.toString()}`);
-      sia2.cr = data[datalen];
-      if (!str) {
-        throw new Error(`Could not parse SIA message. Message (str) ist empay`);
-      }
-      sia2.str = str.toString() || "";
-      sia2.calc_len = str.length;
-      sia2.calc_crc = this.crc16str(str);
-      const crchex = `0000${sia2.crc.toString(16)}`.slice(-4).toUpperCase();
-      const lenhex = `0000${sia2.len.toString(16)}`.slice(-4).toUpperCase();
-      if (sia2.crcformat === "bin") {
-        this.logger && this.logger.debug(`SIA Message : <0x0A><0x${crchex}>${lenhex}${str.toString()}<0x0D>`);
-      } else {
-        this.logger && this.logger.debug(`SIA Message : <0x0A>${crchex}${lenhex}${str.toString()}<0x0D>`);
-      }
-      this.logger && this.logger.debug(`parseSIA sia.str : ${sia2.str}`);
-      if (sia2.calc_len != sia2.len || sia2.calc_crc != sia2.crc) {
-        this.logger && this.logger.debug("CRC or Length different to the caclulated values");
-        this.logger && this.logger.debug(`SIA crc= ${sia2.crc}, calc_crc=${sia2.calc_crc}`);
-        this.logger && this.logger.debug(`SIA len= ${sia2.len}, calc_len=${sia2.calc_len}`);
-        this.logger && this.logger.debug(`Message for CRC and LEN calculation${sia2.str}`);
-        this.logger && this.logger.debug(`Message for CRC and LEN calculation (String)${sia2.str.toString()}`);
-        throw new Error(`Could not parse SIA message. CRC Error!`);
-      }
-      const regexstr = /"(.+)"(\d{4})(R(.{0,6})){0,1}(L(.{0,6}))#([\w\d]+)\[(.+)/gm;
-      const regexstr_result = regexstr.exec(sia2.str);
-      if (regexstr_result && regexstr_result.length >= 8) {
-        let lpref = void 0;
-        this.logger && this.logger.debug(`parseSIA regex   : ${JSON.stringify(sia2)}`);
-        sia2.id = regexstr_result[1] || "";
-        sia2.seq = regexstr_result[2] || "";
-        sia2.rpref = regexstr_result[4] || "";
-        if (regexstr_result[5] === "L") {
-          lpref = 0;
-        }
-        sia2.lpref = regexstr_result[6] || lpref;
-        sia2.act = regexstr_result[7] || "";
-        sia2.pad = "";
-        let msg = regexstr_result[8] || "";
-        const cfg = this.getAccountInfo(sia2.act);
-        if (!cfg) {
+    if (!data || data[0] !== 10 || data[datalen] !== 13) {
+      throw new Error(`Receive message ${data == null ? void 0 : data.toString()} is corrupted.`);
+    }
+    const crcformat = this.getcrcFormat(data);
+    let str = "";
+    let len = "";
+    let crc = "";
+    switch (crcformat) {
+      case "hex":
+        str = Buffer.from(data.subarray(9, datalen)).toString();
+        len = data.subarray(5, 9).toString().toUpperCase();
+        crc = data.subarray(1, 5).toString().toUpperCase();
+        this.logger && this.logger.debug(`SIA Message : <0x0A>${crc}${len}${str == null ? void 0 : str.toString()}<0x0D>`);
+        break;
+      case "bin":
+        str = Buffer.from(data.subarray(7, datalen)).toString();
+        len = `0000${data.subarray(3, 7).toString()}`.slice(-4).toUpperCase();
+        crc = `0000${(data[1] * 256 + data[2]).toString(16)}`.slice(-4).toUpperCase();
+        this.logger && this.logger.debug(`SIA Message : <0x0A><0x${crc}>${len}${str == null ? void 0 : str.toString()}<0x0D>`);
+        break;
+      default:
+        throw new Error(`Could not parse SIA message. Message not in BIN or HEX format!`);
+    }
+    if (str.length === 0) {
+      throw new Error(`Could not parse SIA message. Message corupted`);
+    }
+    const calc_len = `0000${str.length.toString(16)}`.slice(-4).toUpperCase();
+    const calc_crc = `0000${this.crc16str(str).toString(16)}`.slice(-4).toUpperCase();
+    if (calc_len != len) {
+      throw new Error(`Could not parse SIA message. Length of message is not correct!`);
+    }
+    if (calc_crc != crc) {
+      throw new Error(`Could not parse SIA message. CRC of message is not correct!`);
+    }
+    this.logger && this.logger.debug(`parseSIA str : ${str}`);
+    const regexstr = /"(.+)"(\d{4})(R(.{0,6})){0,1}(L(.{0,6}))#([\w\d]+)\[(.+)/gm;
+    const regexstr_result = regexstr.exec(str);
+    if (!regexstr_result || regexstr_result.length !== 9) {
+      throw new Error("Could not parse SIA message. Message corupted");
+    }
+    const id = regexstr_result[1] || "";
+    const seq = regexstr_result[2] || "";
+    const rpref = regexstr_result[4] || "";
+    const lpref = regexstr_result[6] || "";
+    const act = regexstr_result[7] || "";
+    let msg = regexstr_result[8] || "";
+    const cfg = this.getAccountInfo(act);
+    if (!cfg) {
+      throw new Error(`Could not parse SIA message. Accountnumber ${act} missing in the configuration`);
+    }
+    switch (id) {
+      case "*SIA-DCS":
+      case "*ADM-CID":
+        if (!cfg.aes || !cfg.password) {
           throw new Error(
-            `Could not parse SIA message. Accountnumber ${sia2.act} missing in the configuration`
+            `Could not parse SIA message. Could not decrypt message, because AES encrypting disabled or password is missing for ${cfg.accountnumber}`
           );
         }
-        switch (sia2.id) {
-          case "*SIA-DCS":
-          case "*ADM-CID":
-            if (!cfg.aes || !cfg.password) {
-              throw new Error(
-                `Could not parse SIA message. Could not decrypt message, because AES encrypting disabled or password is missing for ${cfg.accountnumber}`
-              );
-            }
-            msg = this.decrypt_hex(cfg.password, msg);
-            if (msg) {
-              const padlen = msg.indexOf("|");
-              sia2.pad = msg.substring(0, padlen);
-              msg = msg.substring(padlen + 1);
-              this.logger && this.logger.debug(`SIA Message decrypted part: ${msg}`);
-            } else {
-              throw new Error(`Could not parse SIA message. Could not decrypt message`);
-            }
-            break;
-          case "SIA-DCS":
-          case "ADM-CID":
-            if (cfg.aes) {
-              throw new Error(
-                `Could not parse SIA message. Encrypting enabled, message was sent not entcrypted`
-              );
-            }
-            break;
-          default:
-            break;
+        msg = this.decrypt_hex(cfg.password, msg);
+        if (msg) {
+          const padlen = msg.indexOf("|");
+          msg = msg.substring(padlen + 1);
+          this.logger && this.logger.debug(`SIA Message decrypted part: ${msg}`);
+        } else {
+          throw new Error(`Could not parse SIA message. Could not decrypt message`);
         }
-        const regexmsg = /(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
-        const regexmsg_result = regexmsg.exec(msg);
-        if (regexmsg_result && regexmsg_result.length >= 1) {
-          sia2.data_message = regexmsg_result[1] || "";
-          sia2.data_extended = regexmsg_result[3] || "";
-          sia2.ts = regexmsg_result[5] || "";
+        break;
+      case "SIA-DCS":
+      case "ADM-CID":
+        if (cfg.aes) {
+          throw new Error(`Could not parse SIA message. Encrypting enabled, message was sent not entcrypted`);
         }
-      }
+        break;
+      default:
+        break;
     }
+    const regexmsg = /(.+?)\](\[(.*?)\])?(_(.+)){0,1}/gm;
+    const regexmsg_result = regexmsg.exec(msg);
+    if (!regexmsg_result || regexmsg_result.length !== 6) {
+      throw new Error(`Incorrect format of data message ${msg}`);
+    }
+    const data_message = regexmsg_result[1] || "";
+    const data_extended = regexmsg_result[3] || "";
+    const ts = regexmsg_result[5] || "";
+    const sia2 = {
+      id,
+      seq,
+      lpref,
+      rpref,
+      act,
+      data_extended,
+      data_message,
+      crc,
+      len,
+      data,
+      calc_crc,
+      calc_len,
+      crcformat,
+      str,
+      ts
+    };
     this.logger && this.logger.debug(`parseSIA : ${JSON.stringify(sia2)}`);
-    if (sia2 && sia2.id && sia2.seq && sia2.lpref && sia2.act && sia2.data_message) {
+    if (sia2 && sia2.id.length > 0 && sia2.seq.length > 0 && sia2.lpref.length > 0 && sia2.act.length > 0 && sia2.data_message.length > 0) {
       return sia2;
     }
     throw new Error(`Could not parse SIA message ${data.toString()}. Required SIA fields missing`);
@@ -558,8 +574,7 @@ class sia extends import_events.EventEmitter {
           this.emit("sia", sia2, void 0);
           this.logger && this.logger.info(`sending to ${remoteAddress} following ACK message: ${ack.toString().trim()}`);
         } catch (err) {
-          const crcformat = this.getcrcFormat(data);
-          const ack = this.createNACK(crcformat);
+          const ack = this.createNACK(data);
           sock.end(ack);
           this.emit("sia", void 0, tools.getErrorMessage(err));
           this.logger && this.logger.error(
@@ -613,8 +628,7 @@ class sia extends import_events.EventEmitter {
         this.emit("sia", sia2, void 0);
         this.logger && this.logger.info(`sending to ${remote.address} following ACK message: ${ack.toString().trim()}`);
       } catch (err) {
-        const crcformat = this.getcrcFormat(data);
-        const ack = this.createNACK(crcformat);
+        const ack = this.createNACK(data);
         this.serverudp.send(ack, 0, ack.length, remote.port, remote.address, (err2, bytes) => {
         });
         this.emit("sia", void 0, tools.getErrorMessage(err));

@@ -299,12 +299,7 @@ class sia extends utils.Adapter {
                     val = sia.data_extended;
                     break;
                 case 'ts':
-                    try {
-                        val = this.convertToUnixTime(sia.ts).toString();
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    } catch (err) {
-                        val = sia.ts;
-                    }
+                    val = sia.ts;
                     break;
                 case 'crc':
                     val = sia.crc;

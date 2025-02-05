@@ -17,7 +17,6 @@ export const dpSIA: ifSIA = {
         write: false,
         def: '',
     },
-
     sequence: {
         type: 'string',
         role: 'value', // Number 4 character, 0-9
@@ -26,7 +25,6 @@ export const dpSIA: ifSIA = {
         write: false,
         def: '',
     },
-
     rpref: {
         type: 'string',
         role: 'text',
@@ -35,7 +33,6 @@ export const dpSIA: ifSIA = {
         write: false,
         def: '',
     },
-
     lpref: {
         type: 'string',
         role: 'text',
@@ -44,7 +41,6 @@ export const dpSIA: ifSIA = {
         write: false,
         def: '',
     },
-
     accountnumber: {
         type: 'string',
         role: 'text',
@@ -53,7 +49,6 @@ export const dpSIA: ifSIA = {
         write: false,
         def: '',
     },
-
     msgdata: {
         type: 'string',
         role: 'text',
@@ -62,7 +57,6 @@ export const dpSIA: ifSIA = {
         write: false,
         def: '',
     },
-
     extdata: {
         type: 'string',
         role: 'text',
@@ -71,39 +65,28 @@ export const dpSIA: ifSIA = {
         write: false,
         def: '',
     },
-    /*
-  ts: {
-    type: 'number',
-    role: 'value.time',
-    name: 'Timestamp', // Timestamp
-    read: true,
-    write: false
-  },
-  */
     ts: {
         type: 'string',
         role: 'text',
         name: 'Timestamp', // Timestamp
         read: true,
         write: false,
-        def: new Date(),
+        def: '',
     },
-
     crc: {
-        type: 'number',
+        type: 'string',
         role: 'value',
-        name: 'CRC16', // CRC
+        name: 'CRC', // CRC
         read: true,
         write: false,
-        def: 0,
+        def: '',
     },
-
     len: {
-        type: 'number',
+        type: 'string',
         role: 'value',
         name: 'Length of Message', // Länge
         read: true,
         write: false,
-        def: 0,
+        def: '',
     },
 };

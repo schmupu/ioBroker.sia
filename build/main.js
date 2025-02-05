@@ -291,11 +291,7 @@ class sia extends utils.Adapter {
           val = sia2.data_extended;
           break;
         case "ts":
-          try {
-            val = this.convertToUnixTime(sia2.ts).toString();
-          } catch (err) {
-            val = sia2.ts;
-          }
+          val = sia2.ts;
           break;
         case "crc":
           val = sia2.crc;

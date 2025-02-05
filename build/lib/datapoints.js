@@ -85,15 +85,6 @@ const dpSIA = {
     write: false,
     def: ""
   },
-  /*
-  ts: {
-    type: 'number',
-    role: 'value.time',
-    name: 'Timestamp', // Timestamp
-    read: true,
-    write: false
-  },
-  */
   ts: {
     type: "string",
     role: "text",
@@ -101,25 +92,25 @@ const dpSIA = {
     // Timestamp
     read: true,
     write: false,
-    def: /* @__PURE__ */ new Date()
+    def: ""
   },
   crc: {
-    type: "number",
+    type: "string",
     role: "value",
-    name: "CRC16",
+    name: "CRC",
     // CRC
     read: true,
     write: false,
-    def: 0
+    def: ""
   },
   len: {
-    type: "number",
+    type: "string",
     role: "value",
     name: "Length of Message",
     // Länge
     read: true,
     write: false,
-    def: 0
+    def: ""
   }
 };
 // Annotate the CommonJS export names for ESM import in node:

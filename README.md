@@ -142,6 +142,12 @@ You can use ioBroker with this adapter as central station. For example. you can 
     ```
 
 ## Changelog
+
+### **WORK IN PROGRESS**
+
+- (Stübi) Fixed Issue Required SIA fields Missing (Issue #19)
+- (Stübi) Fixed an error by reading the length of the message
+
 ### 2.0.3 (2025-02-01)
 
 - (Stübi) add error envent if connction close
