@@ -299,7 +299,7 @@ class sia extends import_events.EventEmitter {
         break;
       default:
         crcbuf = Buffer.from("");
-        this.logger && this.logger.eror(`Created NAK : <0x0A><0x0D>`);
+        this.logger && this.logger.error(`Created NAK : <0x0A><0x0D>`);
         break;
     }
     const lenbuf = Buffer.from(lenhex);

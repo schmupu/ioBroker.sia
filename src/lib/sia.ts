@@ -345,7 +345,7 @@ export class sia extends EventEmitter {
             default:
                 /** Empty message */
                 crcbuf = Buffer.from('');
-                this.logger && this.logger.eror(`Created NAK : <0x0A><0x0D>`);
+                this.logger && this.logger.error(`Created NAK : <0x0A><0x0D>`);
                 break;
         }
         const lenbuf = Buffer.from(lenhex);
@@ -646,7 +646,6 @@ export class sia extends EventEmitter {
                     this.emit('data', data);
                     const sia = this.parseSIA(data);
                     const ack = this.createACK(sia);
-                    // set states only if ACK okay
                     sock.end(ack);
                     this.emit('sia', sia, undefined);
                     this.logger &&
