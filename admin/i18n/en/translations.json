@@ -14,5 +14,6 @@
     "subscriber": "Subscriber",
     "Path for saving SIA messages": "Path for saving SIA messages",
     "Save incomming SIA messages": "Save incomming SIA messages",
-    "List of Accounts": "List of Accounts"
+    "List of Accounts": "List of Accounts",
+    "Connection close by SIA Server": "Connection close by SIA Server"
 }

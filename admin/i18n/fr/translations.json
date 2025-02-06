@@ -15,5 +15,6 @@
     "subscriber": "Abonné",
     "Save incomming SIA messages": "Enregistrer les messages SIA incorporés",
     "Main Settings": "Paramètres principaux",
-    "List of Accounts": "Liste des comptes"
+    "List of Accounts": "Liste des comptes",
+    "Connection close by SIA Server": "Connexion Ferme par SIA Server"
 }

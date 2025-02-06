@@ -7,6 +7,7 @@ declare global {
             port: number;
             bind: string;
             timeout: number;
+            sockend: boolean;
             path: string;
             save: boolean;
             keys: {

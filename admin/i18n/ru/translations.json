@@ -15,5 +15,6 @@
     "subscriber": "Подписчик",
     "Save incomming SIA messages": "Сохранить сообщения SIA SIA",
     "Main Settings": "Основные настройки",
-    "List of Accounts": "Список учетных записей"
+    "List of Accounts": "Список учетных записей",
+    "Connection close by SIA Server": "Соединение рядом с сервером SIA"
 }

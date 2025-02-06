@@ -66,6 +66,7 @@ export class sia extends EventEmitter {
     private logger: any;
     private serverudp: dgram.Socket;
     private servertcp: net.Server;
+    private sockend: boolean;
 
     /**
      * Constructor
@@ -75,10 +76,12 @@ export class sia extends EventEmitter {
      * @param parameter.host bind host
      * @param parameter.port bind port
      * @param parameter.logger logger
+     * @param parameter.sockend close connection
      */
-    constructor(parameter: { timeout?: number; host: string; port: number; logger?: any }) {
+    constructor(parameter: { timeout?: number; host: string; port: number; logger?: any; sockend?: boolean }) {
         super();
         this.timeout = parameter.timeout === undefined ? 10 : parameter.timeout;
+        this.sockend = parameter.sockend ? true : false;
         this.host = parameter.host;
         this.port = parameter.port;
         this.accounts = [];
@@ -635,6 +638,7 @@ export class sia extends EventEmitter {
     public serverStartTCP(): void {
         // this.servertcp = net.createServer();
         this.servertcp.on('connection', sock => {
+            let handletimeout: NodeJS.Timeout | undefined = undefined;
             const remoteAddress = `${sock.remoteAddress}:${sock.remotePort}`;
             this.logger && this.logger.debug(`New client connected: ${remoteAddress}`);
             sock.on('data', (data: any) => {
@@ -646,12 +650,22 @@ export class sia extends EventEmitter {
                     this.emit('data', data);
                     const sia = this.parseSIA(data);
                     const ack = this.createACK(sia);
-                    sock.end(ack);
+                    sock.write(ack);
+                    if (this.sockend) {
+                        sock.end();
+                    } else {
+                        /** close connection afer 30 seconds */
+                        handletimeout = setTimeout(() => {
+                            this.logger && this.logger.info(`disconnecting connection from ${remoteAddress}`);
+                            sock.end();
+                        }, 30 * 1000);
+                    }
                     this.emit('sia', sia, undefined);
                     this.logger &&
                         this.logger.info(`sending to ${remoteAddress} following ACK message: ${ack.toString().trim()}`);
                 } catch (err) {
                     const ack = this.createNACK(data);
+                    sock.write(ack);
                     sock.end(ack);
                     this.emit('sia', undefined, tools.getErrorMessage(err));
                     this.logger &&
@@ -659,6 +673,12 @@ export class sia extends EventEmitter {
                             `sending to ${remoteAddress} following NACK message: ${ack.toString().trim()} because of error ${tools.getErrorMessage(err)}`,
                         );
                 }
+            });
+            sock.on('end', () => {
+                if (!this.sockend) {
+                    handletimeout && clearTimeout(handletimeout);
+                }
+                this.logger && this.logger.info(`connection from ${remoteAddress} disconnected`);
             });
             sock.on('close', () => {
                 this.logger && this.logger.info(`connection from ${remoteAddress} closed`);

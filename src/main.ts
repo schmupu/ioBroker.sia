@@ -45,6 +45,7 @@ class sia extends utils.Adapter {
         try {
             this.siaclient = new siamanager.sia({
                 timeout: this.config.timeout,
+                sockend: this.config.sockend,
                 host: this.config.bind,
                 port: this.config.port,
                 logger: this.log,

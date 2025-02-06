@@ -15,5 +15,6 @@
     "subscriber": "Abbonato",
     "Save incomming SIA messages": "Salva messaggi SIA intrecciati",
     "Main Settings": "Impostazioni principali",
-    "List of Accounts": "Elenco degli account"
+    "List of Accounts": "Elenco degli account",
+    "Connection close by SIA Server": "Connessione vicina al server Sia"
 }

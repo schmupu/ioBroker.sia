@@ -40,6 +40,15 @@
                     "label": "ACK Timeout",
                     "newLine": true
                 },
+                "sockend": {
+                    "type": "checkbox",
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4,
+                    "xs": 12,
+                    "label": "Connection close by SIA Server"
+                },
                 "path": {
                     "newLine": true,
                     "type": "text",

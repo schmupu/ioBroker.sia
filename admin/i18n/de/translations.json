@@ -15,5 +15,6 @@
     "subscriber": "Teilnehmer",
     "Save incomming SIA messages": "Speichern von eingehenden SIA Nachrichten",
     "Main Settings": "Haupteinstellungen",
-    "List of Accounts": "Liste der Accounts"
+    "List of Accounts": "Liste der Accounts",
+    "Connection close by SIA Server": "Verbindung in der Nähe von SIA Server"
 }

@@ -15,5 +15,6 @@
     "subscriber": "Abonado",
     "Save incomming SIA messages": "Guardar mensajes de SIA en incomming",
     "Main Settings": "Configuración principal",
-    "List of Accounts": "Lista de cuentas"
+    "List of Accounts": "Lista de cuentas",
+    "Connection close by SIA Server": "Conexión cerca del servidor SIA"
 }

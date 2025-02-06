@@ -44,6 +44,7 @@ class sia extends import_events.EventEmitter {
   logger;
   serverudp;
   servertcp;
+  sockend;
   /**
    * Constructor
    *
@@ -52,10 +53,12 @@ class sia extends import_events.EventEmitter {
    * @param parameter.host bind host
    * @param parameter.port bind port
    * @param parameter.logger logger
+   * @param parameter.sockend close connection
    */
   constructor(parameter) {
     super();
     this.timeout = parameter.timeout === void 0 ? 10 : parameter.timeout;
+    this.sockend = parameter.sockend ? true : false;
     this.host = parameter.host;
     this.port = parameter.port;
     this.accounts = [];
@@ -561,6 +564,7 @@ class sia extends import_events.EventEmitter {
    */
   serverStartTCP() {
     this.servertcp.on("connection", (sock) => {
+      let handletimeout = void 0;
       const remoteAddress = `${sock.remoteAddress}:${sock.remotePort}`;
       this.logger && this.logger.debug(`New client connected: ${remoteAddress}`);
       sock.on("data", (data) => {
@@ -570,17 +574,32 @@ class sia extends import_events.EventEmitter {
           this.emit("data", data);
           const sia2 = this.parseSIA(data);
           const ack = this.createACK(sia2);
-          sock.end(ack);
+          sock.write(ack);
+          if (this.sockend) {
+            sock.end();
+          } else {
+            handletimeout = setTimeout(() => {
+              this.logger && this.logger.info(`disconnecting connection from ${remoteAddress}`);
+              sock.end();
+            }, 30 * 1e3);
+          }
           this.emit("sia", sia2, void 0);
           this.logger && this.logger.info(`sending to ${remoteAddress} following ACK message: ${ack.toString().trim()}`);
         } catch (err) {
           const ack = this.createNACK(data);
+          sock.write(ack);
           sock.end(ack);
           this.emit("sia", void 0, tools.getErrorMessage(err));
           this.logger && this.logger.error(
             `sending to ${remoteAddress} following NACK message: ${ack.toString().trim()} because of error ${tools.getErrorMessage(err)}`
           );
         }
+      });
+      sock.on("end", () => {
+        if (!this.sockend) {
+          handletimeout && clearTimeout(handletimeout);
+        }
+        this.logger && this.logger.info(`connection from ${remoteAddress} disconnected`);
       });
       sock.on("close", () => {
         this.logger && this.logger.info(`connection from ${remoteAddress} closed`);

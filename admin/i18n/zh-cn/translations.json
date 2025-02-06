@@ -15,5 +15,6 @@
     "subscriber": "订户",
     "Save incomming SIA messages": "保存不断的SIA消息",
     "Main Settings": "主要设置",
-    "List of Accounts": "帐户列表"
+    "List of Accounts": "帐户列表",
+    "Connection close by SIA Server": "SIA服务器关闭的连接"
 }

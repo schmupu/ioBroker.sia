@@ -15,5 +15,6 @@
     "subscriber": "Абонент",
     "Save incomming SIA messages": "Зберегти інформування повідомлень SIA",
     "Main Settings": "Основні налаштування",
-    "List of Accounts": "Список рахунків"
+    "List of Accounts": "Список рахунків",
+    "Connection close by SIA Server": "Підключення, близьке SIA Server"
 }
