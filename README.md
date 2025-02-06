@@ -145,8 +145,7 @@ You can use ioBroker with this adapter as central station. For example. you can 
     ```
 
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 2.0.4 (2025-02-06)
 
 - (Stübi) Fixed Issue Required SIA fields Missing (Issue #19)
 - (Stübi) Fixed an error by reading the length of the message
