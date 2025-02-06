@@ -1,7 +1,7 @@
-chore: release v2.0.3
+chore: release v2.0.4
 
-- (Stübi) add error envent if connction close
-- (Stübi) add the proctocol ADM-CID and \*ADM-CID (Ademco Contact ID)
-- (Stübi) add translations
-- (Stübi) fix bugs by receiving messages by udp
-- (Stübi) adjust readme
+- (Stübi) Fixed Issue Required SIA fields Missing (Issue #19)
+- (Stübi) Fixed an error by reading the length of the message
+- (Stübi) Fixed Issue Socket not kept connected (Issue #20)
+- (Stübi) the crc and length will be shown as HEX ASCII (4 characters) in the object crc and len
+- (Stübi) timestamp will be shown in format hh:mm:ss,MM-DD-YYYY (GMT time) in the object ts
