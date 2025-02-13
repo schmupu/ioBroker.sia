@@ -145,6 +145,11 @@ You can use ioBroker with this adapter as central station. For example. you can 
     ```
 
 ## Changelog
+
+### **WORK IN PROGRESS**
+
+- (Stübi) Fixing @iobroker/adapter-dev 1.0.1 specified. 1.3.0 is required as minimum, 1.3.0 is recommended (Issue #48)
+
 ### 2.0.4 (2025-02-06)
 
 - (Stübi) Fixed Issue Required SIA fields Missing (Issue #19)
