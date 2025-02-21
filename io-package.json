@@ -1,191 +1,181 @@
 {
-  "common": {
-    "name": "sia",
-    "version": "2.0.4",
-    "tier": 3,
-    "news": {
-      "2.0.4": {
-        "en": "Fixed Issue Required SIA fields Missing (Issue #19)\nFixed an error by reading the length of the message\nFixed Issue Socket not kept connected (Issue #20)\nthe crc and length will be shown as HEX ASCII (4 characters) in the object crc and len\ntimestamp will be shown in format hh:mm:ss,MM-DD-YYYY (GMT time) in the object ts",
-        "de": "Behobene Ausgabe Erforderliche SIA-Felder Fehlen (Issue #19)\nFehler behoben, indem die Länge der Nachricht gelesen wurde\nProblem behoben Steckdose nicht angeschlossen (Issue #20)\ndie cc und die Länge wird als HEX ASCII (4 Zeichen) im Objekt cc und len dargestellt\nzeitstempel wird im Format hh:mm:ss,MM-DD-YYYY (GMT-Zeit) im Objekt ts angezeigt",
-        "ru": "Исправленные вопросы Требуемые SIA поля Пропавшие (Исход #19)\nИсправлена ошибка, читая длину сообщения\nИсправленный вопрос Сокет не соединен (Issue #20)\nкружок и длина будут показаны как HEX ASCII (4 символа) в объекте crc и len\nhh:mm:ss,MM-DD-YYY (время GMT) в объекте ts",
-        "pt": "Questões corrigidas Campos de SIA exigidos Faltando (Issue #19)\nCorrigido um erro lendo o comprimento da mensagem\nProblema corrigido Soquete não mantido conectado (Issue #20)\no crc e o comprimento serão mostrados como HEX ASCII (4 caracteres) no objeto crc e len\ntimestamp será mostrado no formato hh:mm:ss,MM-DD-YYYYY (hora GMT) no objeto ts",
-        "nl": "Vaste uitgave Vereiste SIA-velden ontbreken (issue #19)\nEen fout hersteld door de lengte van het bericht te lezen\nVaste uitgifte Socket niet verbonden gehouden (Issue #20)\nde crc en lengte worden weergegeven als HEX ASCII (4 tekens) in het object crc en len\ntijdstempel wordt getoond in formaat hh:mm:ss,MM-DD-JJJJ (GMT-tijd) in het object ts",
-        "fr": "Numéro fixe Champs requis de l'ÉIS manquants (numéro 19)\nCorrection d'une erreur en lisant la longueur du message\nNuméro fixe Socket non maintenu connecté (Issue #20)\nle crc et la longueur seront montrés comme HEX ASCII (4 caractères) dans l'objet crc et len\ntimestamp sera affiché au format hh:mm:ss,MM-JJ-AAA (temps GMT) dans l'objet ts",
-        "it": "Risolto Problema richiesto Campi SIA mancante (Essuto #19)\nRisolto un errore leggendo la lunghezza del messaggio\nProblema risolto Presa non mantenuta collegata (Essue #20)\nil crc e la lunghezza saranno mostrati come HEX ASCII (4 caratteri) nell'oggetto crc e len\ntimestamp sarà mostrato in formato hh:mm:ss,MM-DD-YYYYY (GMT time) in ts dell'oggetto",
-        "es": "Edición fija Campos obligatorios SIA perdidos (Isue #19)\nCorregido un error leyendo la longitud del mensaje\nCuestión fija Socket no se mantuvo conectado (Isue #20)\nel crc y la longitud se mostrará como HEX ASCII (4 caracteres) en el objeto crc y len\ntimetamp se mostrará en formato hh:mm:ss,MM-DD-YYYY (tiempo GMT) en el objeto ts",
-        "pl": "Usunięcie stałe Wymagane pola SIA Brak (wydanie # 19)\nNaprawiono błąd czytając długość wiadomości\nWydanie stałe Gniazdo niepodłączone (wydanie # 20)\ncrc i długość zostaną pokazane jako HEX ASCII (4 znaki) w obiekcie crc i len\nznacznik czasu zostanie pokazany w formacie hh: mm: ss, MM- DD- YYYY (GMT time) w obiekcie",
-        "uk": "Виправлено проблему обов’язкові поля SIA (Isue #19)\nВиправлено помилку шляхом читання довжини повідомлення\nФіксований випуск Розетка не підтримується (Issue #20)\nкришка і довжина буде показано як HEX ASCII (4 символи) в об'єкті crc і len\ntimestamp буде показано у форматі hh:mm:ss,MM-DDD-YYY (GMT час) в об'єкті ts",
-        "zh-cn": "丢失的固定问题所需SIA字段(问题19)\n通过读取信件长度来修正错误\n固定问题 未连接的套接字( 问题 # 20)\n在对象 crc 和 len 中,将显示为 HEX ASCII( 4 个字符) \n时间戳将在对象 ts 中以 hh:mm:s, MM-DD- YYY 格式显示"
-      },
-      "2.0.3": {
-        "en": "add error envent if connction close\nadd the proctocol ADM-CID and \\*ADM-CID (Ademco Contact ID)\nadd translations\nfix bugs by receiving messages by udp\nadjust readme",
-        "de": "fehler-erfinden hinzufügen, wenn konnktion schließen\ndie proctocol ADM-CID und \\*ADM-CID (Ademco Contact ID) hinzufügen\nübersetzungen hinzufügen\nfehler beheben, indem sie nachrichten von udp empfangen\ndas lesegerät",
-        "ru": "добавить ошибку, если коннкция закрыта\nдобавить проктокол ADM-CID и \\*ADM-CID (Ademco Contact ID)\nдобавить переводы\nисправить ошибки, получая сообщения от udp\nнастроить считывание",
-        "pt": "adicionar erro envent se connction fechar\nadicione o proctocol ADM-CID e \\*ADM-CID (Ademco Contact ID)\nadicionar traduções\ncorrigir bugs recebendo mensagens por udp\najustar a leitura",
-        "nl": "fout toevoegen als verbinding sluiten\nde proctocol ADM-CID en \\*ADM-CID (Ademco Contact ID) toevoegen\nvertalingen toevoegen\nbugs herstellen door berichten te ontvangen door udp\nreadme aanpassen",
-        "fr": "ajouter une erreur envent si connction close\najouter le protocole ADM-CID et \\*ADM-CID (ID de contact d'Ademco)\najouter des traductions\ncorrection des bugs en recevant des messages par udp\najuster la lecture",
-        "it": "aggiungere errore inventare se la connzione si chiude\naggiungere il proctocollo ADM-CID e \\*ADM-CID (Ademco Contact ID)\naggiungere le traduzioni\ncorreggere bug ricevendo messaggi da udp\nregolare la lettura",
-        "es": "añadir error envent si connction close\nañadir el proctocol ADM-CID y \\*ADM-CID (Ademco Contact ID)\nañadir traducciones\nsolucionar errores recibiendo mensajes por udp\najuste readme",
-        "pl": "dodać błąd envent jeśli connction close\ndodaj ADM- CID i\\ * ADM- CID (Adres Ademco)\ndodaj tłumaczenia\nnaprawić błędy poprzez odbieranie wiadomości przez udp\ndostosować readme",
-        "uk": "додавати повідомлення про помилку, якщо конвекція закрита\nдодати протокол ADM-CID і \\ * ADM-CID (Ademco Контакт ID)\nдодати переклади\nвиправити помилки шляхом отримання повідомлень udp\nрегульований зчитувач",
-        "zh-cn": "关闭连接时添加错误代理\n添加 Proctocol ADM- CID 和 QQADM- CID (Ademco Contact ID)\n添加翻译\n通过 udp 接收消息来修正错误\n调整读取器"
-      },
-      "2.0.2": {
-        "en": "Bug fixing and some new features",
-        "de": "Fehlerbehebung und einige neue Funktionen",
-        "ru": "Исправление ошибок и некоторые новые функции",
-        "pt": "Corrigação de bugs e alguns novos recursos",
-        "nl": "Bug -fixing en enkele nieuwe functies",
-        "fr": "Fixation de bogues et de nouvelles fonctionnalités",
-        "it": "Fissaggio di bug e alcune nuove funzionalità",
-        "es": "Corrección de errores y algunas características nuevas",
-        "pl": "Naprawienie błędów i kilka nowych funkcji",
-        "uk": "Виправлення помилок та деякі нові функції",
-        "zh-cn": "错误修复和一些新功能"
-      },
-      "2.0.1": {
-        "en": "Redesign of SIA adapter",
-        "de": "Neugestaltung des SIA -Adapters",
-        "ru": "Редизайна адаптера SIA",
-        "pt": "Redesenho do adaptador SIA",
-        "nl": "Herontwerp van SIA -adapter",
-        "fr": "Refonte de l'adaptateur SIA",
-        "it": "Riprogettazione dell'adattatore SIA",
-        "es": "Rediseño del adaptador SIA",
-        "pl": "Przeprojektowanie adaptera SIA",
-        "uk": "Переробка адаптера SIA",
-        "zh-cn": "SIA适配器的重新设计"
-      },
-      "1.0.4": {
-        "en": "Bugfixing, changing the time calculation for ACK and NACK messages",
-        "de": "Bugfixing, Änderung der Zeitberechnung für ACK- und NACK-Nachrichten",
-        "ru": "Исправление ошибок, изменение расчета времени для сообщений ACK и NACK",
-        "pt": "Correção de erros, alterando o cálculo do tempo para mensagens ACK e NACK",
-        "nl": "Bugfixing, het wijzigen van de tijdberekening voor ACK- en NACK-berichten",
-        "fr": "Correction de bugs, modification du calcul de l'heure pour les messages ACK et NACK",
-        "it": "Correzione di bug, modifica del calcolo del tempo per i messaggi ACK e NACK",
-        "es": "Corrección de errores, cambiando el cálculo del tiempo para mensajes ACK y NACK",
-        "pl": "Naprawianie błędów, zmiana obliczania czasu dla wiadomości ACK i NACK",
-        "zh-cn": "错误修正，更改ACK和NACK消息的时间计算",
-        "uk": "Помилка, зміна розрахунку часу для повідомлень ACK та NACK"
-      }
+    "common": {
+        "name": "sia",
+        "version": "2.0.4",
+        "tier": 3,
+        "news": {
+            "2.0.4": {
+                "en": "Fixed Issue Required SIA fields Missing (Issue #19)\nFixed an error by reading the length of the message\nFixed Issue Socket not kept connected (Issue #20)\nthe crc and length will be shown as HEX ASCII (4 characters) in the object crc and len\ntimestamp will be shown in format hh:mm:ss,MM-DD-YYYY (GMT time) in the object ts",
+                "de": "Behobene Ausgabe Erforderliche SIA-Felder Fehlen (Issue #19)\nFehler behoben, indem die Länge der Nachricht gelesen wurde\nProblem behoben Steckdose nicht angeschlossen (Issue #20)\ndie cc und die Länge wird als HEX ASCII (4 Zeichen) im Objekt cc und len dargestellt\nzeitstempel wird im Format hh:mm:ss,MM-DD-YYYY (GMT-Zeit) im Objekt ts angezeigt",
+                "ru": "Исправленные вопросы Требуемые SIA поля Пропавшие (Исход #19)\nИсправлена ошибка, читая длину сообщения\nИсправленный вопрос Сокет не соединен (Issue #20)\nкружок и длина будут показаны как HEX ASCII (4 символа) в объекте crc и len\nhh:mm:ss,MM-DD-YYY (время GMT) в объекте ts",
+                "pt": "Questões corrigidas Campos de SIA exigidos Faltando (Issue #19)\nCorrigido um erro lendo o comprimento da mensagem\nProblema corrigido Soquete não mantido conectado (Issue #20)\no crc e o comprimento serão mostrados como HEX ASCII (4 caracteres) no objeto crc e len\ntimestamp será mostrado no formato hh:mm:ss,MM-DD-YYYYY (hora GMT) no objeto ts",
+                "nl": "Vaste uitgave Vereiste SIA-velden ontbreken (issue #19)\nEen fout hersteld door de lengte van het bericht te lezen\nVaste uitgifte Socket niet verbonden gehouden (Issue #20)\nde crc en lengte worden weergegeven als HEX ASCII (4 tekens) in het object crc en len\ntijdstempel wordt getoond in formaat hh:mm:ss,MM-DD-JJJJ (GMT-tijd) in het object ts",
+                "fr": "Numéro fixe Champs requis de l'ÉIS manquants (numéro 19)\nCorrection d'une erreur en lisant la longueur du message\nNuméro fixe Socket non maintenu connecté (Issue #20)\nle crc et la longueur seront montrés comme HEX ASCII (4 caractères) dans l'objet crc et len\ntimestamp sera affiché au format hh:mm:ss,MM-JJ-AAA (temps GMT) dans l'objet ts",
+                "it": "Risolto Problema richiesto Campi SIA mancante (Essuto #19)\nRisolto un errore leggendo la lunghezza del messaggio\nProblema risolto Presa non mantenuta collegata (Essue #20)\nil crc e la lunghezza saranno mostrati come HEX ASCII (4 caratteri) nell'oggetto crc e len\ntimestamp sarà mostrato in formato hh:mm:ss,MM-DD-YYYYY (GMT time) in ts dell'oggetto",
+                "es": "Edición fija Campos obligatorios SIA perdidos (Isue #19)\nCorregido un error leyendo la longitud del mensaje\nCuestión fija Socket no se mantuvo conectado (Isue #20)\nel crc y la longitud se mostrará como HEX ASCII (4 caracteres) en el objeto crc y len\ntimetamp se mostrará en formato hh:mm:ss,MM-DD-YYYY (tiempo GMT) en el objeto ts",
+                "pl": "Usunięcie stałe Wymagane pola SIA Brak (wydanie # 19)\nNaprawiono błąd czytając długość wiadomości\nWydanie stałe Gniazdo niepodłączone (wydanie # 20)\ncrc i długość zostaną pokazane jako HEX ASCII (4 znaki) w obiekcie crc i len\nznacznik czasu zostanie pokazany w formacie hh: mm: ss, MM- DD- YYYY (GMT time) w obiekcie",
+                "uk": "Виправлено проблему обов’язкові поля SIA (Isue #19)\nВиправлено помилку шляхом читання довжини повідомлення\nФіксований випуск Розетка не підтримується (Issue #20)\nкришка і довжина буде показано як HEX ASCII (4 символи) в об'єкті crc і len\ntimestamp буде показано у форматі hh:mm:ss,MM-DDD-YYY (GMT час) в об'єкті ts",
+                "zh-cn": "丢失的固定问题所需SIA字段(问题19)\n通过读取信件长度来修正错误\n固定问题 未连接的套接字( 问题 # 20)\n在对象 crc 和 len 中,将显示为 HEX ASCII( 4 个字符) \n时间戳将在对象 ts 中以 hh:mm:s, MM-DD- YYY 格式显示"
+            },
+            "2.0.3": {
+                "en": "add error envent if connction close\nadd the proctocol ADM-CID and \\*ADM-CID (Ademco Contact ID)\nadd translations\nfix bugs by receiving messages by udp\nadjust readme",
+                "de": "fehler-erfinden hinzufügen, wenn konnktion schließen\ndie proctocol ADM-CID und \\*ADM-CID (Ademco Contact ID) hinzufügen\nübersetzungen hinzufügen\nfehler beheben, indem sie nachrichten von udp empfangen\ndas lesegerät",
+                "ru": "добавить ошибку, если коннкция закрыта\nдобавить проктокол ADM-CID и \\*ADM-CID (Ademco Contact ID)\nдобавить переводы\nисправить ошибки, получая сообщения от udp\nнастроить считывание",
+                "pt": "adicionar erro envent se connction fechar\nadicione o proctocol ADM-CID e \\*ADM-CID (Ademco Contact ID)\nadicionar traduções\ncorrigir bugs recebendo mensagens por udp\najustar a leitura",
+                "nl": "fout toevoegen als verbinding sluiten\nde proctocol ADM-CID en \\*ADM-CID (Ademco Contact ID) toevoegen\nvertalingen toevoegen\nbugs herstellen door berichten te ontvangen door udp\nreadme aanpassen",
+                "fr": "ajouter une erreur envent si connction close\najouter le protocole ADM-CID et \\*ADM-CID (ID de contact d'Ademco)\najouter des traductions\ncorrection des bugs en recevant des messages par udp\najuster la lecture",
+                "it": "aggiungere errore inventare se la connzione si chiude\naggiungere il proctocollo ADM-CID e \\*ADM-CID (Ademco Contact ID)\naggiungere le traduzioni\ncorreggere bug ricevendo messaggi da udp\nregolare la lettura",
+                "es": "añadir error envent si connction close\nañadir el proctocol ADM-CID y \\*ADM-CID (Ademco Contact ID)\nañadir traducciones\nsolucionar errores recibiendo mensajes por udp\najuste readme",
+                "pl": "dodać błąd envent jeśli connction close\ndodaj ADM- CID i\\ * ADM- CID (Adres Ademco)\ndodaj tłumaczenia\nnaprawić błędy poprzez odbieranie wiadomości przez udp\ndostosować readme",
+                "uk": "додавати повідомлення про помилку, якщо конвекція закрита\nдодати протокол ADM-CID і \\ * ADM-CID (Ademco Контакт ID)\nдодати переклади\nвиправити помилки шляхом отримання повідомлень udp\nрегульований зчитувач",
+                "zh-cn": "关闭连接时添加错误代理\n添加 Proctocol ADM- CID 和 QQADM- CID (Ademco Contact ID)\n添加翻译\n通过 udp 接收消息来修正错误\n调整读取器"
+            },
+            "2.0.2": {
+                "en": "Bug fixing and some new features",
+                "de": "Fehlerbehebung und einige neue Funktionen",
+                "ru": "Исправление ошибок и некоторые новые функции",
+                "pt": "Corrigação de bugs e alguns novos recursos",
+                "nl": "Bug -fixing en enkele nieuwe functies",
+                "fr": "Fixation de bogues et de nouvelles fonctionnalités",
+                "it": "Fissaggio di bug e alcune nuove funzionalità",
+                "es": "Corrección de errores y algunas características nuevas",
+                "pl": "Naprawienie błędów i kilka nowych funkcji",
+                "uk": "Виправлення помилок та деякі нові функції",
+                "zh-cn": "错误修复和一些新功能"
+            },
+            "2.0.1": {
+                "en": "Redesign of SIA adapter",
+                "de": "Neugestaltung des SIA -Adapters",
+                "ru": "Редизайна адаптера SIA",
+                "pt": "Redesenho do adaptador SIA",
+                "nl": "Herontwerp van SIA -adapter",
+                "fr": "Refonte de l'adaptateur SIA",
+                "it": "Riprogettazione dell'adattatore SIA",
+                "es": "Rediseño del adaptador SIA",
+                "pl": "Przeprojektowanie adaptera SIA",
+                "uk": "Переробка адаптера SIA",
+                "zh-cn": "SIA适配器的重新设计"
+            },
+            "1.0.4": {
+                "en": "Bugfixing, changing the time calculation for ACK and NACK messages",
+                "de": "Bugfixing, Änderung der Zeitberechnung für ACK- und NACK-Nachrichten",
+                "ru": "Исправление ошибок, изменение расчета времени для сообщений ACK и NACK",
+                "pt": "Correção de erros, alterando o cálculo do tempo para mensagens ACK e NACK",
+                "nl": "Bugfixing, het wijzigen van de tijdberekening voor ACK- en NACK-berichten",
+                "fr": "Correction de bugs, modification du calcul de l'heure pour les messages ACK et NACK",
+                "it": "Correzione di bug, modifica del calcolo del tempo per i messaggi ACK e NACK",
+                "es": "Corrección de errores, cambiando el cálculo del tiempo para mensajes ACK y NACK",
+                "pl": "Naprawianie błędów, zmiana obliczania czasu dla wiadomości ACK i NACK",
+                "zh-cn": "错误修正，更改ACK和NACK消息的时间计算",
+                "uk": "Помилка, зміна розрахунку часу для повідомлень ACK та NACK"
+            }
+        },
+        "titleLang": {
+            "en": "SIA Server for burglar alarms",
+            "de": "SIA Server für Alarmanlagen",
+            "ru": "SIA сервер для охранной сигнализации",
+            "pt": "Servidor SIA para alarmes contra roubo",
+            "nl": "SIA-server voor inbraakalarmen",
+            "fr": "SIA Server pour les alarmes antivol",
+            "it": "Server SIA per allarmi anti-intrusione",
+            "es": "Servidor SIA para alarmas antirrobo",
+            "pl": "Serwer SIA do alarmów antywłamaniowych",
+            "zh-cn": "用于防盗警报的SIA服务器",
+            "uk": "Sia Server для крадіжок"
+        },
+        "desc": {
+            "en": "ioBroker SIA Server Adapter for burglar alarms",
+            "de": "ioBroker SIA Server Adapter für Alarmanlagen",
+            "ru": "ioBroker SIA Серверный адаптер для охранной сигнализации",
+            "pt": "Adaptador de servidor ioBroker SIA para alarmes contra roubo",
+            "nl": "ioBroker SIA Serveradapter voor inbraakalarmen",
+            "fr": "ioBroker SIA Server Adapter pour les alarmes antivol",
+            "it": "ioBroker SIA Server Adapter per gli allarmi anti-intrusione",
+            "es": "ioBroker SIA Server Adapter para alarmas antirrobo",
+            "pl": "Adapter serwera SIA ioBroker do alarmów antywłamaniowych",
+            "zh-cn": "用于防盗报警的ioBroker SIA服务器适配器",
+            "uk": "Адаптер сервера iObroker SIA для тривоги"
+        },
+        "authors": ["Thorsten Stueben <thorsten@stueben.de>"],
+        "keywords": ["sia", "burglar", "alarm"],
+        "licenseInformation": {
+            "license": "MIT",
+            "type": "free"
+        },
+        "platform": "Javascript/Node.js",
+        "icon": "sia.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/schmupu/ioBroker.sia/master/admin/sia.png",
+        "readme": "https://github.com/schmupu/ioBroker.sia/blob/master/README.md",
+        "loglevel": "info",
+        "messagebox": true,
+        "mode": "daemon",
+        "type": "alarm",
+        "compact": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "adminUI": {
+            "config": "json"
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=5.0.19"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=7.4.10"
+            }
+        ]
     },
-    "titleLang": {
-      "en": "SIA Server for burglar alarms",
-      "de": "SIA Server für Alarmanlagen",
-      "ru": "SIA сервер для охранной сигнализации",
-      "pt": "Servidor SIA para alarmes contra roubo",
-      "nl": "SIA-server voor inbraakalarmen",
-      "fr": "SIA Server pour les alarmes antivol",
-      "it": "Server SIA per allarmi anti-intrusione",
-      "es": "Servidor SIA para alarmas antirrobo",
-      "pl": "Serwer SIA do alarmów antywłamaniowych",
-      "zh-cn": "用于防盗警报的SIA服务器",
-      "uk": "Sia Server для крадіжок"
+    "protectedNative": ["keys.password"],
+    "encryptedNative": ["keys.password"],
+    "native": {
+        "port": 55001,
+        "bind": "0.0.0.0",
+        "timeout": 0,
+        "sockend": true,
+        "path": "/tmp/sia/",
+        "save": false,
+        "keys": [
+            {
+                "accountnumber": "test",
+                "aes": false,
+                "hex": false,
+                "password": ""
+            }
+        ]
     },
-    "desc": {
-      "en": "ioBroker SIA Server Adapter for burglar alarms",
-      "de": "ioBroker SIA Server Adapter für Alarmanlagen",
-      "ru": "ioBroker SIA Серверный адаптер для охранной сигнализации",
-      "pt": "Adaptador de servidor ioBroker SIA para alarmes contra roubo",
-      "nl": "ioBroker SIA Serveradapter voor inbraakalarmen",
-      "fr": "ioBroker SIA Server Adapter pour les alarmes antivol",
-      "it": "ioBroker SIA Server Adapter per gli allarmi anti-intrusione",
-      "es": "ioBroker SIA Server Adapter para alarmas antirrobo",
-      "pl": "Adapter serwera SIA ioBroker do alarmów antywłamaniowych",
-      "zh-cn": "用于防盗报警的ioBroker SIA服务器适配器",
-      "uk": "Адаптер сервера iObroker SIA для тривоги"
-    },
-    "authors": [
-      "Thorsten Stueben <thorsten@stueben.de>"
-    ],
-    "keywords": [
-      "sia",
-      "burglar",
-      "alarm"
-    ],
-    "licenseInformation": {
-      "license": "MIT",
-      "type": "free"
-    },
-    "platform": "Javascript/Node.js",
-    "icon": "sia.png",
-    "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/schmupu/ioBroker.sia/master/admin/sia.png",
-    "readme": "https://github.com/schmupu/ioBroker.sia/blob/master/README.md",
-    "loglevel": "info",
-    "messagebox": true,
-    "mode": "daemon",
-    "type": "alarm",
-    "compact": true,
-    "connectionType": "local",
-    "dataSource": "push",
-    "adminUI": {
-      "config": "json"
-    },
-    "dependencies": [
-      {
-        "js-controller": ">=5.0.19"
-      }
-    ],
-    "globalDependencies": [
-      {
-        "admin": ">=6.4.4"
-      }
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "Device or service connected",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "accounts",
+            "type": "channel",
+            "common": {
+                "name": "Subscriber"
+            },
+            "native": {}
+        }
     ]
-  },
-  "protectedNative": [
-    "keys.password"
-  ],
-  "encryptedNative": [
-    "keys.password"
-  ],
-  "native": {
-    "port": 55001,
-    "bind": "0.0.0.0",
-    "timeout": 0,
-    "sockend": true,
-    "path": "/tmp/sia/",
-    "save": false,
-    "keys": [
-      {
-        "accountnumber": "test",
-        "aes": false,
-        "hex": false,
-        "password": ""
-      }
-    ]
-  },
-  "objects": [],
-  "instanceObjects": [
-    {
-      "_id": "info",
-      "type": "channel",
-      "common": {
-        "name": "Information"
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.connection",
-      "type": "state",
-      "common": {
-        "role": "indicator.connected",
-        "name": "Device or service connected",
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    },
-    {
-      "_id": "accounts",
-      "type": "channel",
-      "common": {
-        "name": "Subscriber"
-      },
-      "native": {}
-    }
-  ]
 }

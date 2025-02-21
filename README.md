@@ -149,6 +149,7 @@ You can use ioBroker with this adapter as central station. For example. you can 
 ### **WORK IN PROGRESS**
 
 - (Stübi) Fixing @iobroker/adapter-dev 1.0.1 specified. 1.3.0 is required as minimum, 1.3.0 is recommended (Issue #48)
+- (Stübi) Fixing dependency (Issue #49)
 
 ### 2.0.4 (2025-02-06)
 
