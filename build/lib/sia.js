@@ -31,10 +31,10 @@ __export(sia_exports, {
   sia: () => sia
 });
 module.exports = __toCommonJS(sia_exports);
-var import_crypto = __toESM(require("crypto"));
-var import_dgram = __toESM(require("dgram"));
+var crypto = __toESM(require("crypto"));
+var dgram = __toESM(require("dgram"));
 var import_events = require("events");
-var import_net = __toESM(require("net"));
+var net = __toESM(require("net"));
 var tools = __toESM(require("./tools"));
 class sia extends import_events.EventEmitter {
   timeout;
@@ -69,8 +69,8 @@ class sia extends import_events.EventEmitter {
         error: parameter.logger.error ? parameter.logger.error : parameter.logger
       };
     }
-    this.serverudp = import_dgram.default.createSocket("udp4");
-    this.servertcp = import_net.default.createServer();
+    this.serverudp = dgram.createSocket("udp4");
+    this.servertcp = net.createServer();
   }
   /**
    * Set accounts
@@ -167,12 +167,12 @@ class sia extends import_events.EventEmitter {
         default:
           throw new Error(`Could not encrypt to hex. Wrong password length.`);
       }
-      const cipher = import_crypto.default.createCipheriv(aes, password, iv);
+      const cipher = crypto.createCipheriv(aes, password, iv);
       let encrypt = cipher.update(decrypted);
       encrypt = Buffer.concat([encrypt, cipher.final()]);
       return encrypt.toString("hex");
     } catch (err) {
-      throw new Error(`Could not encrypt message`, { cause: err });
+      throw new Error(`Could not encrypt message ${tools.getErrorMessage(err)}`);
     }
   }
   /**
@@ -200,13 +200,13 @@ class sia extends import_events.EventEmitter {
         default:
           throw new Error(`Could not decrypt from hex. Wrong password length.`);
       }
-      const decipher = import_crypto.default.createDecipheriv(aes, password, iv);
+      const decipher = crypto.createDecipheriv(aes, password, iv);
       decipher.setAutoPadding(false);
       let decrypt = decipher.update(encrypted, "hex", "utf-8");
       decrypt += decipher.final("utf-8");
       return decrypt;
     } catch (err) {
-      throw new Error(`Could not decrypt message`, { cause: err });
+      throw new Error(`Could not decrypt message ${tools.getErrorMessage(err)}`);
     }
   }
   /**
@@ -963,7 +963,8 @@ class sia extends import_events.EventEmitter {
    */
   crc16(buffer) {
     let crc = 0;
-    for (const byte of buffer) {
+    for (let idx = 0; idx < buffer.length; idx++) {
+      const byte = buffer[idx];
       let temp = byte & 255;
       for (let i = 0; i < 8; i++) {
         temp ^= crc & 1;

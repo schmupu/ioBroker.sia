@@ -1,7 +1,7 @@
-import crypto from 'crypto';
-import dgram from 'dgram';
+import * as crypto from 'crypto';
+import * as dgram from 'dgram';
 import { EventEmitter } from 'events';
-import net from 'net';
+import * as net from 'net';
 import * as tools from './tools';
 
 /**
@@ -203,7 +203,7 @@ export class sia extends EventEmitter {
             encrypt = Buffer.concat([encrypt, cipher.final()]);
             return encrypt.toString('hex');
         } catch (err) {
-            throw new Error(`Could not encrypt message`, { cause: err });
+            throw new Error(`Could not encrypt message ${tools.getErrorMessage(err)}`);
         }
     }
 
@@ -239,7 +239,7 @@ export class sia extends EventEmitter {
             decrypt += decipher.final('utf-8');
             return decrypt;
         } catch (err) {
-            throw new Error(`Could not decrypt message`, { cause: err });
+            throw new Error(`Could not decrypt message ${tools.getErrorMessage(err)}`);
         }
     }
 
@@ -820,7 +820,8 @@ export class sia extends EventEmitter {
      */
     private crc16(buffer: Buffer): number {
         let crc = 0;
-        for (const byte of buffer) {
+        for (let idx = 0; idx < buffer.length; idx++) {
+            const byte = buffer[idx];
             let temp = byte & 0xff;
             for (let i = 0; i < 8; i++) {
                 temp ^= crc & 1;
