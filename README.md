@@ -208,7 +208,7 @@ You can use ioBroker with this adapter as central station. For example. you can 
 
 The MIT License (MIT)
 
-Copyright (c) 2025 Thorsten <thorsten@stueben.de>
+Copyright (c) 2025-2026 Thorsten <thorsten@stueben.de>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
