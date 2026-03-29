@@ -1,7 +1,7 @@
-import * as crypto from 'crypto';
-import * as dgram from 'dgram';
-import { EventEmitter } from 'events';
-import * as net from 'net';
+import * as crypto from 'node:crypto';
+import * as dgram from 'node:dgram';
+import { EventEmitter } from 'node:events';
+import * as net from 'node:net';
 import * as tools from './tools';
 
 /**

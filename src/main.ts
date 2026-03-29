@@ -5,7 +5,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from '@iobroker/adapter-core';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import * as dp from './lib/datapoints';
 import * as siamanager from './lib/sia';
 import * as tools from './lib/tools';
