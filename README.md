@@ -145,6 +145,7 @@ You can use ioBroker with this adapter as central station. For example. you can 
 ## Changelog
 
 ### **WORK IN PROGRESS**
+- (copilot) Adapter requires node.js >= 22 now
 
 - (Stübi) Fixing @iobroker/adapter-dev 1.0.1 specified. 1.3.0 is required as minimum, 1.3.0 is recommended (Issue #48)
 - (Stübi) Fixing dependency (Issue #49)
