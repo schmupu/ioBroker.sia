@@ -204,6 +204,8 @@ You can use ioBroker with this adapter as central station. For example. you can 
 - (Stübi) bug fixing
 - (Stübi) first implementation
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 
 The MIT License (MIT)
